@@ -2,7 +2,7 @@
 name: imperva-cwaf-cache
 description: Manage Imperva Cloud WAF cache settings, custom cache rules, client-side caching, response header caching, and cache purging via the API.
 category: imperva-cwaf
-version: 1.1.0
+version: 1.2.0
 ---
 
 # Imperva CWAF Cache Management
@@ -209,6 +209,35 @@ DELETE /sites/{siteId}/settings/cache/rules/{ruleId}
 
 See `references/cache-rule-actions.md` for action-specific parameters.
 
+### Cache Rule Filter Syntax
+
+Cache rule filters use the same expression syntax as WAF custom rules. Key points:
+
+**Multi-value matching with semicolon (`;`):**
+When a filter condition needs to match multiple values, use semicolon-separated quoted strings — each value is its own quoted string:
+
+```
+# Good - semicolon-separated quoted strings:
+URL contains ".jpg";".jpeg";".png";".gif";".webp";".svg";".ico"
+
+# For suffix matching (ends with), put $ inside each quoted string:
+URL contains ".jpg$";".jpeg$";".png$";".gif$";".webp$"
+
+# Also valid but verbose - multiple OR conditions:
+URL contains ".jpg" | URL contains ".jpeg" | URL contains ".png"
+```
+
+This applies to all filter parameters that support multi-value: `URL`, `CountryCode`, `ClientType`, `ParamName`, etc.
+
+**Other filter operators:**
+- `contains` — substring match
+- `==` — exact match
+- `!=` — not equal
+- `|` — OR
+- `&` — AND
+- `^...` — starts with
+- `...$` — ends with
+
 ### Cache Rule Conditional Parameters
 
 Some actions require additional parameters:
@@ -371,6 +400,7 @@ The API key authenticated but the operation was rejected. Common causes:
 - **Empty rule list is not an empty array**: When no rules exist, GET returns `{"res": 0, "debug_info": {"Site has no Cache rules": "..."}}` — not `[]` or `{"value": []}`.
 - **DELETE restores defaults**: `DELETE /sites/{siteId}/settings/cache` resets ALL cache settings to defaults — use with caution.
 - **Cache rules need filter**: Every cache rule requires a `filter` field. Use an empty string `""` for rules that should always match.
+- **Cache rule filter supports semicolon multi-value**: Cache rule filters use the same syntax as WAF custom rules. Use `;` to separate multiple values in a single condition (e.g., `URL contains ".jpg;.jpeg;.png"`) instead of multiple `|` OR conditions. This is cleaner and more efficient.
 - **TTL only for specific actions**: The `ttl` field is only relevant for `HTTP_CACHE_MAKE_STATIC` and `HTTP_CACHE_CLIENT_CACHE_CTL` actions.
 - **Ignored params format**: Use `["*"]` (array with single asterisk string) to ignore all parameters.
 - **Inline Python fails**: `bws run -- python3 -c "..."` fails for complex Python due to shell escaping. Always write a script file first.

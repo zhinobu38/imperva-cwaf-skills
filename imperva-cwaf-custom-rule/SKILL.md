@@ -2,7 +2,7 @@
 name: imperva-cwaf-custom-rule
 description: Create, manage, and test Imperva Cloud WAF custom rules using the API.
 category: imperva-cwaf
-version: 1.1.0
+version: 1.2.0
 ---
 
 # Imperva CWAF Custom Rule Skill
@@ -128,7 +128,7 @@ cat > /tmp/rule.json << 'EOF'
   "name": "ChallengeNonBrowserBots",
   "action": "RULE_ACTION_INTRUSIVE_HTML",
   "enabled": true,
-  "filter": "ClientType != Browser & ClientType != SearchBot & ClientType != SiteHelper"
+  "filter": "ClientType != Browser;SearchBot;SiteHelper"
 }
 EOF
 bws run --project-id <BW_PROJECT_ID_READ> -- python3 /tmp/create_rule.py
@@ -180,9 +180,10 @@ This error means the API key **authenticated but the operation was rejected**. C
 - **Body structure for POST/PUT**: All Imperva APIs use flat JSON (no `data` wrapper) — Policies, Custom Rules, Cache, everything. Never wrap request bodies in `{"data": {...}}`.
 - **ClientType enum values**: Must use exact PascalCase: Browser, SearchBot, SiteHelper, Unknown, AIBot, ClickBot, SpamBot, Crawler, etc. Lowercase values will return "Invalid value" error.
 - **JavaScript challenge action**: Use `RULE_ACTION_INTRUSIVE_HTML` (not `RULE_ACTION_CHALLENGE_JS` which does not exist in the API enum).
-- **Multiple value matching**: Use semicolon-separated values instead of multiple `&` conditions:
+- **Multi-value matching with semicolon**: Use semicolon-separated values instead of multiple `|` OR conditions:
   - Instead of: `ClientType != Browser & ClientType != SearchBot & ClientType != SiteHelper`
   - Use: `ClientType != Browser;SearchBot;SiteHelper;FeedFetcher`
+  - This applies to all filter parameters that support multi-value: `URL`, `CountryCode`, `ClientType`, `ParamName`, `HeaderValue`, `CookieValue`, etc.
 - **Wrong Bitwarden project**: Using project `hermes` instead of `hermes-aws` gives credentials that authenticate (no 401) but cause 9415 "Operation not allowed" on write operations. Always verify you're using `hermes-aws`.
 - **Inline Python fails**: `bws run -- python3 -c "..."` fails for complex Python due to shell escaping. Always write a script file first.
 
@@ -204,7 +205,7 @@ This error means the API key **authenticated but the operation was rejected**. C
 
 ## Notes
 
-- The rule filter syntax must match exactly what is documented in the rule filter parameters.
+- The rule filter syntax is shared between WAF custom rules (`imperva-cwaf-custom-rule`) and cache rules (`imperva-cwaf-cache`). The same semicolon multi-value syntax, operators, and parameter names apply to both.
 - **Action enum values**: `RULE_ACTION_INTRUSIVE_HTML` is the JavaScript challenge action (not `RULE_ACTION_CHALLENGE_JS`). Valid actions: `RULE_ACTION_BLOCK`, `RULE_ACTION_CAPTCHA`, `RULE_ACTION_INTRUSIVE_HTML`, etc.
 - **JSON body structure**: API v2 `/sites/{siteId}/rules` expects the rule object directly in the body (no `data` wrapper).
 - **Case sensitivity**: Filter values are case-sensitive. ClientType values: `Browser`, `SearchBot`, `SiteHelper`, `AIBot`, `ClickBot`, `Crawler`, `SpamBot`, etc. (PascalCase, not lowercase).

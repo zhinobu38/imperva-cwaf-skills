@@ -20,7 +20,9 @@ Each file represents a specific API service or functional area. For example:
 - `site_management.yaml` - Site management API (list sites, get site details, etc.)
 - `policies-api.yaml` - Policies API
 - `rules.yaml` - Rules API
+- `cache-api.yaml` - Cache settings and cache rules API
 - `certificatesUI-api.yaml` - Certificate management API
+- `website-management-api.yaml` - Website settings (TLS/HSTS, etc.)
 - ... and others.
 
 ## How to List API Specs
@@ -161,6 +163,7 @@ All examples in this skill reference `$IMPERVA_API_ID` and `$IMPERVA_API_KEY` â€
 - `imperva-cwaf-site-onboard`: For onboarding a new site.
 - `imperva-cwaf-status-check`: For checking Imperva service status.
 - `imperva-cwaf-ssl-management`: For managing SSL certificates and TLS/HSTS settings.
+- `imperva-cwaf-cache`: For managing cache settings, cache rules, client-side caching, response header caching, and cache purging.
 
 ## Support Files
 

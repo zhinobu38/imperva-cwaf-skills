@@ -54,6 +54,24 @@ This document provides a concise summary of the rule filter parameters available
 - **Logical**: `is-in`, `is-not-in`, `exists`, `does-not-exist`
 - **Special**: `&` (AND), `|` (OR)
 
+## Multi-Value Matching (Semicolon Syntax)
+
+When a filter condition needs to match multiple values, use **semicolon-separated** values instead of multiple `|` OR conditions:
+
+```
+# Good - single condition with semicolon-separated values:
+ClientType != Browser;SearchBot;SiteHelper;FeedFetcher
+URL contains ".jpg;.jpeg;.png;.gif;.webp"
+CountryCode != CN;RU;KP
+
+# Also valid but verbose - multiple OR conditions:
+ClientType != Browser | ClientType != SearchBot | ClientType != SiteHelper
+```
+
+This applies to all filter parameters: `URL`, `Full-URL`, `CountryCode`, `ClientType`, `ParamName`, `HeaderValue`, `CookieValue`, `ParamValue`, `QueryStringParamValue`, `User-Agent`, `Referer`, `City`, `ContinentCode`, `MaliciousIPList`, `Content-Type`, `ResponseContentType`, `Resource Type`, `SSL Cipher`, `SSL Version`, etc.
+
+**Note**: The semicolon syntax works with `==`, `!=`, `contains`, and `not-contains` operators.
+
 ## Notes
 - String matching is case-insensitive unless otherwise specified.
 - For string matching, `^` (start) and `$` (end) can be used within `contains`/`not-contains` for prefix/suffix matching.

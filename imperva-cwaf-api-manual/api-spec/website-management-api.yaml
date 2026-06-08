@@ -1,0 +1,1884 @@
+openapi: 3.0.1
+info:
+  description: Get details of your websites configured in Imperva.
+  license:
+    name: The terms in the absence of an applicable signed agreement between you and
+      Imperva
+    url: https://www.imperva.com/legal/license-agreement/
+  title: Sites management API Documentation
+  version: 1.0.0
+servers:
+  - url: https://api.imperva.com/sites-mgmt
+    description: Imperva API server
+security:
+  - api_id: []
+    api_key: []
+tags:
+  - description: Manage site SPA settings. To enable SPA for your account, contact
+      <a href="https://support.imperva.com" target="_blank"> Support </a> or
+      your customer success representative.
+    name: SPA API
+paths:
+  /v3/accounts/settings/default-tls-configuration:
+    get:
+      description: Get account default TLS configuration settings by account ID.
+      operationId: getAccountDefaultInboundTLSConfiguration
+      parameters:
+        - description: The Imperva ID of the account or subaccount. By default, the
+            account ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                InboundTlsSettingsDto:
+                  description: InboundTlsSettingsDto
+                  value:
+                    data:
+                      - configurationProfile: CUSTOM
+                        tlsConfiguration:
+                          - tlsVersion: TLS_1_3
+                            ciphersSupport:
+                              - TLS_AES_128_GCM_SHA256
+                              - TLS_CHACHA20_POLY1305_SHA256
+              schema:
+                $ref: "#/components/schemas/AccountInboundTLSConfigurationRequest"
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal Error
+      summary: Get account default TLS configuration settings.
+      tags:
+        - Account TLS configuration
+    put:
+      description: Update the account default TLS configuration. This configuration
+        will be applied to new websites created directly under the specified
+        account.
+      operationId: setAccountDefaultInboundTLSConfiguration
+      parameters:
+        - description: The Imperva ID of the account or subaccount. By default, the
+            account ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            examples:
+              SPA:
+                description: Sets custom ciphers profile with support for just TLS v1.3 and
+                  specific list of ciphers.
+                value:
+                  data:
+                    - configurationProfile: CUSTOM
+                      tlsConfiguration:
+                        - tlsVersion: TLS_1_3
+                          ciphersSupport:
+                            - TLS_AES_128_GCM_SHA256
+                            - TLS_CHACHA20_POLY1305_SHA256
+            schema:
+              $ref: "#/components/schemas/AccountInboundTLSConfigurationRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                SPA:
+                  description: SPA
+                  value:
+                    data:
+                      - configurationProfile: CUSTOM
+                        tlsConfiguration:
+                          - tlsVersion: TLS_1_3
+                            ciphersSupport:
+                              - TLS_AES_128_GCM_SHA256
+                              - TLS_CHACHA20_POLY1305_SHA256
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal Error
+      summary: Define account default TLS configuration settings.
+      tags:
+        - Account TLS configuration
+  /v3/sites:
+    get:
+      description: Retrieve details of all websites associated with the current
+        account. <br />To filter for a subset of the account’s websites, provide
+        website IDs and website names. <br />If multiple filters are provided,
+        an AND operation is applied and the API will return all websites
+        matching the filters.
+      operationId: getSites
+      parameters:
+        - description: A list of website ids. If this parameter is provided, only websites
+            matching one of these IDs will be returned.
+          in: query
+          name: siteIds
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int64
+        - description: A list of website names. If this parameter is provided, only
+            websites matching one of these names will be returned.
+          in: query
+          name: names
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - description: A list of website types. Indicates if the website is onboarded to
+            Imperva Cloud WAF or configured for Imperva WAF Anywhere. If this
+            parameter is provided, only websites with type matching one of these
+            types will be returned.
+          in: query
+          name: siteTypes
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - CLOUD_WAF
+                - LOCAL
+                - PUBLIC_CLOUD
+        - description: A list of sub account IDs. When provided, the API returns websites
+            corresponding to the specified sub account IDs. This parameter is
+            ignored if the API call is authenticated as a sub account.
+          in: query
+          name: subAccIds
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int64
+        - description: The page to return starting from 0.
+          in: query
+          name: page
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 0
+        - description: Page size used to determine the first object to be returned and the
+            number of objects to be returned.
+          in: query
+          name: size
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - description: The Imperva ID of the account or subaccount. By default, the
+            account ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedCollectionSite"
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal Error
+      summary: Get sites
+      tags:
+        - Site Management
+    post:
+      description: Create site associated with the current account
+      operationId: postSite
+      parameters:
+        - description: The Imperva ID of the account or subaccount. By default, the
+            account ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Site"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionSite"
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal Error
+      summary: Create site
+      tags:
+        - Site Management
+  /v3/sites/extended:
+    get:
+      description: Retrieve details of all websites associated with the current
+        account. <br />To filter for a subset of the account’s websites, provide
+        website IDs and website names. <br />If multiple filters are provided,
+        an AND operation is applied and the API will return all websites
+        matching the filters.
+      operationId: extendedGetSites
+      parameters:
+        - description: A list of website ids. If this parameter is provided, only websites
+            matching one of these IDs will be returned.
+          in: query
+          name: siteIds
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int64
+        - description: A list of website names. If this parameter is provided, only
+            websites matching one of these names will be returned.
+          in: query
+          name: names
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - description: A list of website types. Indicates if the website is onboarded to
+            Imperva Cloud WAF or configured for Imperva WAF Anywhere. If this
+            parameter is provided, only websites with type matching one of these
+            types will be returned.
+          in: query
+          name: siteTypes
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - CLOUD_WAF
+                - LOCAL
+                - PUBLIC_CLOUD
+        - description: A list of sub account IDs. When provided, the API returns websites
+            corresponding to the specified sub account IDs. This parameter is
+            ignored if the API call is authenticated as a sub account.
+          in: query
+          name: subAccIds
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int64
+        - description: The page to return starting from 0.
+          in: query
+          name: page
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 0
+        - description: Page size used to determine the first object to be returned and the
+            number of objects to be returned.
+          in: query
+          name: size
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - description: The Imperva ID of the account or subaccount. By default, the
+            account ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedCollectionSite"
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal Error
+      summary: Extended get sites
+      tags:
+        - Site Management
+  /v3/sites/onboard:
+    post:
+      description: "Quickly onboard a website with a single API call.</br></br>If the
+        specified domain is configured in DNS to point to your website’s
+        servers, Imperva automatically identifies the origin servers and
+        associates them with the new site. If the specified domain is not
+        configured in your DNS, you must provide the site’s origin server
+        addresses using the servers parameter. The created website automatically
+        receives SSL coverage served by an Imperva-managed certificate dedicated
+        to this site.</br></br>The API response includes all the REST entities
+        that are created during the onboarding process (site, domains, servers,
+        and certificate settings). The response also includes instructions
+        comprised of 2 parts: SSL and Network.</br></br>The SSL instructions
+        describe how to configure your DNS in order to complete the domain
+        ownership validation process. By default, domain ownership validation is
+        done using a CNAME record.</br></br>The Network section provides
+        instructions on how to direct your domain’s traffic to the Imperva
+        network."
+      operationId: postSiteController
+      parameters:
+        - description: The Imperva ID of the account or subaccount. By default, the
+            account ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SiteOnboardingRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionSiteOnboardResponse"
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal Error
+      summary: Simplified site onboarding
+      tags:
+        - Simplified Site Onboarding
+  /v3/sites/spa/{siteId}:
+    get:
+      description: Retrieves the SPA settings for a given website.
+      operationId: getSiteSpaSettings
+      parameters:
+        - description: The Imperva site ID of your website.
+          in: path
+          name: siteId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: The Imperva ID of the account or subaccount. By default, the
+            account ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/SiteSpaSettingsApiResponse"
+          description: Successful operation
+        "400":
+          content:
+            "*/*":
+              examples:
+                Bad Request:
+                  description: Bad Request
+                  value:
+                    errors:
+                      - status: 400
+                        id: null
+                        source:
+                          pointer: /v3/sites/16612920 /settings/spa
+                        title: Bad Request
+                        detail: "Failed to get site spa info. Message: Bad Request"
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            "*/*":
+              examples:
+                Unauthorized:
+                  description: Unauthorized
+                  value:
+                    errors:
+                      - status: 401
+                        id: ba34a964fe9a1887
+                        source:
+                          pointer: /v3/sites/16612920/settings/spa
+                        title: Unauthorized
+                        detail: Failed to verify permissions
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized
+        "404":
+          content:
+            "*/*":
+              examples:
+                Not Found:
+                  description: Not Found
+                  value:
+                    errors:
+                      - status: 404
+                        id: null
+                        source:
+                          pointer: /v3/sites/16/settings/spa
+                        title: Not Found
+                        detail: "Failed to get site spa info. Message: Not Found"
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Not Found
+        "500":
+          content:
+            "*/*":
+              examples:
+                Internal Server Error:
+                  description: Internal Server Error
+                  value:
+                    errors:
+                      - status: 500
+                        id: 1dce2fbdec3e60e2
+                        source:
+                          pointer: /v3/sites/16612922/settings/spa
+                        title: Internal Server Error
+                        detail: Internal Server Error
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal Server Error
+      summary: Get site SPA settings
+      tags:
+        - SPA API
+    put:
+      description: Updates the SPA settings for a given website.
+      operationId: modifySiteSpaSettings
+      parameters:
+        - description: The Imperva site ID of your website.
+          in: path
+          name: siteId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: The Imperva ID of the account or subaccount. By default, the
+            account ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            examples:
+              SPA:
+                description: Defines the whole site as a single-page application.
+                value:
+                  state: SPA
+              SPA_FOR_SPECIFIC_URLS:
+                description: SPA support applies only to the specific URLs specified in the
+                  urlList.
+                value:
+                  state: SPA_FOR_SPECIFIC_URLS
+                  urlList:
+                    - /test1
+                    - /test2
+            schema:
+              $ref: "#/components/schemas/SiteSpaSettingsDto"
+        required: true
+      responses:
+        "200":
+          content:
+            "*/*":
+              examples:
+                SPA:
+                  description: Defines the whole site as a single-page application.
+                  value:
+                    data:
+                      - state: SPA
+                SPA_FOR_SPECIFIC_URLS:
+                  description: SPA support applies only to the specific URLs specified in the
+                    urlList.
+                  value:
+                    data:
+                      - state: SPA_FOR_SPECIFIC_URLS
+                        urlList:
+                          - /test1
+                          - /test2
+              schema:
+                $ref: "#/components/schemas/SiteSpaSettingsApiResponse"
+          description: Successful operation
+        "400":
+          content:
+            "*/*":
+              examples:
+                Bad Request:
+                  description: Bad Request
+                  value:
+                    errors:
+                      - status: 400
+                        id: null
+                        source:
+                          pointer: /v3/sites/16612920 /settings/spa
+                        title: Bad Request
+                        detail: "Failed to get site spa info. Message: Bad Request"
+                NOT_SPA state with not empty url list:
+                  description: NOT_SPA state with not empty url list
+                  value:
+                    errors:
+                      - status: 400
+                        id: 0949bee81d4bce3f
+                        source:
+                          pointer: /v3/sites/16612920/settings/spa
+                        title: Bad Request
+                        detail: Url list must be empty when site state is NOT_SPA
+                Null state:
+                  description: Null state
+                  value:
+                    errors:
+                      - status: 400
+                        id: 787d252e08cd99ad
+                        source:
+                          pointer: /v3/sites/16612920/settings/spa
+                        title: Invalid Input Error
+                        detail: state State must not be null!
+                Null value for url:
+                  description: Null value for url
+                  value:
+                    errors:
+                      - status: 400
+                        id: 358eebec0102e42c
+                        source:
+                          pointer: /v3/sites/16612920/settings/spa
+                        title: Bad Request
+                        detail: Invalid value for URL, expecting a not null string surrounded by quotes
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            "*/*":
+              examples:
+                Unauthorized:
+                  description: Unauthorized
+                  value:
+                    errors:
+                      - status: 401
+                        id: ba34a964fe9a1887
+                        source:
+                          pointer: /v3/sites/16612920/settings/spa
+                        title: Unauthorized
+                        detail: Failed to verify permissions
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized
+        "404":
+          content:
+            "*/*":
+              examples:
+                Not Found:
+                  description: Not Found
+                  value:
+                    errors:
+                      - status: 404
+                        id: null
+                        source:
+                          pointer: /v3/sites/16/settings/spa
+                        title: Not Found
+                        detail: "Failed to get site spa info. Message: Not Found"
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Not Found
+        "500":
+          content:
+            "*/*":
+              examples:
+                Internal Server Error:
+                  description: Internal Server Error
+                  value:
+                    errors:
+                      - status: 500
+                        id: 1dce2fbdec3e60e2
+                        source:
+                          pointer: /v3/sites/16612922/settings/spa
+                        title: Internal Server Error
+                        detail: Internal Server Error
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal Server Error
+      summary: Update site SPA settings
+      tags:
+        - SPA API
+  /v3/sites/{siteId}:
+    delete:
+      description: Delete an existing site
+      operationId: deleteSite
+      parameters:
+        - description: Numeric identifier of the site.
+          in: path
+          name: siteId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: The Imperva ID of the account or subaccount. By default, the
+            account ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionSite"
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal Error
+      summary: Delete site
+      tags:
+        - Site Management
+    get:
+      description: Retrieve details of a website according to its Imperva ID
+      operationId: getSite
+      parameters:
+        - description: Numeric identifier of the site.
+          in: path
+          name: siteId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: The Imperva ID of the account or subaccount. By default, the
+            account ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionSite"
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal Error
+      summary: Get site
+      tags:
+        - Site Management
+  /v3/sites/{siteId}/settings/TLSConfiguration:
+    get:
+      description: Get website tls configuration settings by website id
+      operationId: getSiteTLSConfiguration
+      parameters:
+        - description: Numeric identifier of the website.
+          in: path
+          name: siteId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: The Imperva ID of the account or subaccount. By default, the
+            account ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                SPA:
+                  description: SPA
+                  value:
+                    data:
+                      - hstsConfiguration:
+                          preLoaded: false
+                          maxAge: 7543
+                          subDomainsIncluded: false
+                          isEnabled: true
+                        inboundTlsSettings:
+                          configurationProfile: CUSTOM
+                          tlsConfiguration:
+                            - tlsVersion: TLS_1_3
+                              ciphersSupport:
+                                - TLS_AES_128_GCM_SHA256
+                                - TLS_CHACHA20_POLY1305_SHA256
+                        disablePQCSupport: false
+              schema:
+                $ref: "#/components/schemas/SiteTLSConfigurationRequest"
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal Error
+      summary: Get website TLS configuration settings
+      tags:
+        - Website TLS configuration
+    patch:
+      description: Update TLS settings of an existing website. Only fields that are
+        sent in the request will be updated.
+      operationId: setSiteTLSConfiguration
+      parameters:
+        - description: Numeric identifier of the website.
+          in: path
+          name: siteId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: The Imperva ID of the account or subaccount. By default, the
+            account ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            examples:
+              SPA:
+                description: Enables and configure HSTS and sets custom ciphers profile with
+                  support for just TLS v1.3 and specific list of ciphers.
+                value:
+                  data:
+                    - hstsConfiguration:
+                        preLoaded: false
+                        maxAge: 7543
+                        subDomainsIncluded: false
+                        isEnabled: true
+                      inboundTlsSettings:
+                        configurationProfile: CUSTOM
+                        tlsConfiguration:
+                          - tlsVersion: TLS_1_3
+                            ciphersSupport:
+                              - TLS_AES_128_GCM_SHA256
+                              - TLS_CHACHA20_POLY1305_SHA256
+                      disablePQCSupport: false
+            schema:
+              $ref: "#/components/schemas/SiteTLSConfigurationRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionSiteTLSConfiguration"
+          description: Successful operation
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal Error
+      summary: Modify website TLS configuration settings (partial update)
+      tags:
+        - Website TLS configuration
+  /v3/sites/{siteId}/site-settings:
+    get:
+      description: Retrieves the SPA settings for a given website.
+      operationId: getSiteSpaDataFull
+      parameters:
+        - description: The Imperva site ID of your website.
+          in: path
+          name: siteId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: The Imperva ID of the account or subaccount. By default, the
+            account ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/SiteSpaFullSettingsV3ResponseDto"
+          description: Successful operation
+        "400":
+          content:
+            "*/*":
+              examples:
+                Bad Request:
+                  description: Bad Request
+                  value:
+                    errors:
+                      - status: 400
+                        id: null
+                        source:
+                          pointer: /v3/sites/16612920 /settings/spa
+                        title: Bad Request
+                        detail: "Failed to get site spa info. Message: Bad Request"
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            "*/*":
+              examples:
+                Unauthorized:
+                  description: Unauthorized
+                  value:
+                    errors:
+                      - status: 401
+                        id: ba34a964fe9a1887
+                        source:
+                          pointer: /v3/sites/16612920/settings/spa
+                        title: Unauthorized
+                        detail: Failed to verify permissions
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized
+        "404":
+          content:
+            "*/*":
+              examples:
+                Not Found:
+                  description: Not Found
+                  value:
+                    errors:
+                      - status: 404
+                        id: null
+                        source:
+                          pointer: /v3/sites/16/settings/spa
+                        title: Not Found
+                        detail: "Failed to get site spa info. Message: Not Found"
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Not Found
+        "500":
+          content:
+            "*/*":
+              examples:
+                Internal Server Error:
+                  description: Internal Server Error
+                  value:
+                    errors:
+                      - status: 500
+                        id: 1dce2fbdec3e60e2
+                        source:
+                          pointer: /v3/sites/16612922/settings/spa
+                        title: Internal Server Error
+                        detail: Internal Server Error
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal Server Error
+      summary: Get site SPA settings
+      tags:
+        - SPA API
+    put:
+      description: Updates the SPA settings for a given website.
+      operationId: modifySiteSpaDataFull
+      parameters:
+        - description: The Imperva site ID of your website.
+          in: path
+          name: siteId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: The Imperva ID of the account or subaccount. By default, the
+            account ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            examples:
+              SPA:
+                description: Defines the whole site as a single-page application.
+                value:
+                  state: SPA
+              SPA_FOR_SPECIFIC_URLS:
+                description: SPA support applies only to the specific URLs specified in the
+                  urlList.
+                value:
+                  state: SPA_FOR_SPECIFIC_URLS
+                  urlList:
+                    - /test1
+                    - /test2
+            schema:
+              $ref: "#/components/schemas/SiteSpaFullSettingsDto"
+        required: true
+      responses:
+        "200":
+          content:
+            "*/*":
+              examples:
+                SPA:
+                  description: Defines the whole site as a single-page application.
+                  value:
+                    data:
+                      - state: SPA
+                SPA_FOR_SPECIFIC_URLS:
+                  description: SPA support applies only to the specific URLs specified in the
+                    urlList.
+                  value:
+                    data:
+                      - state: SPA_FOR_SPECIFIC_URLS
+                        urlList:
+                          - /test1
+                          - /test2
+              schema:
+                $ref: "#/components/schemas/SiteSpaFullSettingsV3ResponseDto"
+          description: Successful operation
+        "400":
+          content:
+            "*/*":
+              examples:
+                Bad Request:
+                  description: Bad Request
+                  value:
+                    errors:
+                      - status: 400
+                        id: null
+                        source:
+                          pointer: /v3/sites/16612920 /settings/spa
+                        title: Bad Request
+                        detail: "Failed to get site spa info. Message: Bad Request"
+                NOT_SPA state with not empty url list:
+                  description: NOT_SPA state with not empty url list
+                  value:
+                    errors:
+                      - status: 400
+                        id: 0949bee81d4bce3f
+                        source:
+                          pointer: /v3/sites/16612920/settings/spa
+                        title: Bad Request
+                        detail: Url list must be empty when site state is NOT_SPA
+                Null state:
+                  description: Null state
+                  value:
+                    errors:
+                      - status: 400
+                        id: 787d252e08cd99ad
+                        source:
+                          pointer: /v3/sites/16612920/settings/spa
+                        title: Invalid Input Error
+                        detail: state State must not be null!
+                Null value for url:
+                  description: Null value for url
+                  value:
+                    errors:
+                      - status: 400
+                        id: 358eebec0102e42c
+                        source:
+                          pointer: /v3/sites/16612920/settings/spa
+                        title: Bad Request
+                        detail: Invalid value for URL, expecting a not null string surrounded by quotes
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad Request
+        "401":
+          content:
+            "*/*":
+              examples:
+                Unauthorized:
+                  description: Unauthorized
+                  value:
+                    errors:
+                      - status: 401
+                        id: ba34a964fe9a1887
+                        source:
+                          pointer: /v3/sites/16612920/settings/spa
+                        title: Unauthorized
+                        detail: Failed to verify permissions
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Unauthorized
+        "404":
+          content:
+            "*/*":
+              examples:
+                Not Found:
+                  description: Not Found
+                  value:
+                    errors:
+                      - status: 404
+                        id: null
+                        source:
+                          pointer: /v3/sites/16/settings/spa
+                        title: Not Found
+                        detail: "Failed to get site spa info. Message: Not Found"
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Not Found
+        "500":
+          content:
+            "*/*":
+              examples:
+                Internal Server Error:
+                  description: Internal Server Error
+                  value:
+                    errors:
+                      - status: 500
+                        id: 1dce2fbdec3e60e2
+                        source:
+                          pointer: /v3/sites/16612922/settings/spa
+                        title: Internal Server Error
+                        detail: Internal Server Error
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal Server Error
+      summary: Update site SPA settings
+      tags:
+        - SPA API
+components:
+  schemas:
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+        detail:
+          type: string
+        id:
+          type: string
+        source:
+          type: object
+          additionalProperties:
+            type: object
+        status:
+          type: integer
+          format: int32
+        title:
+          type: string
+    AccountInboundTLSConfigurationRequest:
+      type: object
+      properties:
+        data:
+          maxItems: 1
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/InboundTlsSettings"
+    CertificateSettings:
+      type: object
+      properties:
+        validationMethod:
+          type: string
+          description: The method used by Imperva to validate domain ownership.
+          readOnly: true
+          example: CNAME
+      description: Certificate Settings entity
+    CollectionSite:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Site"
+    CollectionSiteOnboardResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteOnboardResponse"
+    CollectionSiteTLSConfiguration:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteTLSConfiguration"
+    DnsOnboardingInstructionDto:
+      type: object
+      properties:
+        description:
+          type: string
+          description: instruction's description
+          readOnly: true
+        host:
+          type: string
+          description: DNS record host
+          readOnly: true
+          example: www.example.com
+        recordType:
+          type: string
+          description: DNS record type
+          readOnly: true
+          example: CNAME
+        value:
+          type: string
+          description: DNS record value
+          readOnly: true
+          example: abc.impervadns.net
+      description: site onboarding DNS instruction
+      example:
+        description: Add the following record to your DNS provider
+        recordType: A
+        value: 1.2.3.4
+        host: example.com
+    Domain:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The ID of the domain
+          format: int64
+          readOnly: true
+          example: 123456
+        name:
+          type: string
+          description: The domain name
+          example: www.example.com
+        protectionStatus:
+          type: string
+          description: "The domain ownership verification status. Possible values:
+            BYPASSED, MISCONFIGURED, VERIFIED, PROTECTED"
+          readOnly: true
+          example: BYPASSED
+      description: Domain entity
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/APIError"
+    InboundTlsSettings:
+      type: object
+      properties:
+        configurationProfile:
+          type: string
+          description: TLS configuration profile is an enumeration of predefined
+            configuration profiles.It can also be set to CUSTOM, for setting
+            custom TLS configuration.
+          enum:
+            - CUSTOM
+            - DEFAULT
+            - ENHANCED_SECURITY
+        tlsConfiguration:
+          type: array
+          description: List of supported TLS versions and ciphers related to the specific
+            version. This list holds the CUSTOM configuration that is going to
+            be used in the communication between the client and Imperva. If the
+            list is empty a predefined configuration profile should be used.
+          items:
+            $ref: "#/components/schemas/TLSVersion"
+    PaginatedCollectionSite:
+      required:
+        - data
+      type: object
+      properties:
+        data:
+          type: array
+          description: API paginated response data
+          items:
+            $ref: "#/components/schemas/Site"
+        links:
+          type: object
+          additionalProperties:
+            type: string
+            description: API pagination links
+          description: API pagination links
+        meta:
+          $ref: "#/components/schemas/PaginationMetadata"
+    PaginationMetadata:
+      type: object
+      properties:
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+      description: API pagination metadata
+    Servers:
+      type: object
+      properties:
+        ips:
+          type: array
+          description: Data Center's origin server IPs/CNAMEs
+          example:
+            - 1.2.3.4
+            - 3.2.2.2
+          items:
+            type: string
+      description: Server entity
+    Site:
+      required:
+        - name
+        - type
+      type: object
+      properties:
+        accountId:
+          type: integer
+          description: The account ID of the site
+          format: int64
+          readOnly: true
+          example: 10
+        active:
+          type: boolean
+          description: Whether the site is active or bypassed by the Imperva network
+          example: true
+          default: true
+        cname:
+          type: string
+          description: The CNAME provided by Imperva that is used for pointing your
+            website traffic to the Imperva network. This is not relevant for
+            site type of LOCAL or PUBLIC_CLOUD.
+          readOnly: true
+          example: sdh5s.example.com
+        creationTime:
+          type: integer
+          description: The creation date of the site
+          format: int64
+          readOnly: true
+          example: 1673186130
+        deploymentKeys:
+          type: array
+          description: Deployment keys
+          example: 4d0654aa-8d16-46f6-8158-a42a1b48e48b
+          items:
+            type: string
+            description: Deployment keys
+            format: uuid
+            example: 4d0654aa-8d16-46f6-8158-a42a1b48e48b
+        id:
+          type: integer
+          description: The ID of the site.
+          format: int64
+          readOnly: true
+          example: 123456
+        isDefaultSite:
+          type: boolean
+          description: Default anywhere site
+          readOnly: true
+          example: false
+        name:
+          type: string
+          description: Friendly name of the site.
+          example: www.example.com
+        refId:
+          type: string
+          description: Sets the Reference ID, a free-text field that enables you to add a
+            unique identifier to correlate a website in our service with an
+            object on the customer side
+          example: 123abc
+        siteStatus:
+          type: string
+          description: The status
+          readOnly: true
+          example: CONFIGURED
+          enum:
+            - CONFIGURED
+            - PARTIALLY_CONFIGURED
+            - NOT_CONFIGURED
+            - UNKNOWN
+        type:
+          type: string
+          description: The website type. Indicates which kind of website is created, e.g.
+            CLOUD_WAF for a website onboarded to Imperva Cloud WAF.
+          example: CLOUD_WAF
+          enum:
+            - CLOUD_WAF
+            - LOCAL
+            - PUBLIC_CLOUD
+      description: Site entity
+    SiteHstsConfiguration:
+      type: object
+      properties:
+        isEnabled:
+          type: boolean
+          description: Enable/disable HSTS support for this website
+          default: false
+        maxAge:
+          minimum: 0
+          type: integer
+          description: (TTL) The amount of time in seconds to apply HSTS in the browser
+            before attempting to load the page using http://.
+          format: int64
+          example: 7543
+          default: 31536000
+        preLoaded:
+          type: boolean
+          description: The most secure way to enforce HSTS. Ensures the first request goes
+            out in a secure tunnel, since the browser already has that URL in
+            the pre-load list. The domain needs to be listed at
+            https://hstspreload.appspot.com/.
+          default: false
+        subDomainsIncluded:
+          type: boolean
+          description: Enforce HSTS on sub-domains. For example, a page listed on
+            xxx.ddd.com uses resources from images.ddd.com. If HSTS for
+            sub-domains is enabled, the images are also covered. Make sure that
+            the site and all sub-domains support HTTPS so that HSTS does not
+            break an internal resource when rendering the page.
+          default: false
+      description: HTTP Strict transport security (HSTS) ensures that any attempt by
+        visitors to use the unsecure version (http://) of a page will be
+        forwarded automatically to the secure version (https://).
+    SiteOnboardResponse:
+      type: object
+      properties:
+        certificateSettings:
+          $ref: "#/components/schemas/CertificateSettings"
+        domains:
+          type: array
+          items:
+            $ref: "#/components/schemas/Domain"
+        instructions:
+          type: object
+          additionalProperties:
+            type: array
+            description: Site onboarding instructions list
+            example:
+              Network:
+                - description: Add the following record to your DNS provider
+                  host: example.com
+                  recordType: A
+                  value: 1.2.3.4
+                - description: Add the following record to your DNS provider
+                  host: example.com
+                  recordType: A
+                  value: 5.6.7.8
+                - description: Add the following record to your DNS provider
+                  host: www.example.com
+                  recordType: CNAME
+                  value: asdasd.ng.impervadns.net
+              SSL:
+                - description: Add the following record to your DNS provider
+                  host: _delegate_validation.example.com
+                  recordType: CNAME
+                  value: qweqwe.ng.impervadns.net
+            items:
+              $ref: "#/components/schemas/DnsOnboardingInstructionDto"
+          description: Site onboarding instructions list
+          example:
+            Network:
+              - description: Add the following record to your DNS provider
+                host: example.com
+                recordType: A
+                value: 1.2.3.4
+              - description: Add the following record to your DNS provider
+                host: example.com
+                recordType: A
+                value: 5.6.7.8
+              - description: Add the following record to your DNS provider
+                host: www.example.com
+                recordType: CNAME
+                value: asdasd.ng.impervadns.net
+            SSL:
+              - description: Add the following record to your DNS provider
+                host: _delegate_validation.example.com
+                recordType: CNAME
+                value: qweqwe.ng.impervadns.net
+        servers:
+          $ref: "#/components/schemas/Servers"
+        site:
+          $ref: "#/components/schemas/Site"
+      description: Site onboarding response entity
+    SiteOnboardingRequest:
+      required:
+        - domain
+      type: object
+      properties:
+        domain:
+          type: string
+          description: The domain of the site
+          example: my.domain.com
+        generateCertificate:
+          type: boolean
+          description: Indicates whether to automatically generate an SSL certificate.
+            When set to false, SSL certificate generation is disabled.
+          example: false
+          default: true
+        name:
+          type: string
+          description: The name of the site. If not specified, the domain name is used.
+          example: my site
+        servers:
+          type: array
+          description: List of your origin server IP addresses or CNAMEs.
+          example:
+            - 1.2.3.4
+            - 3.2.2.2
+          items:
+            type: string
+        type:
+          type: string
+          description: The website type. Indicates which kind of website is created, e.g.
+            CLOUD_WAF for a website onboarded to Imperva Cloud WAF.
+          example: CLOUD_WAF
+          default: CLOUD_WAF
+          enum:
+            - CLOUD_WAF
+            - LOCAL
+            - PUBLIC_CLOUD
+      description: Site onboarding request entity
+    SiteSpaFullSettingsDto:
+      required:
+        - state
+      type: object
+      properties:
+        allowedSpaDomains:
+          type: array
+          description: List of allowed cross-origin domains for the SPA site. The SPA
+            script is allowed to add SPA-specific request headers when the
+            application makes requests to these domains.
+          items:
+            type: string
+            description: List of allowed cross-origin domains for the SPA site. The SPA
+              script is allowed to add SPA-specific request headers when the
+              application makes requests to these domains.
+        preProdSettings:
+          $ref: "#/components/schemas/SiteSpaPreProdSettingsDto"
+        prodVersion:
+          type: string
+          description: The SPA script version to be used for the website. This parameter
+            is optional. If not specified, the latest version is used.
+          example: "1.1"
+        state:
+          type: string
+          description: >-
+            The SPA configuration option for the specified website. Possible
+            values: SPA, SPA FOR_SPECIFIC_URLS, SPA_ EXCEPT_URLS, NOT_SPA.
+
+
+            Imperva recommends configuring SPA support for the entire website.
+            The other options should be used only for rare cases where SPA
+            functionality is seen to interfere with specific pages, and in
+            consultation with Imperva.
+          example: SPA_FOR_SPECIFIC_URLS
+          enum:
+            - NOT_SPA
+            - SPA_EXCEPT_URLS
+            - SPA_FOR_SPECIFIC_URLS
+            - SPA
+        urlList:
+          type: array
+          description: The list of URLs to be used together with either the SPA
+            FOR_SPECIFIC_URLS or SPA_ EXCEPT_URLS parameter to define SPA
+            support for only a subset of your website.
+          example:
+            - /url1
+            - /url2
+            - /url3
+          items:
+            type: string
+            description: The list of URLs to be used together with either the SPA
+              FOR_SPECIFIC_URLS or SPA_ EXCEPT_URLS parameter to define SPA
+              support for only a subset of your website.
+            example: '["/url1","/url2","/url3"]'
+    SiteSpaFullSettingsV3ResponseDto:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteSpaFullSettingsDto"
+    SiteSpaPreProdSettingsDto:
+      type: object
+      properties:
+        headers:
+          type: array
+          description: The list of headers to be used together with the preProdVersion
+            parameter to provide execution of a specific spa version.
+          example:
+            - header1
+            - header2
+            - header3
+          items:
+            type: string
+            description: The list of headers to be used together with the preProdVersion
+              parameter to provide execution of a specific spa version.
+            example: '["header1","header2","header3"]'
+        preProdVersion:
+          type: string
+          description: The pre production SPA script version to be used for the website.
+            This parameter is optional. If not specified, the latest version is
+            used.
+          example: "1.1"
+      description: The pre-production SPA settings to be used for the website. This
+        parameter is optional.
+    SiteSpaSettingsApiResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteSpaSettingsDto"
+    SiteSpaSettingsDto:
+      required:
+        - state
+      type: object
+      properties:
+        allowedSpaDomains:
+          type: array
+          description: List of allowed cross-origin domains for the SPA site. The SPA
+            script is allowed to add SPA-specific request headers when the
+            application makes requests to these domains.
+          items:
+            type: string
+            description: List of allowed cross-origin domains for the SPA site. The SPA
+              script is allowed to add SPA-specific request headers when the
+              application makes requests to these domains.
+        preProdSettings:
+          $ref: "#/components/schemas/SiteSpaPreProdSettingsDto"
+        prodVersion:
+          type: string
+          description: The SPA script version to be used for the website. This parameter
+            is optional. If not specified, the latest version is used.
+          example: "1.1"
+        state:
+          type: boolean
+          description: >-
+            The SPA configuration state for the specified website.
+
+
+            Imperva recommends configuring SPA support for the entire website.
+            The other options should be used only for rare cases where SPA
+            functionality is seen to interfere with specific pages, and in
+            consultation with Imperva.
+          example: true
+    SiteTLSConfiguration:
+      type: object
+      properties:
+        disablePQCSupport:
+          type: boolean
+          description: Disable Post-Quantum Cryptography support for SNI traffic.
+          default: false
+        hstsConfiguration:
+          $ref: "#/components/schemas/SiteHstsConfiguration"
+        inboundTlsSettings:
+          $ref: "#/components/schemas/InboundTlsSettings"
+    SiteTLSConfigurationRequest:
+      type: object
+      properties:
+        data:
+          maxItems: 1
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteTLSConfiguration"
+    TLSVersion:
+      type: object
+      properties:
+        ciphersSupport:
+          type: array
+          description: List of RFC cipher names supported for the specified TLS version.
+            This configuration is used when the CUSTOM configuration profile is
+            selected. Please refer to
+            https://docs.imperva.com/bundle/cloud-application-security/page/cipher-suites.htm
+            for the list of ciphers.
+          items:
+            type: string
+            description: List of RFC cipher names supported for the specified TLS version.
+              This configuration is used when the CUSTOM configuration profile
+              is selected. Please refer to
+              https://docs.imperva.com/bundle/cloud-application-security/page/cipher-suites.htm
+              for the list of ciphers.
+        tlsVersion:
+          type: string
+          description: "TLS version name. For example: TLS_1_2"
+          enum:
+            - TLS_1_0
+            - TLS_1_1
+            - TLS_1_2
+            - TLS_1_3
+      description: List of supported TLS versions and ciphers related to the specific
+        version. This list holds the CUSTOM configuration that is going to be
+        used in the communication between the client and Imperva. If the list is
+        empty a predefined configuration profile should be used.
+  securitySchemes:
+    api_id:
+      description: An API ID created and managed in the Imperva Cloud Security Console
+        and used for authentication
+      in: header
+      name: x-API-Id
+      type: apiKey
+    api_key:
+      description: An API key created and managed in the Imperva Cloud Security
+        Console and used for authentication
+      in: header
+      name: x-API-Key
+      type: apiKey

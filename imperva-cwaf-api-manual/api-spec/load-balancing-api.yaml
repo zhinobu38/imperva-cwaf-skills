@@ -1,0 +1,180 @@
+swagger: "2.0"
+info:
+  title: "Imperva API2 Load Balancing Settings"
+  description: "Configure load balancing and failover settings for your websites. For full feature documentation, see [Load Balancing Settings](https://docs.imperva.com/bundle/cloud-application-security/page/settings/load-balancing-settings.htm)."
+  version: "2.2.2"
+  termsOfService: "https://www.imperva.com/legal/terms-of-use/"
+host: "my.imperva.com"
+basePath: /api/prov/v2
+schemes:
+  - "https"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+securityDefinitions:
+  api_id:
+    type: "apiKey"
+    in: "header"
+    name: "x-API-Id"
+  api_key:
+    type: "apiKey"
+    in: "header"
+    name: "x-API-Key"
+security:
+  - api_id: []
+    api_key: []
+paths:
+  /sites/{siteId}/dataCenters/resume:
+    post:
+      summary: Resume Traffic to Active DCs
+      description: Use this operation to resume traffic to your active data centers.
+        When at least one active data center is back up, you have to manually reroute your traffic back to the active data center.
+        Traffic does not revert automatically to your active data centers.
+      parameters:
+        - name: "siteId"
+          in: "path"
+          description: Numeric identifier of the site to operate on
+          required: true
+          type: "integer"
+      responses:
+        '200':
+          description: OK. The trffic resumed to active DC's
+        '401':
+          description: Unauthorized siteId
+        '404':
+          description: Resource not found
+      tags:
+        - Load Balancing
+
+  /sites/{siteId}/settings/origin/datacenters:
+    post:
+      summary: Edit data centers
+      description: Edit data centers
+      parameters:
+        - name: "siteId"
+          in: "path"
+          description: Numeric identifier of the site to operate on
+          required: true
+          type: "integer"
+        - name: "DCs"
+          in: "body"
+          description: Array of data centers to edit.
+          required: true
+          schema:
+            $ref: "#/definitions/DCs"
+      responses:
+        '200':
+          description: OK. The updated data center configuration is returned.
+          schema:
+            $ref: "#/definitions/DCs"
+      tags:
+        - Load Balancing
+
+  /sites/{siteId}/settings/origin/datacenters/{dcId}/servers:
+    post:
+      summary: Edit servers
+      description: Edit servers
+      parameters:
+        - name: "siteId"
+          in: "path"
+          description: Numeric identifier of the site to operate on
+          required: true
+          type: "integer"
+        - name: "dcId"
+          in: "path"
+          description: Numeric identifier of the data center to operate on
+          required: true
+          type: "integer"
+        - name: "servers"
+          in: "body"
+          description: Array of servers to edit.
+          required: true
+          schema:
+            $ref: "#/definitions/Servers"
+      responses:
+        '200':
+          description: OK. The updated server configuration is returned.
+          schema:
+            $ref: "#/definitions/Servers"
+        '401':
+          description: Unauthorized siteId
+        '406':
+          description: Invalid Input
+        '500':
+          description: Internal server error
+      tags:
+        - Load Balancing
+
+  #####################
+  ### DEFINITIONS #####
+  #####################
+definitions:
+  DCs:
+    type: "object"
+    properties:
+      DCs:
+        type: "array"
+        items:
+          $ref: "#/definitions/DataCenter"
+
+  DataCenter:
+    type: "object"
+    required: [dcId]
+    properties:
+      dcId:
+        type: "integer"
+        description: Numeric identifier of the data center to operate on
+      isEnabled:
+        type: "boolean"
+        description: "When set to true, the specified data center is enabled."
+      isStandby:
+        type: "boolean"
+        description: "When set to true, the specified data center is defined as standby."
+      isContent:
+        type: "boolean"
+        description: "When set to true, the data center is used only for requests according to a user-defined forwarding delivery rule. Note: There must be at least one data center that is not configured for forward rules."
+      weight:
+        type: "integer"
+        description: "Percentage of traffic to be served by the data center. To change a data center from active to standby, or to disable a data center, you must first reset its weight to zero."
+    example:
+      dcId: '484378'
+      isEnabled: true
+      isStandby: false
+      isContent: false
+      weight: 25
+
+  Servers:
+    type: "object"
+    properties:
+      servers:
+        type: "array"
+        items:
+          $ref: "#/definitions/Server"
+
+  Server:
+    type: "object"
+    required: [serverId]
+    properties:
+      serverId:
+        type: "integer"
+        description: Numeric identifier of the server to operate on
+      serverAddress:
+        type: "string"
+        description: "Server address. Either IP or CNAME."
+      isEnabled:
+        type: "boolean"
+        description: "When set to true, the specified server is enabled."
+      isStandby:
+        type: "boolean"
+        description: "When set to true, the specified server is defined as standby."
+      weight:
+        type: "integer"
+        description: "Percentage of traffic to be served by the server. To disable a server, you must first reset its weight to zero."
+    example:
+      serverId: '1035103'
+      serverAddress: "90.5.5.6"
+      isEnabled: true
+      isStandby: true
+      weight: 60
+

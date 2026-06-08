@@ -1,0 +1,2025 @@
+openapi: 3.0.1
+info:
+  description: View and manage certificates for all websites in your account.
+  license:
+    name: >-
+      The terms in the absence of an applicable signed agreement between you and
+      Imperva
+    url: https://www.imperva.com/legal/license-agreement/
+  title: SSL Certificate Management
+  version: 1.0.0
+servers:
+  - url: https://api.imperva.com/certificates-ui
+    description: Imperva API server
+security:
+  - api_id: []
+    api_key: []
+tags:
+  - description: Get HSM latency
+    name: HSM Certificates
+  - description: >-
+      Get details on the SSL certificates in your account. For full feature
+      documentation, see <a
+      href="https://docs.imperva.com/bundle/cloud-application-security/page/certificates.htm">View
+      SSL Certificates</a>.
+    name: SSL Certificates
+  - description: >-
+
+      Upload and manage your mTLS client certificates to enable mutual
+      authentication between Imperva and your origin servers.
+
+      For full feature documentation, see <a
+      href='https://docs.imperva.com/bundle/cloud-application-security/page/certificate-mtls.htm#Uploadacertificatetoyouraccount'>Imperva
+      to Origin Client Certificate mTLS Support.</a>
+    name: mTLS - Imperva to Origin Certificates
+  - description: >-
+      Manage SSL settings for your account. For full feature documentation, see
+      <a
+      href="https://docs.imperva.com/bundle/cloud-application-security/page/ssl-settings.htm">SSL
+      Settings</a>.
+    name: SSL Account Settings
+  - description: >-
+      Manage settings for the Imperva-generated site certificates for your site.
+      For full feature documentation, see <a
+      href="https://docs.imperva.com/bundle/cloud-application-security/page/website-certificate.htm">Imperva
+      Site Certificates</a>.
+    name: SSL Site Certificate Settings
+paths:
+  /v3/account/ssl-settings:
+    delete:
+      description: Resets SSL settings for your account to the default values.
+      operationId: deleteSSLValidationDelegationSettings
+      parameters:
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountSSLSettingsResponseDto'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Reset SSL settings to default
+      tags:
+        - SSL Account Settings
+    get:
+      description: Get SSL settings for your account.
+      operationId: getSSLValidationDelegationSettings
+      parameters:
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountSSLSettingsResponseDto'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Get account SSL settings
+      tags:
+        - SSL Account Settings
+    patch:
+      description: >-
+        Updates the SSL settings that you send in the request. Other settings
+        remain as is.
+      operationId: patchSSLValidationDelegationSettings
+      parameters:
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountSettingsDto'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountSSLSettingsResponseDto'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Modify SSL settings (partial update)
+      tags:
+        - SSL Account Settings
+    post:
+      description: Update SSL settings for your account.
+      operationId: updateSSLValidationDelegationSettings
+      parameters:
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountSettingsDto'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountSSLSettingsResponseDto'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Overwrite SSL settings (full update)
+      tags:
+        - SSL Account Settings
+  /v3/account/ssl-settings/delegation/domain/{domainId}:
+    delete:
+      description: >-
+        Remove domain from the SSL validation delegation settings of your
+        account. Certificate renewal may require you to revalidate domain
+        ownership.
+      operationId: removedDomainToSSLValidationDelegationSettings
+      parameters:
+        - description: domainId can be getting from this api (GET /v3/account/ssl-settings)
+          in: path
+          name: domainId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountSSLSettingsResponseDto'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Remove domain from the SSL validation delegation settings
+      tags:
+        - SSL Account Settings
+  /v3/account/ssl-settings/delegation/domain/{domainId}/status:
+    post:
+      description: Check if the CNAME record has been added to the domain's DNS zone.
+      operationId: verifyDomainToSSLValidationDelegationSettings
+      parameters:
+        - description: domainId can be getting from this api (GET /v3/account/ssl-settings)
+          in: path
+          name: domainId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/AllowDelegationDomainWithInheritanceResponseDto
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: >-
+        Check the configuration status of a domain that appears in the domain
+        delegation list
+      tags:
+        - SSL Account Settings
+  /v3/account/ssl-settings/delegation/domain/{domain}:
+    post:
+      description: >-
+        Add domain to the SSL validation delegation settings of your account.
+        Delegating a domain enables Imperva to perform domain ownership
+        validation on your behalf during website onboarding and certificate
+        renewal. 
+      operationId: addDomainToSSLValidationDelegationSettings
+      parameters:
+        - in: path
+          name: domain
+          required: true
+          schema:
+            type: string
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountSSLSettingsResponseDto'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Add domain to the SSL validation delegation settings
+      tags:
+        - SSL Account Settings
+  /v3/certificates:
+    get:
+      description: Get details for certificates in your account.
+      operationId: getCertificates_1
+      parameters:
+        - description: >-
+            The Imperva ID of the onboarded website. Retrieves certificate
+            details for a specific website. If not specified, this API retrieves
+            details of all certificates in the account.
+          in: query
+          name: extSiteId
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - description: The type of certificate to provide details for
+          in: query
+          name: certType
+          required: false
+          schema:
+            type: string
+            enum:
+              - ATLAS
+              - CUSTOM_CERT
+              - MANUAL
+              - MANAGED
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalCertificateResponse'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Get certificate details
+      tags:
+        - SSL Certificates
+  /v3/certificates/hsm/latency:
+    get:
+      description: >-
+        Get the latest HSM latency between a given Imperva data center (PoP) and
+        a specific Fortanix region.<br/>This operation returns the time it takes
+        for Imperva to get the private key from Fortanix.It does not include the
+        session creation time.
+      operationId: getLatency
+      parameters:
+        - description: >-
+            The code of the Imperva data center (PoP) to check latency
+            for.<br/>For the full list of PoPs and codes, see <a
+            href='https://docs.imperva.com/bundle/cloud-application-security/page/more/pops.htm'>Imperva
+            Data Centers</a>.
+          in: query
+          name: pop
+          required: true
+          schema:
+            type: string
+        - description: >-
+            The URI (host name) of the Fortanix region.<br/>Possible values:
+            amer, uk, eu, apac, au in the required format, e.g.
+            api.amer.smartkey.io
+          in: query
+          name: hsmHostName
+          required: true
+          schema:
+            type: string
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HsmLatencyDetailsResponse'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+        '504':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Gateway Timeout Request
+      summary: Get HSM latency
+      tags:
+        - HSM Certificates
+  /v3/certificates/{certificateId}/sans/{sanId}/validationMethod:
+    put:
+      description: >-
+        Changes the SAN validation method and value used for certificate
+        revalidation.
+      operationId: changeSanValidationMethod
+      parameters:
+        - description: >-
+            The Imperva ID assigned to the certificate. Use the GET
+            /v3/certificates API call to retrieve the IDs of certificates in
+            your account.
+          in: path
+          name: certificateId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: >-
+            The Imperva ID assigned to the SAN. Use the GET /v3/certificates API
+            call to retrieve the SAN IDs of certificates in your account.
+          in: path
+          name: sanId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeValidationMethodRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangeValidationMethodExternalResponse'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Change SAN validation method
+      tags:
+        - SSL Certificates
+  /v3/instructions:
+    get:
+      description: Get validation instructions for all pending SANs in the account
+      operationId: sanInstructionsForAccount
+      parameters:
+        - description: The Imperva ID of the onboarded website.
+          in: query
+          name: extSiteId
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - description: The methods that can be used to validate ownership of the domain.
+          in: query
+          name: validationMethod
+          required: false
+          schema:
+            type: string
+            enum:
+              - EMAIL
+              - DNS
+              - CNAME
+              - METATAG
+              - URL
+              - HTTP
+              - NONE
+        - description: The type that can be used to get san instructions.
+          in: query
+          name: certificateType
+          required: false
+          schema:
+            type: string
+            enum:
+              - ATLAS
+              - CUSTOM_CERT
+              - MANUAL
+              - MANAGED
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalSanInstructionsResponse'
+          description: Successful operation
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Unauthorized
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Server Error
+      summary: Get domain validation instructions
+      tags:
+        - SSL Certificates
+  /v3/mtls/origin:
+    get:
+      description: >-
+        Retrieve details of all mTLS client certificates in your account or
+        assigned to a specific website.
+      operationId: getCertificates
+      parameters:
+        - description: The Imperva ID of the onboarded website.
+          in: query
+          name: siteId
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MtlsCertificateDetailsResponse'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Not Found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Get details of all mTLS client certificates
+      tags:
+        - mTLS - Imperva to Origin Certificates
+    post:
+      description: |-
+        Upload an mTLS certificate to your account.
+        Body should be provided in multipart/form-data.
+      operationId: uploadCertificate
+      parameters:
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                certificateFile:
+                  type: string
+                  format: binary
+                  description: >-
+                    Your mTLS client certificate file. Supported formats: PEM,
+                    DER and PFX.
+
+                    Only RSA certificates are currently supported.
+
+                    The certificate RSA key size must be 2048 bit or less.
+
+                    The certificate must be issued by a certificate authority
+                    (CA) and cannot be self-signed.
+                certificateName:
+                  type: string
+                  description: A descriptive name for your mTLS client certificate.
+                passphrase:
+                  type: string
+                  description: >-
+                    Your private key passphrase. Leave empty if the private key
+                    is not password protected.
+                privateKeyFile:
+                  type: string
+                  format: binary
+                  description: >-
+                    Your private key file. supported formats: PEM, DER. If PFX
+                    certificate is used, then this field can remain empty.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MtlsCertificateDetailsResponse'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Not Found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Upload mTLS client certificate
+      tags:
+        - mTLS - Imperva to Origin Certificates
+  /v3/mtls/origin/{certificateId}:
+    delete:
+      description: >-
+        Delete an existing mTLS client certificate that is uploaded to your
+        account. Deleting the certificate may cause outages for applications
+        that still use it. Before deleting the certificate, we strongly advise
+        you to ensure that these applications are not using it.
+      operationId: removeCertificate
+      parameters:
+        - description: The mTLS certificate id you want to delete.
+          in: path
+          name: certificateId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/DataResponse'
+          description: Successful operation
+        '400':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '404':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Not Found
+        '500':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Delete mTLS client certificate
+      tags:
+        - mTLS - Imperva to Origin Certificates
+    get:
+      description: Retrieve details of a specific mTLS client certificate.
+      operationId: getCertificateById
+      parameters:
+        - in: path
+          name: certificateId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MtlsCertificateDetailsResponse'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Not Found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Get mTLS client certificate details
+      tags:
+        - mTLS - Imperva to Origin Certificates
+    put:
+      description: >-
+        Replace an existing mTLS client certificate that is uploaded to your
+        account. The Imperva certificate ID remains the same after replacement.
+
+        Body should be provided in multipart/form-data.
+      operationId: updateCertificate
+      parameters:
+        - description: The mTLS certificate id you want to edit.
+          in: path
+          name: certificateId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                certificateFile:
+                  type: string
+                  format: binary
+                  description: >-
+                    Your mTLS client certificate file. Supported formats: PEM,
+                    DER and PFX.
+
+                    Only RSA certificates are currently supported.
+
+                    The certificate RSA key size must be 2048 bit or less.
+
+                    The certificate must be issued by a certificate authority
+                    (CA) and cannot be self-signed.
+                certificateName:
+                  type: string
+                  description: A descriptive name for your mTLS client certificate.
+                passphrase:
+                  type: string
+                  description: >-
+                    Your private key passphrase. Leave empty if the private key
+                    is not password protected.
+                privateKeyFile:
+                  type: string
+                  format: binary
+                  description: >-
+                    Your private key file. supported formats: PEM, DER. If PFX
+                    certificate is used, then this field can remain empty.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MtlsCertificateDetailsResponse'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Not Found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Replace mTLS client certificate
+      tags:
+        - mTLS - Imperva to Origin Certificates
+  /v3/mtls/origin/{certificateId}/associated-sites/{siteId}:
+    delete:
+      description: >-
+        When the mTLS certificate is unassigned from the website, the
+        certificate is not served to the website’s origin server.
+      operationId: unAssignCertificateFromSite
+      parameters:
+        - description: The mTLS certificate id you want to un assign your site.
+          in: path
+          name: certificateId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: Site id to un assign from a given mTLS client certificate
+          in: path
+          name: siteId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataResponse'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Not Found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Remove mTLS client certificate from website
+      tags:
+        - mTLS - Imperva to Origin Certificates
+    get:
+      description: >-
+        Check if a specific mTLS client certificate id is associated to a
+        specific site id.
+      operationId: isCertificateAssociatedToSite
+      parameters:
+        - description: mTLS certificate id.
+          in: path
+          name: certificateId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: Site id.
+          in: path
+          name: siteId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataResponse'
+          description: Successful operation. Association exist
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataResponse'
+          description: Not Found. Association does not exist
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Check association between specific mTLS certificate and site.
+      tags:
+        - mTLS - Imperva to Origin Certificates
+    put:
+      description: >-
+        Assign an mTLS client certificate to websites in your account. This
+        defines which certificate is served during the TLS handshake between the
+        Imperva proxy and your website’s origin server.
+
+        This overrides an existing certificate-site association.
+      operationId: assignCertificateToSite
+      parameters:
+        - description: The mTLS certificate id you want to assign to your site.
+          in: path
+          name: certificateId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: Site id to assign to a given mTLS client certificate
+          in: path
+          name: siteId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataResponse'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Not Found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Assign an mTLS client certificate to websites
+      tags:
+        - mTLS - Imperva to Origin Certificates
+  /v3/sites/{siteId}/certificates/managed:
+    delete:
+      deprecated: true
+      description: >-
+        Removes site certificate coverage for a specific website according to
+        the site ID.<br><b>Warning: This API was deprecated. To remove site
+        certificate coverage for a specific website, use POST
+        /v3/sites/{siteId}/certificates/managed API.</b>
+      operationId: deleteSiteSSLCertificateSettings
+      parameters:
+        - in: path
+          name: siteId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteSSLCertificatesSettings'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Remove site certificate coverage.
+      tags:
+        - SSL Site Certificate Settings
+    get:
+      description: >-
+        Retrieves site certificate settings for a specific website according to
+        the site ID.
+      operationId: getSiteSSLCertificateSettings
+      parameters:
+        - in: path
+          name: siteId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteSSLCertificatesSettings'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Get site certificate settings
+      tags:
+        - SSL Site Certificate Settings
+    post:
+      description: >-
+        Enables/disables a site certificate for a specific website and updates
+        its settings. The site certificate is issued for all domains that are
+        added manually to the website configuration in Imperva (“managed
+        domains”).
+      operationId: updateSiteSSLCertificateSettings
+      parameters:
+        - in: path
+          name: siteId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - description: >-
+            When set to true: If the site has both a site certificate and the
+            customer’s custom certificate, setting this parameter to true
+            ensures that there is no coverage loss. <br> When enabling site
+            certificate support (SiteCertificateEnabled=true), the request will
+            fail if there is an existing custom certificate that contains SANs
+            that will not be covered by the site certificate. <br> When
+            disabling site certificate support (updating the settings with
+            SiteCertificateEnabled=false), the request will fail if there is an
+            existing custom certificate and the site certificate contains SANs
+            that do not exist in the custom certificate.
+          in: query
+          name: preventCoverageLack
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - description: >-
+            When set to true, the request will succeed even if the site contains
+            auto-discovered domains.
+          in: query
+          name: skipAutoDiscoveredDomainsCheck
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - description: >-
+            The Imperva ID of the account or subaccount. By default, the account
+            ID is the ID associated with the API credentials used for
+            authentication. To run an API on a sub account, specify the sub
+            account ID.
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteSSLCertificatesSettings'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteSSLCertificatesSettings'
+          description: Successful operation
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+          description: Internal Error
+      summary: Overwrite site certificate settings (full update)
+      tags:
+        - SSL Site Certificate Settings
+components:
+  schemas:
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+        detail:
+          type: string
+        id:
+          type: string
+        source:
+          type: object
+          additionalProperties:
+            type: object
+        status:
+          type: integer
+          format: int32
+        title:
+          type: string
+    APIErrors:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/APIError'
+    AccountDtoSSLDelegationSettingsDto:
+      type: object
+      properties:
+        allowCNAMEValidation:
+          type: boolean
+          description: >-
+            Enable Imperva to automatically perform domain ownership validation
+            on your behalf for domains in the allowedDomainsForCNAMEValidation
+            list.
+          example: true
+          default: false
+        allowedDomainsForCNAMEValidation:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllowDomainDelegationWithInheritance'
+    AccountSSLSettingsResponseDto:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountSettingsDto'
+    AccountSettingsDto:
+      type: object
+      properties:
+        allowSupportOldTLSVersions:
+          type: boolean
+          description: >-
+            When true, sites under the account or sub-accounts can allow support
+            of old TLS versions traffic. This can be configured only on the
+            parent account level.
+          example: true
+          default: false
+        enableHSTSForNewSites:
+          type: boolean
+          description: When true, enables HSTS support for newly created websites.
+          example: true
+          default: false
+        impervaCertificate:
+          $ref: '#/components/schemas/ImpervaGeneratedCertificateSettingsDto'
+    AllowDelegationDomainWithInheritanceResponseDto:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllowDomainDelegationWithInheritance'
+    AllowDomainDelegationWithInheritance:
+      type: object
+      properties:
+        cnameRecordHost:
+          type: string
+          description: The CNAME record host to use.
+          readOnly: true
+          example: _delegate_validation.example.com
+        cnameRecordValue:
+          type: string
+          description: >-
+            The CNAME record value to use to configure this domain for
+            delegation.
+          readOnly: true
+          example: _abc.a1234.validation.imperva.com
+        creationDate:
+          type: integer
+          description: The domain creation date.
+          format: int64
+          readOnly: true
+          example: 1663446207139
+        id:
+          type: integer
+          description: The domain id.
+          format: int64
+          readOnly: true
+          example: 123
+        inherited:
+          type: boolean
+          description: >-
+            CNAME validation is automatically inherited from a parent domain
+            that is delegated to Imperva. When domain delegation configured
+            (true) for a specific subdomain, its CNAME value overrides the
+            current setting of the parent domain.
+          readOnly: true
+          example: false
+        lastStatusCheck:
+          type: integer
+          description: The date the domain status was last verified.
+          format: int64
+          readOnly: true
+          example: 1663446207139
+        name:
+          type: string
+          description: The domain name.
+          example: example.com
+        status:
+          type: string
+          description: 'The domain status. Possible values: CONFIGURED, NOT_CONFIGURED'
+          readOnly: true
+          example: CONFIGURED
+        statusSince:
+          type: integer
+          description: The date the domain status was last modified.
+          format: int64
+          readOnly: true
+          example: 1663446207139
+      description: >-
+        The list of domains delegated to Imperva for purposes of domain
+        ownership validation. Subdomains of the domains in the list are also
+        automatically validated by Imperva. Wildcards are not allowed.
+    CaIssueDetails:
+      type: object
+      properties:
+        domain:
+          type: string
+          description: The domain to which the CA issue applies
+          example: example.com
+        message:
+          type: string
+          description: A general description about the issue
+          example: The CAA record for the domain must contain GlobalSign CA
+        rawDetails:
+          type: string
+          description: The error response from the CA
+          example: 'Request rejected by CA: caa: example.com.: issue=example-ca.com'
+        type:
+          type: string
+          description: >-
+            DNS issues reported to Imperva by the CA during the certificate
+            validation process
+          example: CAA_CONFIG_ISSUE
+          enum:
+            - CAA_CONFIG_ISSUE
+            - SERVFAIL
+            - INVALID_CNAME_CONFIG
+            - DNSSEC_CHAIN_ERROR
+    Certificate:
+      type: object
+      properties:
+        authType:
+          type: string
+          description: The authentication type of the certificate
+          example: RSA
+          enum:
+            - RSA
+            - ECC
+        customCertificateDetails:
+          $ref: '#/components/schemas/CustomCertificateDetails'
+        expirationDate:
+          type: integer
+          description: Certificate expiration date
+          format: int64
+          example: 1633180421000
+        extSiteId:
+          type: integer
+          description: The Imperva ID of the onboarded website covered by the certificate
+          format: int64
+          example: 856963
+        id:
+          type: integer
+          description: The Imperva ID of the certificate.
+          format: int64
+          example: 2674
+        inRenewal:
+          type: boolean
+          description: Is certificate under renewal process
+          example: true
+        level:
+          type: string
+          description: The level of the certificate (SITE or ACCOUNT)
+          example: SITE
+          enum:
+            - SITE
+            - ACCOUNT
+        name:
+          type: string
+          description: >-
+            For an Imperva-generated certificate, indicates the certificate name
+            and the ID of the Imperva request to the CA.
+          example: ATLAS_47_3483659225
+        originCertOrderId:
+          type: string
+          description: >-
+            The order ID of the Imperva request to the CA for a certificate that
+            is set to expire in the near future and must be renewed. This
+            certificate will be replaced by the certificate specified by
+            renewalCertOrderId.
+          example: ATLAS_47_3483659225
+        renewalCertOrderId:
+          type: string
+          description: >-
+            The order ID of the Imperva request to the CA for a new certificate
+            that will replace an expiring certificate. This certificate will
+            replace the certificate specified by originCertOrderId.
+          example: ATLAS_47_3483659225
+        sans:
+          type: array
+          description: List of Subject Alternative Names found on the certificate
+          items:
+            $ref: '#/components/schemas/CertificateSanDetails'
+        siteId:
+          type: integer
+          description: The id of the site
+          format: int64
+        siteName:
+          type: string
+          description: The name of the onboarded website covered by the certificate
+          example: Site Name
+        status:
+          type: string
+          description: >-
+            Certificate status 
+             Possible values for Imperva generated certificate: ISSUED, IN_PROCESS, UNDER_RENEWAL 
+            Possible values for Custom Certificate: ACTIVE, NEAR_EXPIRATION,
+            EXPIRED, SITE_MISMATCH 
+          example: IN_PROCESS
+        type:
+          type: string
+          description: Certificate type
+          example: ATLAS
+          enum:
+            - ATLAS
+            - CUSTOM_CERT
+            - MANUAL
+            - MANAGED
+    CertificateSanDetails:
+      type: object
+      properties:
+        approverFqdn:
+          type: string
+        autoValidation:
+          type: boolean
+        caIssue:
+          $ref: '#/components/schemas/CaIssueDetails'
+        cnameValidationValue:
+          type: string
+        domainIds:
+          uniqueItems: true
+          type: array
+          items:
+            type: integer
+            format: int64
+        expirationDate:
+          type: integer
+          format: int64
+        numSitesCovered:
+          type: integer
+          format: int32
+        sanId:
+          type: integer
+          format: int64
+        sanValue:
+          type: string
+        sitesIds:
+          uniqueItems: true
+          type: array
+          items:
+            type: integer
+            format: int64
+        status:
+          type: string
+        statusDate:
+          type: integer
+          format: int64
+        validationEmail:
+          type: string
+        validationMethod:
+          type: string
+        verificationCode:
+          type: string
+      description: List of Subject Alternative Names found on the certificate
+    CertificateValidation:
+      type: object
+      properties:
+        field:
+          type: string
+        status:
+          type: string
+          enum:
+            - OK
+            - WARNING
+            - ERROR
+        statusDetails:
+          type: string
+        validationType:
+          type: string
+        value:
+          type: object
+    ChangeValidationMethodDTO:
+      type: object
+      properties:
+        domain:
+          type: string
+          description: Validation domain
+          example: example.imperva.com
+        expirationDate:
+          type: integer
+          description: SAN expiration date
+          format: int64
+          example: 1633180421000
+        lastNotificationDate:
+          type: integer
+          description: Last date an email was sent
+          format: int64
+          example: 1633180421000
+        recordType:
+          type: string
+          description: validation record type
+          example: TXT
+          enum:
+            - TXT
+            - CNAME
+            - A
+            - NONE
+        validationEmail:
+          type: string
+          description: Validation email
+          example: example@imperva.com
+        validationMethod:
+          type: string
+          description: SAN Validation method
+          example: DNS
+          enum:
+            - EMAIL
+            - DNS
+            - CNAME
+            - METATAG
+            - URL
+            - HTTP
+            - NONE
+        verificationCode:
+          type: string
+          description: SAN Verification code
+          example: globalsign-domain-verification=1234
+        verificationCodeExpirationDate:
+          type: integer
+          description: Verification code expiration date
+          format: int64
+          example: 1633380421000
+      description: Validation instructions.
+    ChangeValidationMethodExternalResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          description: Validation instructions.
+          items:
+            $ref: '#/components/schemas/ChangeValidationMethodDTO'
+    ChangeValidationMethodRequest:
+      required:
+        - validationMethod
+      type: object
+      properties:
+        validationEmail:
+          type: string
+          description: >-
+            Validation email. Required only when the EMAIL validation method is
+            used.
+          example: example@imperva.com
+        validationMethod:
+          type: string
+          description: SAN Validation method
+          example: EMAIL
+          enum:
+            - DNS
+            - EMAIL
+            - CNAME
+            - METATAG
+    CustomCertificateDetails:
+      type: object
+      properties:
+        authType:
+          type: string
+        eccCurve:
+          type: string
+        expirationDate:
+          type: integer
+          format: int64
+        fingerprint:
+          type: string
+          description: The certificate fingerprint
+          example: >-
+            SHA1
+            Fingerprint=FE:AB:F3:B4:93:0C:56:CF:4B:EC:E0:29:1C:C5:8A:9E:47:78:4E:A9
+        hasMismatchSite:
+          type: boolean
+          description: Return true if domain is covered by the certificate
+          example: true
+        hsmType:
+          type: string
+          description: The name of the HSM provider
+          example: FORTANIX
+        inputHash:
+          type: string
+          description: Internal use for terraform
+          example: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
+        isHsm:
+          type: boolean
+          description: >-
+            If certificate private key is managed in an HSM, this will return
+            true
+          example: true
+        serialNumber:
+          type: string
+          description: The certificate serialNumber
+          example: FB:4B:BD:4B:1B:7D:7C:CF
+        validations:
+          type: array
+          items:
+            $ref: '#/components/schemas/CertificateValidation'
+    DataResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+    ExternalCertificateResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Certificate'
+    ExternalSanInstructionsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SanInstructionsDto'
+    HsmLatencyDetailsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          description: HSM latency response.
+          items:
+            $ref: '#/components/schemas/HsmLatencyDto'
+    HsmLatencyDto:
+      type: object
+      properties:
+        hsmHostName:
+          type: string
+          description: >-
+            The URI (host name) of the Fortanix region.<br/>Possible values:
+            amer, uk, eu, apac, au in the required format, e.g.
+            api.amer.smartkey.io
+          example: api.amer.smartkey.io
+        latency:
+          type: integer
+          description: The last latency in the pop
+          format: int64
+          example: 146
+        requestTime:
+          type: integer
+          description: >-
+            The time the latency request was recorded.<br/> Unix epoch time, in
+            milliseconds.
+          format: int64
+          example: 1677144366
+      description: HSM latency response.
+    ImpervaGeneratedCertificateSettingsDto:
+      type: object
+      properties:
+        addNakedDomainSanForWWWSites:
+          type: boolean
+          description: >-
+            For sites with the www prefix, adds the naked domain SAN to the
+            Imperva SSL certificate. The value you assign is used as the default
+            option when onboarding new websites.
+          example: true
+          default: true
+        delegation:
+          $ref: '#/components/schemas/AccountDtoSSLDelegationSettingsDto'
+        useWildCardSanInsteadOfFQDN:
+          type: boolean
+          description: >-
+            Adds the wildcard SAN to the Imperva SSL certificate instead of the
+            full domain SAN. The value you assign is used as the default option
+            when onboarding new websites.
+          example: true
+          default: true
+    MtlsCertificateBaseDetails:
+      type: object
+      properties:
+        accountId:
+          type: integer
+          description: The ID of the Account that owns the certificate.
+          format: int64
+          example: 1
+        appliedSitesDetails:
+          type: array
+          description: List of the sites attached to the current certificate.
+          items:
+            $ref: '#/components/schemas/SiteExternalDetails'
+        certificateId:
+          type: integer
+          description: The Imperva ID of the Certificate.
+          format: int64
+          example: 1
+        chain:
+          type: string
+          description: >-
+            The certification path, from the uploaded certificate back to the
+            root certificate, where each certificate has been signed by the next
+            one in the chain.
+          example: my.company.org, example intermediate CA, example root CA
+        creationDate:
+          type: integer
+          description: The date the certificate was uploaded. In epoch
+          format: int64
+          example: 1693415951000
+        errors:
+          $ref: '#/components/schemas/MtlsCertificateErrorsDto'
+        hash:
+          type: string
+          description: State representation. For Terraform provider use
+          example: bdf252eb5fc9ec468a966de1e9e83db676d1851c
+        issuedBy:
+          type: string
+          description: The Certificate Authority that issued the certificate.
+          example: CN=example ca,OU=internal ca,O=ca,L=example city,ST=california,C=us
+        issuedTo:
+          type: string
+          description: The domain that the certificate applies to.
+          example: CN=example company,OU=dev,O=IT,L=example city,ST=california,C=us
+        lastUpdate:
+          type: integer
+          description: The date the certificate was updated. In epoch
+          format: int64
+          example: 1693415951000
+        name:
+          type: string
+          description: >-
+            The name you assign to the certificate, and the unique identifier
+            assigned by Imperva.
+          example: example-certificate
+        serialNumber:
+          type: string
+          description: >-
+            The certificate serial number that was assigned by the CA that
+            signed the certificate.
+          example: 1234abcd
+        validFrom:
+          type: integer
+          description: The date the certificate was issued. In epoch
+          format: int64
+          example: 1655140751000
+        validUntil:
+          type: integer
+          description: The date the certificate expires. In epoch
+          format: int64
+          example: 1693415951000
+      description: mTLS certificate response.
+    MtlsCertificateDetailsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          description: mTLS certificate response.
+          items:
+            $ref: '#/components/schemas/MtlsCertificateBaseDetails'
+    MtlsCertificateErrorsDto:
+      type: object
+      properties:
+        chainValid:
+          type: boolean
+          description: >-
+            Is the chain of trust valid. False indicates that the signatures in
+            the certificate are not valid.
+        expirationDateValid:
+          type: boolean
+          description: Indicates if the certificate expired or not.
+    RelatedSansDetails:
+      type: object
+      properties:
+        domainIds:
+          type: array
+          description: List of domain ids that are being SSL covered by this SAN
+          example: 1
+          items:
+            type: integer
+            description: List of domain ids that are being SSL covered by this SAN
+            format: int64
+            example: 1
+        expirationDate:
+          type: integer
+          format: int64
+        sanId:
+          type: integer
+          format: int64
+        sanValue:
+          type: string
+      description: List of related SANs using the same domain for validation
+      example: 1633180421000
+    SanInstructionsDto:
+      type: object
+      properties:
+        certificateLevel:
+          type: string
+          description: The level of the certificate (SITE or ACCOUNT)
+          example: SITE
+          enum:
+            - SITE
+            - ACCOUNT
+        domain:
+          type: string
+          description: Domain to validate
+          example: example.imperva.com
+        expirationDate:
+          type: integer
+          description: SAN expiration date
+          format: int64
+          example: 1633180421000
+        lastNotificationDate:
+          type: integer
+          description: Last date an email was sent
+          format: int64
+          example: 1633180421000
+        recordType:
+          type: string
+          description: Record type for the validation
+          example: TXT
+          enum:
+            - TXT
+            - CNAME
+            - A
+            - NONE
+        relatedSansDetails:
+          type: array
+          description: List of related SANs using the same domain for validation
+          example: 1633180421000
+          items:
+            $ref: '#/components/schemas/RelatedSansDetails'
+        validationEmail:
+          type: string
+          description: Validation email
+          example: example@imperva.com
+        validationMethod:
+          type: string
+          description: Validation method of the SAN
+          example: DNS
+          enum:
+            - EMAIL
+            - DNS
+            - CNAME
+            - METATAG
+            - URL
+            - HTTP
+            - NONE
+        verificationCode:
+          type: string
+          description: Verification code of the SAN
+          example: '856963'
+        verificationCodeExpirationDate:
+          type: integer
+          description: Verification code expiration date
+          format: int64
+          example: 1633180421000
+    SiteExternalDetails:
+      type: object
+      properties:
+        accountId:
+          type: integer
+          description: The Imperva ID of the account.
+          format: int64
+          example: 22222
+        externalId:
+          type: integer
+          description: The Imperva ID of the website.
+          format: int64
+          example: 11111
+        name:
+          type: string
+          description: The name of the website.
+          example: my.domain.org
+      description: List of the sites attached to the current certificate.
+    SiteSSLCertificatesSettings:
+      type: object
+      properties:
+        defaultValidationMethod:
+          type: string
+          description: >-
+            The default validation method that will be used as part of the
+            domain SSL validation process.
+          example: CNAME
+          default: CNAME
+          enum:
+            - DNS
+            - CNAME
+            - EMAIL
+        siteCertificateEnabled:
+          type: boolean
+          description: >-
+            Indicates whether the site certificate is enabled or not. When
+            enabled, a site certificate is issued for all domains that are added
+            manually to the website configuration in Imperva (“managed
+            domains”).
+          example: true
+          default: true
+        siteId:
+          type: integer
+          description: The Imperva ID of the onboarded website covered by the certificate
+          format: int64
+          example: 856963
+  securitySchemes:
+    api_id:
+      description: >-
+        An API ID created and managed in the Imperva Cloud Security Console and
+        used for authentication
+      in: header
+      name: x-API-Id
+      type: apiKey
+    api_key:
+      description: >-
+        An API key created and managed in the Imperva Cloud Security Console and
+        used for authentication
+      in: header
+      name: x-API-Key
+      type: apiKey

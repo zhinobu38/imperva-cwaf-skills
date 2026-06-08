@@ -1,0 +1,294 @@
+openapi: 3.0.1
+info:
+  title: Imperva Troubleshooting Page API
+  description: "Gain more visibility into connectivity issues that occur when Imperva\
+    \ data centers cannot reach your origin web servers. For full feature documentation,\
+    \ see <a href=\"https://docs.imperva.com/bundle/cloud-application-security/page/troubleshoot.htm\"\
+    >Troubleshoot Website Errors.</a>"
+  license:
+    name: The terms in the absence of an applicable signed agreement between you and
+      Imperva
+    url: https://www.imperva.com/legal/license-agreement/
+  version: 1.0.0
+servers:
+- url: https://api.imperva.com/troubleshooting-center
+  description: Imperva API server
+security:
+- api_key: []
+  api_id: []
+tags:
+- name: Connectivity Tests
+  description: Website Connectivity Tests API
+paths:
+  /v3/connectivityTests/{assetType}/{assetId}:
+    post:
+      tags:
+      - Connectivity Tests
+      summary: Retrieve connectivity tests for a given website.
+      description: Retrieves details of connectivity tests of a given website.
+      operationId: getConnectivityCheckApiResult
+      parameters:
+      - name: assetType
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - WEBSITE
+      - name: assetId
+        in: path
+        description: Numeric identifier of the site to retrieve.
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 562034
+      requestBody:
+        description: Filters
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectivityTestSearch'
+        required: true
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "200":
+          description: Successful operation
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ApiResult'
+        "500":
+          description: Internal Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    ConnectivityTestSearch:
+      required:
+      - start
+      type: object
+      properties:
+        start:
+          type: integer
+          description: Start of search time range (in milliseconds)
+          format: int64
+          example: 1672841491000
+        end:
+          type: integer
+          description: End of search time range (in milliseconds)
+          format: int64
+          example: 1672841591000
+        limit:
+          type: integer
+          description: "The number of objects to return in the response.<br/>Default:\
+            \ 100<br/>Possible values: 10, 25, 50, 100"
+          format: int32
+          example: 50
+        page:
+          type: integer
+          description: The page to return starting from 1.
+          format: int32
+          example: 1
+        connectivityTestIds:
+          type: array
+          items:
+            type: integer
+            description: List of identifiers of connectivity test ids to retrieve.
+            format: int64
+            example: 3636828
+        errorCodesList:
+          type: array
+          items:
+            type: integer
+            description: "List of error codes to retrieve.<br/>Possible values: 8,\
+              \ 20"
+            format: int32
+            example: 8
+        popsIdsList:
+          type: array
+          items:
+            type: string
+            description: List of Imperva PoPs to retrieve. For possible values see
+              the <a href="https://docs.imperva.com/bundle/cloud-application-security/page/more/pops.htm">Imperva
+              Data Centers</a> documentation
+            example: lax
+        originIPsList:
+          type: array
+          items:
+            type: string
+            description: List of origin IP addresses to filter by.
+            example: 192.68.45.4
+        originCNAMEsList:
+          type: array
+          items:
+            type: string
+            description: List of CNAMES to filter by.
+            example: my-test.site.net
+    APIError:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+        id:
+          type: string
+        code:
+          type: string
+        source:
+          type: object
+          additionalProperties:
+            type: object
+        title:
+          type: string
+        detail:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/APIError'
+    ApiResult:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConnectivityTest'
+    Check:
+      type: object
+      properties:
+        check_type:
+          type: string
+          enum:
+          - PING
+          - MTR
+          - MTR_TCP
+        check:
+          type: string
+      description: Output of connectivity test performed against origin server
+      example:
+      - checkType: PING
+        check: "PING 8.8.8.8 (8.8.8.8): 56 data bytes..."
+      - checkType: MTR
+        check: "Start: 2021-03-10T14:02:24+0200..."
+      - checkType: MTR_TCP
+        check: "Start: 2021-03-10T14:02:24+0200..."
+    ConnectivityTest:
+      type: object
+      properties:
+        connectivityTestId:
+          type: string
+          description: Numeric identifier of the connectivity test that was performed
+            against the origin server.
+          example: "3"
+        siteId:
+          type: integer
+          description: Numeric identifier of the site the test was performed on.
+          format: int64
+          example: 10
+        accountId:
+          type: integer
+          description: Numeric identifier of the account the site belongs to.
+          format: int64
+          example: 15
+        originIP:
+          type: string
+          description: The IP of the origin server (that was resolved when the test
+            was performed).
+          example: 192.5.10.41
+        originCNAME:
+          type: string
+          description: The CNAME of the origin server.
+          example: my-test.site.net
+        timeStamp:
+          type: integer
+          description: The timestamp in which the connectivity test was performed.
+          format: int64
+          example: 1672841491000
+        pop:
+          $ref: '#/components/schemas/Pop'
+        errorCode:
+          type: string
+          description: The error code that triggered the connectivity test.
+          example: "20"
+        tcpPort:
+          type: integer
+          description: The port the MTR over TCP test is performed against.
+          format: int32
+          example: 8080
+        connectivityTestsList:
+          type: array
+          description: Output of connectivity test performed against origin server
+          example:
+          - checkType: PING
+            check: "PING 8.8.8.8 (8.8.8.8): 56 data bytes..."
+          - checkType: MTR
+            check: "Start: 2021-03-10T14:02:24+0200..."
+          - checkType: MTR_TCP
+            check: "Start: 2021-03-10T14:02:24+0200..."
+          items:
+            $ref: '#/components/schemas/Check'
+    Meta:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: The page returned
+          format: int64
+          example: 1
+        limit:
+          type: integer
+          description: The number of connectivity test returned per page
+          format: int64
+          example: 50
+        totalPages:
+          type: integer
+          description: The total number of pages in search result
+          format: int64
+          example: 20
+    Pop:
+      type: object
+      properties:
+        popId:
+          type: string
+          example: ast
+        popName:
+          type: string
+          example: "AST, London"
+  securitySchemes:
+    api_key:
+      type: apiKey
+      description: An API key created and managed in the Imperva Cloud Security Console
+        and used for authentication
+      name: x-API-Key
+      in: header
+    api_id:
+      type: apiKey
+      description: An API ID created and managed in the Imperva Cloud Security Console
+        and used for authentication
+      name: x-API-Id
+      in: header

@@ -1,0 +1,386 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "Application Performance Statistics API",
+    "description" : "Retrieve application performance data per account or site.<br/><br/>For full feature documentation, see <a href=\"https://docs.imperva.com/bundle/cloud-application-security/page/web-performance-dash.htm\">Web Performance Dashboard</a>.",
+    "license" : {
+      "name" : "Imperva License Agreement",
+      "url" : "https://www.imperva.com/legal/license-agreement/"
+    },
+    "version" : "1.0"
+  },
+  "servers" : [ {
+    "url" : "https://api.imperva.com/appdlv-dashboards-ui",
+    "description" : "Imperva API server",
+    "variables" : { }
+  } ],
+  "security" : [ {
+    "x-API-Key" : [ ]
+  }, {
+    "x-API-Id" : [ ]
+  } ],
+  "tags" : [ {
+    "name" : "Application Performance Statistics v3",
+    "description" : "Retrieve selected application performance statistics."
+  } ],
+  "paths" : {
+    "/v3/performance/statistics" : {
+      "get" : {
+        "tags" : [ "Application Performance Statistics v3" ],
+        "summary" : "Retrieve selected application performance statistics for account",
+        "description" : "This API retrieves application performance statistics for the last reliable minute, defined as the minute that ended 5 minutes ago.<br/>Supported metric types are: popLatency, originResponseTime, errorResponseTypes.<br/><br><b>popLatency</b>: The total time (in milliseconds) for a request to be processed from the moment the Imperva proxy selects an origin server (before opening a connection to the origin) until the full response is sent back to the proxy. Redirect requests are excluded from average latency time statistics since there is no origin server response.<br/><b>originResponseTime</b>: The time (in milliseconds) measured from when the Imperva proxy server in the PoP sends a request to an origin server until the response headers are received by the proxy. Redirect requests are excluded from average response time statistics since there is no origin server response.<br/><b>errorResponseTypes</b>: The number of requests that resulted in a specific error type.<br/><br/>Specify website IDs to retrieve statistics for specific sites in the account. If omitted, statistics are generated for all sites in the account.<br/>Specify metric types to retrieve specific metrics. If omitted, statistics are generated for all currently supported types.",
+        "operationId" : "getStats",
+        "parameters" : [ {
+          "name" : "caid",
+          "in" : "query",
+          "description" : "The Imperva ID of the account or subaccount. By default, the account ID is the ID associated with the API credentials used for authentication. To run an API on a sub account, specify the sub account ID.",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "example" : 11111
+        }, {
+          "name" : "siteIds",
+          "in" : "query",
+          "description" : "Comma separated list of unique Imperva website IDs for up to 10 sites. If omitted, statistics for all sites in the account are returned.",
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "123456,123457"
+        }, {
+          "name" : "metrics",
+          "in" : "query",
+          "description" : "Comma separated list of metric types. If omitted, all supported metrics are returned. Supported metric types are: popLatency, originResponseTime, errorResponseTypes.",
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "popLatency,originResponseTime,errorResponseTypes"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully retrieved performance statistics in the last reliable minute for requested sites and metrics",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StatisticsApiSuccessResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StatisticsApiErrorResponse"
+                },
+                "example" : {
+                  "errors" : [ {
+                    "status" : 400,
+                    "source" : {
+                      "pointer" : "/v3/performance/statistics?metrics=1&caid=11111"
+                    },
+                    "title" : "Invalid input parameters"
+                  } ]
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Rate limit exceeded",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StatisticsApiErrorResponse"
+                },
+                "example" : {
+                  "errors" : [ {
+                    "status" : 429,
+                    "source" : {
+                      "pointer" : "/v3/performance/statistics?metrics=1&caid=11111"
+                    },
+                    "title" : "Rate limit exceeded"
+                  } ]
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/StatisticsApiErrorResponse"
+                },
+                "example" : {
+                  "errors" : [ {
+                    "status" : 500,
+                    "source" : {
+                      "pointer" : "/v3/performance/statistics?metrics=1&caid=11111"
+                    },
+                    "title" : "Error generating statistics"
+                  } ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "ErrorResponseTypesModel" : {
+        "type" : "object",
+        "additionalProperties" : {
+          "type" : "number",
+          "description" : "A mapping between error response types and their counts. <br> For the full list of Cloud WAF Error Codes and their description see <a href=\"https://docs.imperva.com/bundle/cloud-application-security/page/error-codes.htm\">Cloud WAF Error Pages and Codes</a>",
+          "format" : "double"
+        },
+        "description" : "A mapping between error response types and their counts. <br> For the full list of Cloud WAF Error Codes and their description see <a href=\"https://docs.imperva.com/bundle/cloud-application-security/page/error-codes.htm\">Cloud WAF Error Pages and Codes</a>",
+        "example" : {
+          "REQ_BAD_TIMEOUT" : 3,
+          "REQ_SSL_NOT_SUPPORTED" : 1,
+          "REQ_IPV6_NOT_SUPPORTED" : 4,
+          "REQ_BAD_PARSE_ERROR" : 2
+        }
+      },
+      "LatencyTimeMetricModel" : {
+        "type" : "array",
+        "description" : "A list of average latency time (in milliseconds) of the Imperva proxy servers in the PoP that handled requests for the website. For the full list of Imperva Data Centers (PoPs) see <a href=\"https://docs.imperva.com/bundle/cloud-application-security/page/more/pops.htm\">Imperva Data Centers (PoPs)</a>",
+        "example" : [ {
+          "region" : "us-east",
+          "valuePerRegion" : 123,
+          "pops" : [ {
+            "pop" : "atl",
+            "valuePerPop" : 123
+          } ]
+        }, {
+          "region" : "apac",
+          "valuePerRegion" : 345,
+          "pops" : [ {
+            "pop" : "mel",
+            "valuePerPop" : 345
+          } ]
+        } ],
+        "items" : {
+          "$ref" : "#/components/schemas/RegionLatencyModel"
+        }
+      },
+      "OriginResponseTimeMetricModel" : {
+        "type" : "array",
+        "description" : "A list of response times (in milliseconds) for each origin server.",
+        "example" : [ {
+          "origin" : "1.1.1.1",
+          "valuePerOrigin" : 123
+        }, {
+          "origin" : "my.url-address.com",
+          "valuePerOrigin" : 345
+        } ],
+        "items" : {
+          "$ref" : "#/components/schemas/OriginResponseTimeModel"
+        }
+      },
+      "OriginResponseTimeModel" : {
+        "type" : "object",
+        "properties" : {
+          "server" : {
+            "type" : "string",
+            "description" : "The IP address or URL of the origin server",
+            "example" : "1.1.1.1 or my.url-address.com"
+          },
+          "dataCenterName" : {
+            "type" : "string",
+            "description" : "The name of your data center as defined in Imperva",
+            "example" : "My data center name"
+          },
+          "originPop" : {
+            "type" : "string",
+            "description" : "The Imperva PoP used to route traffic through Imperva to the origin server, if the Origin PoP setting was defined.",
+            "example" : "ash"
+          },
+          "avgResponseTime" : {
+            "type" : "number",
+            "description" : "Average response time in milliseconds for all reporting proxies.",
+            "format" : "double",
+            "example" : 234
+          }
+        },
+        "description" : "The amount of time taken (in milliseconds) for a request to go from the Imperva proxy server in the PoP to the origin server and back. Calculated as the time the Imperva proxy has decided to send a request to the origin (before opening a connection to the origin), until the origin finishes sending the response to the proxy.Note: Redirect requests are excluded from average response time statistics since there is no origin server response.",
+        "example" : {
+          "server" : "1.1.1.1",
+          "dataCenterName" : "My data center name",
+          "originPop" : "atl",
+          "avgResponseTime" : 234
+        }
+      },
+      "PerformanceStatisticsModel" : {
+        "type" : "object",
+        "properties" : {
+          "timestamp" : {
+            "type" : "integer",
+            "description" : "Timestamp of the retrieved statistics in unix epoch time, truncated to the nearest full minute.",
+            "format" : "int64",
+            "example" : 1730122740000
+          },
+          "accountId" : {
+            "type" : "integer",
+            "description" : "The unique account ID assigned by Imperva",
+            "format" : "int64",
+            "example" : 11111
+          },
+          "sitesStatistics" : {
+            "type" : "array",
+            "description" : "A list of site statistics",
+            "items" : {
+              "$ref" : "#/components/schemas/SiteStatisticsModel"
+            }
+          }
+        },
+        "example" : "{\"timestamp\": 1730122740000, \"accountId\": 11111, \"sitesStatistics\": [{\"siteId\": 22, \"siteName\": \"example.website.com\", \"statistics\": {\"popLatency\": [{\"region\": \"us-east\", \"valuePerRegion\": 123, \"pops\": [{\"pop\": \"atl\", \"valuePerPop\": 123}]},{\"region\": \"apac\", \"valuePerRegion\": 345, \"pops\": [{\"pop\": \"mel\", \"valuePerPop\": 345}]}]{\"originResponseTime\": [{\"origin\": \"1.1.1.1\", \"valuePerOrigin\": 123},{\"origin\": \"my.url-address.com\", \"valuePerOrigin\": 345}]{\"errorResponseTypes\": {\"REQ_BAD_TIMEOUT\": 3, \"REQ_SSL_NOT_SUPPORTED\": 1, \"REQ_IPV6_NOT_SUPPORTED\": 4, \"REQ_BAD_PARSE_ERROR\": 2}}]"
+      },
+      "PopLatencyModel" : {
+        "type" : "object",
+        "properties" : {
+          "pop" : {
+            "type" : "string",
+            "description" : "The 3-digit code for the PoP",
+            "example" : "asr"
+          },
+          "valuePerPop" : {
+            "type" : "number",
+            "description" : "Latency time (in milliseconds) of the Imperva proxy servers in the PoP that handled requests for the website. Averaged over all servers in the PoP.",
+            "format" : "double",
+            "example" : 234
+          }
+        },
+        "description" : "A list of PoPs in the region and their average latency time (in milliseconds)",
+        "example" : {
+          "pop" : "asr",
+          "valuePerPop" : 1234
+        }
+      },
+      "RegionLatencyModel" : {
+        "type" : "object",
+        "properties" : {
+          "region" : {
+            "type" : "string",
+            "description" : "Region name",
+            "example" : "us-east-1"
+          },
+          "valuePerRegion" : {
+            "type" : "number",
+            "description" : "The regional latency time (in milliseconds) averaged over all PoPs in the region",
+            "format" : "double",
+            "example" : 123
+          },
+          "pops" : {
+            "type" : "array",
+            "description" : "A list of PoPs in the region and their average latency time (in milliseconds)",
+            "items" : {
+              "$ref" : "#/components/schemas/PopLatencyModel"
+            }
+          }
+        },
+        "description" : "The regional average latency (in milliseconds) of Imperva proxy servers in the PoP that processed requests for the website.",
+        "example" : {
+          "region" : "us-east",
+          "valuePerRegion" : 123,
+          "pops" : [ {
+            "pop" : "atl",
+            "valuePerPop" : 123
+          } ]
+        }
+      },
+      "SiteStatisticsModel" : {
+        "type" : "object",
+        "properties" : {
+          "siteId" : {
+            "type" : "integer",
+            "description" : "The unique website ID assigned by Imperva",
+            "format" : "int64",
+            "example" : 222
+          },
+          "siteName" : {
+            "type" : "string",
+            "description" : "Website name",
+            "example" : "example.website.com"
+          },
+          "statistics" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "object",
+              "description" : "The metric model that is returned in the response.",
+              "oneOf" : [ {
+                "$ref" : "#/components/schemas/LatencyTimeMetricModel"
+              }, {
+                "$ref" : "#/components/schemas/OriginResponseTimeMetricModel"
+              }, {
+                "$ref" : "#/components/schemas/ErrorResponseTypesModel"
+              } ]
+            },
+            "description" : "The metric model that is returned in the response."
+          }
+        },
+        "description" : "A list of site statistics"
+      },
+      "StatisticsApiSuccessResponse" : {
+        "type" : "object",
+        "properties" : {
+          "data" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PerformanceStatisticsModel"
+            }
+          }
+        },
+        "description" : "The success response model for the statistics API"
+      },
+      "StatisticsApiErrorModel" : {
+        "type" : "object",
+        "properties" : {
+          "status" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "source" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "title" : {
+            "type" : "string"
+          }
+        },
+        "description" : "The error response model for the statistics API"
+      },
+      "StatisticsApiErrorResponse" : {
+        "type" : "object",
+        "properties" : {
+          "errors" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/StatisticsApiErrorModel"
+            }
+          }
+        },
+        "description" : "The error response model for the statistics API"
+      }
+    },
+    "securitySchemes" : {
+      "x-API-Id" : {
+        "type" : "apiKey",
+        "description" : "An API ID created and managed in the Imperva Cloud Security Console and used for authentication",
+        "name" : "x-API-Id",
+        "in" : "header"
+      },
+      "x-API-Key" : {
+        "type" : "apiKey",
+        "description" : "An API key created and managed in the Imperva Cloud Security Console and used for authentication",
+        "name" : "x-API-Key",
+        "in" : "header"
+      }
+    }
+  }
+}

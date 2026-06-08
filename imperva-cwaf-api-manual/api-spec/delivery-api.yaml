@@ -1,0 +1,286 @@
+swagger: "2.0"
+info:
+  title: "Imperva API2 Delivery Settings"
+  description: "Configure delivery options to help you optimize your content delivery and improve performance by providing faster loading of your web pages. For full feature documentation, see [Delivery Settings](https://docs.imperva.com/bundle/cloud-application-security/page/settings/delivery-settings.htm)."
+  version: "2.2.2"
+  termsOfService: "https://www.imperva.com/legal/terms-of-use/"
+host: "my.imperva.com"
+basePath: /api/prov/v2
+schemes:
+  - "https"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+securityDefinitions:
+  api_id:
+    type: "apiKey"
+    in: "header"
+    name: "x-API-Id"
+  api_key:
+    type: "apiKey"
+    in: "header"
+    name: "x-API-Key"
+security:
+  - api_id: []
+    api_key: []
+paths:
+  /sites/{siteId}/settings/delivery:
+    get:
+      summary: Get delivery settings
+      description: Retrieves delivery settings for a given website according to site ID.
+      parameters:
+        - name: "siteId"
+          in: "path"
+          description: Numeric identifier of the site to operate on
+          required: true
+          type: "integer"
+        - name: "sections"
+          in: "query"
+          description: "The sections of configurations to get, separated by comma. If not passed, all sections will be returned."
+          type: "string"
+          enum:
+            - compression
+            - image_compression
+            - network
+            - redirection
+            - custom_error_page
+          uniqueItems: true
+          required: false
+      responses:
+        '200':
+          description: OK. The rule is returned.
+          schema:
+            $ref: "#/definitions/DeliverySettingsObject"
+        '401':
+          description: Unauthorized siteId
+        '406':
+          description: Invalid Input
+        '500':
+          description: Internal server error
+      tags:
+        - Delivery
+
+    put:
+      summary: Update delivery settings (partial update)
+      description: Modifies delivery settings for a given website according to site ID. Only specified fields are modified.
+      parameters:
+        - name: "siteId"
+          in: "path"
+          description: Numeric identifier of the site to operate on
+          required: true
+          type: "integer"
+        - name: "body"
+          in: "body"
+          description: The delivery settings to use
+          required: true
+          schema:
+            $ref: "#/definitions/DeliverySettingsObject"
+      responses:
+        '200':
+          description: OK. The updated rule is returned.
+          schema:
+            $ref: "#/definitions/DeliverySettingsObject"
+        '401':
+          description: Unauthorized siteId
+        '406':
+          description: Invalid Input
+        '500':
+          description: Internal server error
+      tags:
+        - Delivery
+
+    delete:
+      summary: Restore default delivery settings
+      description: Restores default delivery settings for a given website according to site ID.
+      parameters:
+        - name: "siteId"
+          in: "path"
+          description: Numeric identifier of the site to operate on
+          required: true
+          type: "integer"
+      responses:
+        '200':
+          description: OK. The delivery settings restored to default
+        '401':
+          description: Unauthorized siteId
+        '406':
+          description: Invalid Input
+        '500':
+          description: Internal server error
+      tags:
+        - Delivery
+
+  #####################
+  ### DEFINITIONS #####
+  #####################
+definitions:
+
+  DeliverySettingsObject:
+    description: 'The overall delivery policy configuration for your website.'
+    type: "object"
+    properties:
+      compression:
+        description: "Compress files to shrink file size and reduce load time."
+        type: "object"
+        properties:
+          file_compression:
+            description: "When this option is enabled, any textual resource such as JavaScript, CSS and HTML is compressed as it is transferred. 
+                          Files are decompressed automatically within the browser. Compression options: Gzip or Brotli"
+            type: "boolean"
+          compression_type:
+            description: "Gzip (default). Brotli (recommended for more efficient compression)"
+            type: "string"
+          minify_js:
+            description: "Minify JavaScript. Minification removes characters that are not necessary for rendering the page, such as whitespace and comments.
+                          This makes the files smaller and therefore reduces their access time. Minification has no impact on the functionality of the
+                          Javascript, CSS, and HTML files."
+            type: "boolean"
+          minify_css:
+            description: '<a href="https://www.imperva.com/learn/performance/minification/">Content minification</a> can applied only to cached Javascript, CSS
+                          and HTML content.'
+            type: "boolean"
+          minify_static_html:
+            type: "boolean"
+      image_compression:
+        description: "Image compression can be applied only to cached JPEG and PNG images. As such, this option is disabled when caching is disabled."
+        type: "object"
+        properties:
+          compress_jpeg:
+            description: "Compress JPEG images. Compression reduces download time by reducing the file size."
+            type: "boolean"
+          progressive_image_rendering:
+            description: "The image is rendered with progressively finer resolution, potentially causing a pixelated effect until the final image is rendered
+                          with no loss of quality. This option reduces page load times and allows images to gradually load after the page is rendered."
+            type: "boolean"
+          aggressive_compression:
+            description: "A more aggressive method of compression is applied with the goal of minimizing the image file size, possibly impacting the
+                          final quality of the image displayed. Applies to JPEG compression only."
+            type: "boolean"
+          compress_png:
+            description: "Compress PNG images. Compression reduces download time by reducing the file size. PNG compression removes only
+                          image meta-data with no impact on quality."
+            type: "boolean"
+      network:
+        type: "object"
+        properties:
+          tcp_pre_pooling:
+            description: "Maintain a set of idle TCP connections to the origin server to eliminate the latency associated with opening new connections
+                          or new requests (TCP handshake)."
+            type: "boolean"
+          origin_connection_reuse:
+            description: "TCP connections that are opened for a client request remain open for a short time to handle additional requests that may arrive."
+            type: "boolean"
+          support_non_sni_clients:
+            description: "By default, non-SNI clients are supported. Disable this option to block non-SNI clients."
+            type: "boolean"
+          enable_http2:
+            description: "Allows supporting browsers to take advantage of the performance enhancements provided by HTTP/2 for your website. Non-supporting
+                          browsers can connect via HTTP/1.0 or HTTP/1.1."
+            type: "boolean"
+          http2_to_origin:
+            description: "Enables HTTP/2 for the connection between Imperva and your origin server. (HTTP/2 must also be supported by the origin server.)"
+            type: "boolean"
+          port:
+            type: "object"
+            description: "To redirect incoming requests, rewrite the port number used to access the origin."
+            properties:
+              to:
+                description: "The port number. If field is set to 80 (the default value), rewrite port will be removed."
+                type: "string"
+              from:
+                description: "Read only field. Indicate the source port number for the non-SSL port."
+                type: "string"
+          ssl_port:
+            type: "object"
+            description: "To redirect incoming requests, rewrite the SSL port number used to access the origin."
+            properties:
+              to:
+                description: "The port number to rewrite default SSL port to. if field is set to 443 (the default value), rewrite SSL port will be removed."
+                type: "string"
+              from:
+                description: "Read only field. Indicate the source port number for the SSL port."
+                type: "string"
+      redirection:
+        type: "object"
+        properties:
+          redirect_naked_to_full:
+            description: "Redirect all visitors to your site’s full domain (which includes www). This option is displayed only for a naked domain."
+            type: "boolean"
+          redirect_http_to_https:
+            description: "Sites that require an HTTPS connection force all HTTP requests to be redirected to HTTPS. This option is displayed only for an SSL site."
+            type: "boolean"
+      custom_error_page:
+        type: "object"
+        properties:
+          error_page_template:
+            description: "The default error page HTML template. $TITLE$ and $BODY$ placeholders are required."
+            type: "string"
+          custom_error_page_templates:
+            description: "Custom error pages for a specific error type.
+                          Errors with no custom pages will get the default error page template.
+                          To remove custom error configuration and return to default, send the appropriate error type with an empty template."
+            type: "object"
+            properties:
+              error.type.connection_timeout:
+                description: "The HTML template for 'Connection Timeout' error. $TITLE$ and $BODY$ placeholders are required. Set empty value to return to default."
+                type: "string"
+              error.type.access_denied:
+                description: "The HTML template for 'Access Denied' error. $TITLE$ and $BODY$ placeholders are required. Set empty value to return to default."
+                type: "string"
+              error.type.parse_req_error:
+                description: "The HTML template for 'Unable to parse request' error. $TITLE$ and $BODY$ placeholders are required. Set empty value to return to default."
+                type: "string"
+              error.type.parse_resp_error:
+                description: "The HTML template for 'Unable to parse response' error. $TITLE$ and $BODY$ placeholders are required. Set empty value to return to default."
+                type: "string"
+              error.type.connection_failed:
+                description: "The HTML template for 'Unable to connect to origin server' error. $TITLE$ and $BODY$ placeholders are required. Set empty value to return to default."
+                type: "string"
+              error.type.ssl_failed:
+                description: "The HTML template for 'Unable to establish SSL connection' error. $TITLE$ and $BODY$ placeholders are required. Set empty value to return to default."
+                type: "string"
+              error.type.deny_and_captcha:
+                description: "The HTML template for 'Initial connection denied - CAPTCHA required' error. $TITLE$ and $BODY$ placeholders are required. Set empty value to return to default."
+                type: "string"
+              error.type.no_ssl_config:
+                description: "The HTML template for 'Site not configured for SSL' error. $TITLE$ and $BODY$ placeholders are required. Set empty value to return to default."
+                type: "string"
+              error.type.abp_identification_failed:
+                description: "The HTML template for 'ABP identification failed' error. Placeholders are not supported. HTML Template must contain only tags located inside the body. Set empty value to return to default."
+                type: "string"
+    example:
+      {
+        compression: {
+          file_compression: true,
+          minify_js: true,
+          minify_css: false,
+          minify_static_html: true,
+          compression_type: "BROTLI"
+        },
+        image_compression: {
+          compress_jpeg: true,
+          progressive_image_rendering: true,
+          aggressive_compression: false,
+          compress_png: true,
+        },
+        network: {
+          tcp_pre_pooling: true,
+          origin_connection_reuse: false,
+          support_non_sni_clients: true,
+          port: {"to": "8080"},
+          ssl_port: {"to": "9001" }
+        },
+        redirection: {
+          redirect_naked_to_full: false,
+          redirect_http_to_https: true
+        },
+        custom_error_page: {
+          error_page_template: "<html><body><h1>$TITLE$</h1><div>$BODY$</div></body></html>",
+          custom_error_page_templates: {
+            error.type.connection_timeout: "<html><body><h1>$TITLE$</h1><div>$BODY$</div></body></html>",
+            error.type.access_denied: "<html><body><h1>$TITLE$</h1><div>$BODY$</div></body></html>"
+          }
+        }
+      }
+

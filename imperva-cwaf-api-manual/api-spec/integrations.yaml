@@ -1,0 +1,287 @@
+openapi: 3.0.1
+info:
+  title: Cloud Application Security API
+  description: 'Imperva provides customers and partners with the ability to manage
+    accounts and sites via an API.
+
+    For more information, see <a style="text-decoration:none" href="https://docs.imperva.com/csh?context=my_api">Cloud
+    Application Security API Reference</a>.'
+  license:
+    name: Imperva License Agreement.
+    url: http://www.imperva.com/other/license_agreement.asp
+  version: '1.0'
+servers:
+- url: https://my.imperva.com
+  description: Imperva API server
+components:
+  schemas:
+    ApiResultGetClappsInfo:
+      type: object
+      properties:
+        res:
+          type: integer
+          description: res - contains specific error code
+          format: int32
+          example: 0
+        res_message:
+          type: string
+          example: OK
+        debug_info:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+              description: General information which is not strictly required for
+                using the API
+            description: General information which is not strictly required for using
+              the API
+        clientApps:
+          type: array
+          example:
+            '1': Firefox
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        clientAppTypes:
+          type: array
+          example:
+            '1': Browser
+          items:
+            type: object
+            additionalProperties:
+              type: object
+    ApiResultGetTexts:
+      type: object
+      properties:
+        res:
+          type: integer
+          description: res - contains specific error code
+          format: int32
+          example: 0
+        res_message:
+          type: string
+          example: OK
+        debug_info:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+              description: General information which is not strictly required for
+                using the API
+            description: General information which is not strictly required for using
+              the API
+        texts:
+          type: array
+          example:
+            api.stats.visits_timeseries.human: Human visits
+            api.stats.visits_timeseries.bot: Bot visits
+            api.threats.followup.view: View Incidents
+          items:
+            type: object
+            additionalProperties:
+              type: object
+    ApiResult:
+      type: object
+      properties:
+        res:
+          type: integer
+          description: res - contains specific error code
+          format: int32
+          example: 0
+        res_message:
+          type: string
+          example: OK
+        debug_info:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+              description: General information which is not strictly required for
+                using the API
+            description: General information which is not strictly required for using
+              the API
+    ApiResultIncapsulaRanges:
+      type: object
+      properties:
+        res:
+          type: integer
+          description: res - contains specific error code
+          format: int32
+          example: 0
+        res_message:
+          type: string
+          example: OK
+        debug_info:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+              description: General information which is not strictly required for
+                using the API
+            description: General information which is not strictly required for using
+              the API
+        ipRanges:
+          type: array
+          items:
+            type: object
+            example: 199.83.128.0/21
+        ipv6Ranges:
+          type: array
+          items:
+            type: object
+            example: 2a02:e980::/29
+    GeoInfo:
+      type: object
+      properties:
+        res:
+          type: integer
+          description: res - contains specific error code
+          format: int32
+          example: 0
+        res_message:
+          type: string
+          example: OK
+        debug_info:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+              description: General information which is not strictly required for
+                using the API
+            description: General information which is not strictly required for using
+              the API
+        countriesCodes:
+          type: array
+          example:
+            BD: Bangladesh
+            BE: Belgium
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        continentsCodes:
+          type: array
+          example:
+            AF: Africa
+          items:
+            type: object
+            additionalProperties:
+              type: object
+  securitySchemes:
+    api_id:
+      type: apiKey
+      name: x-API-Id
+      in: header
+    api_key:
+      type: apiKey
+      name: x-API-Key
+      in: header
+security:
+- api_key: []
+- api_id: []
+paths:
+  /api/integration/v1/clapps:
+    post:
+      tags:
+      - Integrations
+      summary: Get client applications info
+      description: Use this operation to retrieve a list of all the client applications.
+      operationId: getClappsInfo
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResultGetClappsInfo'
+  /api/integration/v1/geo:
+    post:
+      tags:
+      - Integrations
+      summary: Get geographical info
+      description: Use this operation to retrieve a list of all the countries and
+        continents codes.
+      operationId: getGeoInfo
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoInfo'
+  /api/integration/v1/ips:
+    get:
+      tags:
+      - Integrations
+      summary: Get Imperva IP ranges
+      description: Use this operation to get the updated list of Imperva IP ranges.
+        This list may be used to define firewall rules that restrict access to customers
+        sites from non-Imperva IPs.
+      operationId: getIPRanges
+      parameters:
+      - name: resp_format
+        in: query
+        description: 'Response format.<br/>Possible values: json | apache | nginx
+          | iptables | text<br/>Default: json'
+        schema:
+          type: string
+        example: json
+      responses:
+        '200':
+          description: res - contains the specific error code:<br/>14001 - Format
+            invalid
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ApiResultIncapsulaRanges'
+                - $ref: '#/components/schemas/ApiResult'
+    post:
+      tags:
+      - Integrations
+      summary: Get Imperva IP ranges
+      description: Use this operation to get the updated list of Imperva IP ranges.
+        This list may be used to define firewall rules that restrict access to customers
+        sites from non-Imperva IPs.
+      operationId: getIPRangesWithPost
+      parameters:
+      - name: resp_format
+        in: query
+        description: 'Response format.<br/>Possible values: json | apache | nginx
+          | iptables | text<br/>Default: json'
+        schema:
+          type: string
+        example: json
+      responses:
+        '200':
+          description: res - contains the specific error code:<br/>14001 - Format
+            invalid
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ApiResultIncapsulaRanges'
+                - $ref: '#/components/schemas/ApiResult'
+  /api/integration/v1/texts:
+    post:
+      tags:
+      - Integrations
+      summary: Get texts
+      description: Use this operation to retrieve a list of all text messages that
+        may be part of API responses. For each message a key and a value are provided.
+        The key is the unique identifier of the message and the value is the message
+        text itself, in the API's default locale (English).
+      operationId: getTexts
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResultGetTexts'

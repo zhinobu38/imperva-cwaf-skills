@@ -1,0 +1,1769 @@
+openapi: 3.0.1
+info:
+  description: |-
+    Create policies to centrally configure settings and apply them to multiple websites in your account.
+     For full feature documentation, see <a style="text-decoration:none" href="https://docs.imperva.com/csh?context=policies">Create and Manage Policies</a>.
+  license:
+    name: The terms in the absence of an applicable signed agreement between you and
+      Imperva
+    url: https://www.imperva.com/legal/license-agreement/
+  title: Imperva API Documentation
+  version: 1.0.0
+servers:
+- description: Imperva API server
+  url: https://api.imperva.com/policies
+security:
+- api_id: []
+  api_key: []
+tags:
+- description: "Operations for managing security policies (WAF, ACL, Block URL, etc.)"
+  name: Policy Management
+- description: Operations for managing account-to-policy associations
+  name: Policy Management account application
+- description: Operations for applying policies to assets (sites)
+  name: Policy Management asset application
+paths:
+  /v2/accounts/policies/{policyId}:
+    get:
+      description: Retrieves the IDs of accounts that can view and manage a policy
+      operationId: getAllAvailableAccountsOfPolicy
+      parameters:
+      - description: The Policy ID
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: "The Imperva Account ID. By default, the API operates on account\
+          \ (A) associated with the API credentials used for authentication. To operate\
+          \ on a different account (an account under the account (A)), specify the\
+          \ account ID"
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PolicyAccountsResult'
+          description: Success
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Bad Request
+      summary: Retrieves the list of accounts that can access a policy
+      tags:
+      - Policy Management account application
+    put:
+      description: Configures the list of accounts that can view and manage a policy
+      operationId: setAvailableAccountToPolicy
+      parameters:
+      - description: The Policy ID
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: "The Imperva Account ID. By default, the API operates on account\
+          \ (A) associated with the API credentials used for authentication. To operate\
+          \ on a different account (an account under the account (A)), specify the\
+          \ account ID"
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              description: "The list of account IDs that can access the policy, e.g.\
+                \ [123,234]"
+              items:
+                type: integer
+                format: int64
+        required: true
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PolicyAccountsResult'
+          description: Success
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Bad Request
+      summary: Defines the list of accounts that can access a policy
+      tags:
+      - Policy Management account application
+  /v2/accounts/{subAccountId}/policies/{policyId}:
+    delete:
+      description: Removes an account from the list of accounts that can view and
+        manage a policy
+      operationId: removeAvailableAccountFromPolicy
+      parameters:
+      - description: The Policy ID
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: Sub Account Id to remove from the policy
+        in: path
+        name: subAccountId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: "The Imperva Account ID. By default, the API operates on account\
+          \ (A) associated with the API credentials used for authentication. To operate\
+          \ on a different account (an account under the account (A)), specify the\
+          \ account ID"
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PolicyAccountsResult'
+          description: Success
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Bad Request
+      summary: Removes access to a policy by an account
+      tags:
+      - Policy Management account application
+    post:
+      description: "Adds an account to the list of accounts that can view and manage\
+        \ a given policy. \nIf the policy is currently defined as available to all\
+        \ sub accounts, running this API overwrites the setting. The policy will be\
+        \ available to the parent account and the specified sub account only."
+      operationId: addAvailableAccountToPolicy
+      parameters:
+      - description: The Policy ID
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: Sub Account Id to add to the policy
+        in: path
+        name: subAccountId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: "The Imperva Account ID. By default, the API operates on account\
+          \ (A) associated with the API credentials used for authentication. To operate\
+          \ on a different account (an account under the account (A)), specify the\
+          \ account ID"
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PolicyAccountsResult'
+          description: Success
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Bad Request
+      summary: Enables an account to access a policy
+      tags:
+      - Policy Management account application
+  /v2/assets/policies/{policyId}:
+    get:
+      operationId: getAllAssetOfPolicy
+      parameters:
+      - description: The Policy ID
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: "By default, the policy should belong to the account (A) associated\
+          \ with the API credentials used for authentication. To get the assets for\
+          \ a policy of a different account (an account under the account (A)), specify\
+          \ the account ID."
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetAssetsResponse'
+          description: Success
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Bad Request
+        "404":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetAssetsResponse'
+          description: Not Found
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Internal error
+      summary: Retrieve assets to which policy is applied
+      tags:
+      - Policy Management asset application
+  /v2/assets/{assetType}/{assetId}/policies:
+    get:
+      operationId: getAllPoliciesOfAsset
+      parameters:
+      - description: The type of asset on which the policy is applied
+        in: path
+        name: assetType
+        required: true
+        schema:
+          type: string
+      - description: The Asset ID
+        in: path
+        name: assetId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: |-
+          Optional to get full policy data. Default is false.
+          When set to false, the response returns basic policy details such as name, ID, and policy type,
+          according to GetLeanPoliciesResponse. This is the default value.
+          If set to true, the response returns full policy details,
+          including current configuration and settings, according to GetPoliciesResponse.
+        in: query
+        name: extended
+        required: false
+        schema:
+          type: boolean
+      - description: "The Imperva Account ID. By default, the API operates on account\
+          \ (A) associated with the API credentials used for authentication. To operate\
+          \ on a different account (an account under the account (A)), specify the\
+          \ account ID"
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetLeanPoliciesResponse'
+          description: Success
+        "404":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetAssetsResponse'
+          description: Not found
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Internal error
+      summary: Retrieve all policies applied to an asset
+      tags:
+      - Policy Management asset application
+  /v2/assets/{assetType}/{assetId}/policies/{policyId}:
+    delete:
+      description: "If you remove a WAF Rules policy from a website, the account’\
+        s default policy is automatically re-applied to the website."
+      operationId: unApplyPolicyOnAsset
+      parameters:
+      - description: The Policy ID
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: Asset type to remove
+        in: path
+        name: assetType
+        required: true
+        schema:
+          type: string
+      - description: Asset ID to remove
+        in: path
+        name: assetId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: "By default, the policy should belong to the account (A) associated\
+          \ with the API credentials used for authentication. To unapply a policy\
+          \ for a different account (an account under the account (A)), specify the\
+          \ account ID."
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PolicyAssetMappingResult'
+          description: Success
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Internal error
+      summary: Remove policy from asset
+      tags:
+      - Policy Management asset application
+    post:
+      description: Applies a policy to an asset. Policies already assigned to the
+        asset are not modified. A website must have exactly one WAF Rules policy applied
+        to it
+      operationId: applyAssetToPolicy
+      parameters:
+      - description: The Policy ID
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: The type of asset on which the policy is applied
+        in: path
+        name: assetType
+        required: true
+        schema:
+          type: string
+      - description: Asset ID to add to policy
+        in: path
+        name: assetId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: "By default, the Asset should belong to the account (A) associated\
+          \ with the API credentials used for authentication. To assign an asset of\
+          \ a different account (an account under the account (A)), specify the account\
+          \ ID."
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetAssetsResponse'
+          description: Success
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Internal error
+      summary: Apply a single policy to a single asset
+      tags:
+      - Policy Management asset application
+    put:
+      description: "Applies a single policy to a single asset and removes previously\
+        \ assigned policies. If you apply a WAF Rules policy to a website, it replaces\
+        \ the policy that is currently applied. Since this API is removing all other\
+        \ policies but the one provided, it can be only applied to WAF Rules policies"
+      operationId: updateAssetWithSinglePolicy
+      parameters:
+      - description: The Policy ID
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: The type of asset on which the policy is applied
+        in: path
+        name: assetType
+        required: true
+        schema:
+          type: string
+      - description: Asset Id
+        in: path
+        name: assetId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: "By default, the policy should belong to the account (A) associated\
+          \ with the API credentials used for authentication. To update a policy for\
+          \ a different account (an account under the account (A)), specify the account\
+          \ ID."
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PolicyDtoResult'
+          description: Success
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Internal error
+      summary: Overwrite policies assigned to a single asset
+      tags:
+      - Policy Management asset application
+  /v2/policies:
+    get:
+      operationId: getAllPoliciesByAccount
+      parameters:
+      - description: |-
+          Optional to get full policy data. Default is false.
+          When set to false, the response returns basic policy details such as name, ID, and policy type,
+          according to GetLeanPoliciesResponse. This is the default value.
+          If set to true, the response returns full policy details,
+          including current configuration and settings, according to GetPoliciesResponse.
+        in: query
+        name: extended
+        required: false
+        schema:
+          type: boolean
+      - description: "By default, the policies are retrieved for the account (A) associated\
+          \ with the API credentials used for authentication. To retrieve the policies\
+          \ for a different account (an account under the account (A)), specify the\
+          \ account ID."
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetLeanPoliciesResponse'
+          description: Success
+        "404":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Not Found
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Internal Error
+      summary: Retrieve all policies in account
+      tags:
+      - Policy Management
+    post:
+      description: "When copying an existing policy the body is ignored but nevertheless\
+        \ needs to be sent. A good approach is to send an empty JSON as the request\
+        \ body, e.g {}"
+      operationId: createNewPolicy
+      parameters:
+      - description: Optional to clone full policy data
+        in: query
+        name: sourcePolicyId
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - description: "By default, the policy is created for the account (A) associated\
+          \ with the API credentials used for authentication. To create the policy\
+          \ for a different account (an account under the account (A)), specify the\
+          \ account ID."
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyDto'
+        required: true
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetPolicyResponse'
+          description: Success
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Internal Error
+      summary: Add a new policy or copy an existing policy
+      tags:
+      - Policy Management
+  /v2/policies/{policyId}:
+    delete:
+      operationId: deletePolicy
+      parameters:
+      - description: The Policy ID
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: "By default, the policy is deleted for the account (A) associated\
+          \ with the API credentials used for authentication. To delete the policy\
+          \ for a different account (an account under the account (A)), specify the\
+          \ account ID."
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - in: query
+        name: uiContext
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PolicyResult'
+          description: Success
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Internal Error
+      summary: Delete an existing policy
+      tags:
+      - Policy Management
+    get:
+      operationId: getPolicyById
+      parameters:
+      - description: The Policy ID
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: |-
+          Optional to get full policy data. Default is false.
+          When set to false, the response returns basic policy details such as name, ID, and policy type,
+          according to GetLeanPoliciesResponse. This is the default value.
+          If set to true, the response returns full policy details,
+          including current configuration and settings, according to GetPoliciesResponse.
+        in: query
+        name: extended
+        required: false
+        schema:
+          type: boolean
+      - description: "By default, the policy is retrieved for the account (A) associated\
+          \ with the API credentials used for authentication. To retrieve the policy\
+          \ for a different account (an account under the account (A)), specify the\
+          \ account ID."
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetLeanPoliciesResponse'
+          description: Success
+        "404":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Not Found
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Internal Error
+      summary: Retrieve policy details
+      tags:
+      - Policy Management
+    post:
+      description: "When you send content in the data attribute, it is appended to\
+        \ the existing resource and not overwritten. When updating existing policy\
+        \ settings or exceptions, include the relevant policy settings or exception\
+        \ id. Use this endpoint to add or append entries without removing existing\
+        \ data."
+      operationId: modifyPolicy
+      parameters:
+      - description: The Policy ID
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: "By default, the policy is updated for the account (A) associated\
+          \ with the API credentials used for authentication. To update the policy\
+          \ for a different account (an account under the account (A)), specify the\
+          \ account ID."
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePolicyDto'
+        required: true
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetPolicyResponse'
+          description: Success
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Bad Request
+        "404":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Not Found
+      summary: Modify an existing policy (partial update)
+      tags:
+      - Policy Management
+    put:
+      description: "Replaces the entire resource with the contents of the data attribute.\
+        \ Fields or entries omitted from the data attribute are removed from the resource.\
+        \ When updating existing policy settings or exceptions, include the relevant\
+        \ policy settings or exception id. Use this endpoint when you want to perform\
+        \ a full update or to delete previously stored entries by sending the new,\
+        \ complete representation of the resource."
+      operationId: updatePolicy
+      parameters:
+      - description: The Policy ID
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: "By default, the policy is saved for the account (A) associated\
+          \ with the API credentials used for authentication. To save the policy for\
+          \ a different account (an account under the account (A)), specify the account\
+          \ ID."
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyDto'
+        required: true
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetPolicyResponse'
+          description: Success
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Bad Request
+        "404":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Not Found
+      summary: Overwrite an existing policy (full update)
+      tags:
+      - Policy Management
+  /v2/policies/{policyId}/assets/{assetType}/{assetId}:
+    get:
+      description: True if the policy is applied on the asset
+      operationId: checkIfPolicyIsAppliedOnAsset
+      parameters:
+      - description: The Policy ID
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: The type of asset on which the policy is applied
+        in: path
+        name: assetType
+        required: true
+        schema:
+          type: string
+      - description: Asset ID
+        in: path
+        name: assetId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: "By default, the check is performed for an asset that belongs\
+          \ to the account (A) associated with the API credentials used for authentication.\
+          \ To check for an asset that belongs to a different account (an account\
+          \ under the account (A)), specify the account ID."
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetPolicyResponse'
+          description: Success
+        "404":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PolicyBaseFailureResponse'
+          description: Not found
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Internal error
+      summary: Check whether the policy is applied on the asset
+      tags:
+      - Policy Management
+  /v2/policies/{policyId}/{assetType}/{assetId}:
+    patch:
+      description: Applies a single policy to a single asset and removes the previously
+        applied assets from the policy.
+      operationId: updatePolicyToSingleAsset
+      parameters:
+      - description: The Policy ID
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: The type of asset on which the policy is applied
+        in: path
+        name: assetType
+        required: true
+        schema:
+          type: string
+      - description: Asset ID
+        in: path
+        name: assetId
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - description: "By default, the policy is applied for an asset that belongs\
+          \ to the account (A) associated with the API credentials used for authentication.\
+          \ To apply the policy for an asset that belongs to a different account (an\
+          \ account under the account (A)), specify the account ID."
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - in: query
+        name: uiContext
+        required: false
+        schema:
+          type: boolean
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AssetResult'
+          description: Success
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SimpleTextErrorResponse'
+          description: Internal error
+      summary: Overwrite applied assets in a policy
+      tags:
+      - Policy Management
+  /v3/accounts/associated-policies:
+    get:
+      description: "Retrieves the account’s default polices, and all the policies\
+        \ that are available to the account."
+      operationId: getAccountPolicyAssociation
+      parameters:
+      - description: "By default, the policies association is retrieved for the account\
+          \ (A) associated with the API credentials used for authentication. To retrieve\
+          \ the policies associated with a different account (an account under the\
+          \ account (A)), specify the account ID."
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AccountPolicyAssociationV3RequestResponse'
+          description: Success
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Internal Server Error
+      summary: Retrieve the list of default and available policies of the account
+      tags:
+      - Policy Management account application
+    patch:
+      description: Updates the account’s default polices and updates the list of policies
+        that are available to the account.
+      operationId: patchAccountPolicyAssociation
+      parameters:
+      - description: "By default, the policies association is set for the account\
+          \ (A) associated with the API credentials used for authentication. To retrieve\
+          \ the policies associated with a different account (an account under the\
+          \ account (A)), specify the account ID."
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountPolicyAssociationV3RequestResponse'
+        required: true
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AccountPolicyAssociationV3RequestResponse'
+          description: Success
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Internal Server Error
+      summary: Update the list of default and available policies of the account
+      tags:
+      - Policy Management account application
+    put:
+      description: "Sets the account’s default polices, and sets the list of policies\
+        \ that are available to the account (full overwrite)."
+      operationId: putAccountPolicyAssociation
+      parameters:
+      - description: "By default, the policies association is set for the account\
+          \ (A) associated with the API credentials used for authentication. To retrieve\
+          \ the policies associated with a different account (an account under the\
+          \ account (A)), specify the account ID."
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountPolicyAssociationV3RequestResponse'
+        required: true
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AccountPolicyAssociationV3RequestResponse'
+          description: Success
+        "400":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Bad Request
+        "500":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Internal Server Error
+      summary: Set the list of default and available policies of the account (full
+        overwrite)
+      tags:
+      - Policy Management account application
+  /v3/policies:
+    get:
+      description: "Get Policies for the account based on the provided filters. If\
+        \ no filters are provided, all policies for the account will be returned according\
+        \ to the page size."
+      operationId: getAccountPoliciesByFilter
+      parameters:
+      - description: "A list of policy ids. If this parameter is provided, only policies\
+          \ matching one of these ids will be returned."
+        in: query
+        name: policyIds
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - description: "A list of policy names. If this parameter is provided, only\
+          \ policies matching one of these names will be returned."
+        in: query
+        name: names
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - description: "A list of policy types. If this parameter is provided, only\
+          \ policies matching one of these types will be returned."
+        in: query
+        name: types
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - ACL
+            - WHITELIST
+            - WAF_RULES
+            - FILE_UPLOAD
+      - description: "A list of website ids. If this parameter is provided, only websites\
+          \ matching one of these IDs will be returned."
+        in: query
+        name: assetIds
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - description: "A list of sub account ids. If this parameter is provided, websites\
+          \ corresponding to the sub account ids will be returned.</br> Else it will\
+          \ default to return all sites corresponding to the acc id in user jwt"
+        in: query
+        name: subAccIds
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - description: The page to return starting from 0.
+        in: query
+        name: page
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+          minimum: 0
+      - description: Page size used to determine the first object to be returned and
+          the number of objects to be returned.
+        in: query
+        name: size
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          maximum: 100
+      - description: Extended parameter is used to determine whether to return a more
+          detailed policies dto.
+        in: query
+        name: extended
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - description: "The Imperva ID of the account or subaccount. By default, the\
+          \ account ID is the ID associated with the API credentials used for authentication.\
+          \ To run an API on a sub account, specify the sub account ID."
+        in: query
+        name: caid
+        required: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCollectionPolicyDtoWithAssetsAndSubAccountsAssignment'
+          description: Success
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Not Found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Internal Server Error
+      summary: Get account policies by filter
+      tags:
+      - Policy Management
+components:
+  schemas:
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+        detail:
+          type: string
+        id:
+          type: string
+        source:
+          type: object
+          additionalProperties:
+            type: object
+        status:
+          type: integer
+          format: int32
+        title:
+          type: string
+    AccountPolicyAssociationDto:
+      type: object
+      properties:
+        accountId:
+          type: integer
+          format: int64
+          description: The Imperva ID of the current account.
+          example: 10
+        availablePolicyIds:
+          type: array
+          description: The account’s available policies. These policies can be applied
+            to the websites in the account
+          example:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          items:
+            type: integer
+            format: int64
+            description: The account’s available policies. These policies can be applied
+              to the websites in the account
+        defaultNonMandatoryNonDistinctPolicyIds:
+          type: array
+          description: "The Imperva IDs of the account’s default, optional and simultaneously\
+            \ applied policies. An account can have multiple policies for each of\
+            \ these policy types. (e.g ACL, WHITELIST)"
+          example:
+          - 3
+          - 4
+          items:
+            type: integer
+            format: int64
+            description: "The Imperva IDs of the account’s default, optional and simultaneously\
+              \ applied policies. An account can have multiple policies for each of\
+              \ these policy types. (e.g ACL, WHITELIST)"
+        defaultWafPolicyId:
+          type: integer
+          format: int64
+          description: The Imperva ID of the account’s default WAF Rules policy. Each
+            Imperva account and sub account includes a default WAF Rules policy.
+          example: 5
+    AccountPolicyAssociationV3RequestResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountPolicyAssociationDto'
+    AssetResult:
+      type: object
+      properties:
+        isError:
+          type: boolean
+          description: States if an error has occurred
+          example: false
+        value:
+          type: array
+          items:
+            $ref: '#/components/schemas/value'
+    DefaultPolicyConfigDto:
+      type: object
+      description: "Sets the specified policy as default for the account, or indicates\
+        \ that the policy is set as default. A default policy is used by any new website\
+        \ added to the account."
+      properties:
+        accountId:
+          type: integer
+          format: int64
+          description: The account ID
+          example: 10
+        assetType:
+          type: string
+          description: The type of asset on which the policy is applied
+          enum:
+          - WEBSITE
+          - WEBSITE
+        id:
+          type: integer
+          format: int64
+          description: The ID of this default policy configuration.
+          example: 10
+        policyId:
+          type: integer
+          format: int64
+          description: The ID of this policy
+          example: 8
+    ExceptionsDataDto:
+      type: object
+      description: The Filter/s of the exception
+      properties:
+        exceptionType:
+          type: string
+          description: The element that the exception is based on.
+          enum:
+          - GEO
+          - IP
+          - URL
+          - URL_NOT_EQUALS
+          - URL_NOT_CONTAINS
+          - URL_PREFIX
+          - URL_SUFFIX
+          - URL_NOT_PREFIX
+          - URL_NOT_SUFFIX
+          - URL_CONTAINS
+          - CLIENT_ID
+          - SITE_ID
+          - HTTP_PARAM
+          - USER_AGENT
+          - FILE_HASH
+          - "GEO,IP,URL,URL_NOT_EQUALS,URL_NOT_CONTAINS,URL_PREFIX,URL_SUFFIX,URL_NOT_PREFIX,URL_NOT_SUFFIX,URL_CONTAINS,CLIENT_ID,SITE_ID,HTTP_PARAM,USER_AGENT,\
+            \ FILE_HASH"
+        values:
+          type: array
+          description: Values of the exception vary based on the exceptionType parameter
+          items:
+            type: string
+            description: Values of the exception vary based on the exceptionType parameter
+    GeoDto:
+      type: object
+      description: Country/Continent Codes arrays
+      properties:
+        continents:
+          type: array
+          description: Continent Codes array
+          example:
+          - APAC
+          - US
+          items:
+            type: string
+            description: Continent Codes array
+            example: "[\"APAC\",\"US\"]"
+        countries:
+          type: array
+          description: Country Codes array
+          example:
+          - AE
+          - AC
+          items:
+            type: string
+            description: Country Codes array
+            example: "[\"AE\",\"AC\"]"
+    GetAssetsResponse:
+      type: object
+      properties:
+        isError:
+          type: boolean
+          description: States if an error has occurred
+          example: false
+        value:
+          type: array
+          items:
+            $ref: '#/components/schemas/value'
+    GetLeanPoliciesResponse:
+      type: object
+      properties:
+        isError:
+          type: boolean
+          description: States if an error has occurred
+          example: false
+        value:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeanPolicyDto'
+    GetPolicyResponse:
+      type: object
+      properties:
+        isError:
+          type: boolean
+          description: States if an error has occurred
+          example: false
+        value:
+          $ref: '#/components/schemas/PolicyDto'
+    LeanPolicyDto:
+      type: object
+      properties:
+        description:
+          type: string
+        id:
+          type: integer
+          format: int64
+          description: The Policy ID
+          example: 10
+        isMarkedAsDefault:
+          type: boolean
+        lastModified:
+          type: string
+          format: date-time
+        lastModifiedBy:
+          type: integer
+          format: int64
+        lastUserModified:
+          type: string
+        name:
+          type: string
+          description: The Policy name
+          example: Block ip Policy
+        numberOfAssets:
+          type: integer
+          format: int32
+          description: The number of assets to which the policy is applied
+        policyType:
+          type: string
+          description: The Policy type
+          enum:
+          - ACL
+          - WHITELIST
+          - WAF_RULES
+          - FILE_UPLOAD
+          example: ACL
+    PaginatedCollectionPolicyDtoWithAssetsAndSubAccountsAssignment:
+      type: object
+      properties:
+        data:
+          type: array
+          description: API paginated response data
+          items:
+            $ref: '#/components/schemas/PolicyDtoWithAssetsAndSubAccountsAssignment'
+        links:
+          type: object
+          additionalProperties:
+            type: string
+            description: API pagination links
+          description: API pagination links
+        meta:
+          $ref: '#/components/schemas/PaginationMetadata'
+      required:
+      - data
+    PaginationMetadata:
+      type: object
+      description: API pagination metadata
+      properties:
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+    PolicyAccountsResult:
+      type: object
+      properties:
+        isError:
+          type: boolean
+          description: States if an error has occurred
+          example: false
+        value:
+          type: array
+          description: Account Ids
+          example:
+          - 123456
+          items:
+            type: integer
+            format: int64
+            description: Account Ids
+    PolicyAssetMappingResult:
+      type: object
+      properties:
+        isError:
+          type: boolean
+          description: States if an error has occurred
+          example: false
+        value:
+          type: array
+          description: Policy Asset Mapping
+          items:
+            $ref: '#/components/schemas/value'
+    PolicyBaseFailureResponse:
+      type: object
+      properties:
+        isError:
+          type: boolean
+          description: States if an error has occurred
+          example: true
+        value:
+          type: object
+    PolicyDataExceptionDto:
+      type: object
+      description: The exception configuration on a given settings
+      properties:
+        comment:
+          type: string
+          description: Comment describing the exception and its reason
+          example: exclude all ips for pen tests
+        data:
+          type: array
+          description: The Filter/s of the exception
+          items:
+            $ref: '#/components/schemas/ExceptionsDataDto'
+        id:
+          type: integer
+          format: int64
+          description: The PolicyDataExceptions ID
+          example: 10
+        policySettingsId:
+          type: integer
+          format: int64
+          description: The PolicySettings ID
+          example: 55
+    PolicyDto:
+      type: object
+      description: Policy meta data
+      properties:
+        accountId:
+          type: integer
+          format: int64
+          description: The Account Id Of the Policy
+          example: 10
+        defaultPolicyConfig:
+          type: array
+          description: "Sets the specified policy as default for the account, or indicates\
+            \ that the policy is set as default. A default policy is used by any new\
+            \ website added to the account."
+          items:
+            $ref: '#/components/schemas/DefaultPolicyConfigDto'
+        description:
+          type: string
+          description: The Policy description
+          example: This is policy blocks all requests from Europe
+        enabled:
+          type: boolean
+          description: "Enable or disable the policy. A WAF Rules policy is always\
+            \ created in the enabled state, and cannot be disabled."
+        name:
+          type: string
+          description: The Policy name
+          example: Block ip Policy
+        policySettings:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolicySettingsDto'
+        policyType:
+          type: string
+          description: The Policy type
+          enum:
+          - ACL
+          - WHITELIST
+          - WAF_RULES
+          - FILE_UPLOAD
+      required:
+      - enabled
+      - name
+      - policyType
+    PolicyDtoResult:
+      type: object
+      properties:
+        isError:
+          type: boolean
+          description: States if an error has occurred
+          example: false
+        value:
+          $ref: '#/components/schemas/PolicyDto'
+    PolicyDtoWithAssetsAndSubAccountsAssignment:
+      type: object
+      description: API paginated response data
+      properties:
+        accountId:
+          type: integer
+          format: int64
+          description: The Account Id Of the Policy
+          example: 10
+        assetsIds:
+          type: array
+          description: Set of asset IDs that this policy assigned to.
+          items:
+            type: integer
+            format: int64
+            description: Set of asset IDs that this policy assigned to.
+        defaultPolicyConfig:
+          type: array
+          description: "Sets the specified policy as default for the account, or indicates\
+            \ that the policy is set as default. A default policy is used by any new\
+            \ website added to the account."
+          items:
+            $ref: '#/components/schemas/DefaultPolicyConfigDto'
+        description:
+          type: string
+          description: The Policy description
+          example: This is policy blocks all requests from Europe
+        enabled:
+          type: boolean
+          description: "Enable or disable the policy. A WAF Rules policy is always\
+            \ created in the enabled state, and cannot be disabled."
+        name:
+          type: string
+          description: The Policy name
+          example: Block ip Policy
+        policySettings:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolicySettingsDto'
+        policyType:
+          type: string
+          description: The Policy type
+          enum:
+          - ACL
+          - WHITELIST
+          - WAF_RULES
+          - FILE_UPLOAD
+        subaccountIds:
+          type: array
+          description: set of subaccount IDs that allowed to use this policy.
+          items:
+            type: object
+            description: set of subaccount IDs that allowed to use this policy.
+      required:
+      - enabled
+      - name
+      - policyType
+    PolicyResult:
+      type: object
+      properties:
+        isError:
+          type: boolean
+          description: States if an error has occurred
+          example: false
+        value:
+          type: object
+    PolicySettingsDto:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SettingsDataDto'
+        id:
+          type: integer
+          format: int64
+          description: The Policy Settings ID
+          example: 10
+        policyDataExceptions:
+          type: array
+          description: The exception configuration on a given settings
+          items:
+            $ref: '#/components/schemas/PolicyDataExceptionDto'
+        policyId:
+          type: integer
+          format: int64
+          description: The Policy ID of this setting
+          example: 10
+        policySettingType:
+          type: string
+          description: The PolicySettings type
+          enum:
+          - GEO
+          - URL
+          - IP
+          - HEADER_VALUE
+          - CROSS_SITE_SCRIPTING
+          - ILLEGAL_RESOURCE_ACCESS
+          - REMOTE_FILE_INCLUSION
+          - SQL_INJECTION
+          - RESP_DATA_LEAK
+          - MALICIOUS_FILE_UPLOAD
+          - "IP,GEO,URL,CROSS_SITE_SCRIPTING,ILLEGAL_RESOURCE_ACCESS,REMOTE_FILE_INCLUSION,SQL_INJECTION,RESP_DATA_LEAK,MALICIOUS_FILE_UPLOAD"
+          example: IP/GEO/URL
+        settingsAction:
+          type: string
+          description: The action taken by Imperva when a policy rule is triggered
+          enum:
+          - BLOCK
+          - ALLOW
+          - ALERT
+          - BLOCK_USER
+          - BLOCK_IP
+          - IGNORE
+          - HIDDEN_ALERT
+          - MASK
+          example: BLOCK
+    SettingsDataDto:
+      type: object
+      description: depends on the policy settings type
+      properties:
+        geo:
+          $ref: '#/components/schemas/GeoDto'
+        ips:
+          type: array
+          items:
+            type: string
+        urls:
+          type: array
+          items:
+            $ref: '#/components/schemas/UrlsDto'
+    SimpleTextErrorResponse:
+      type: object
+      properties:
+        isError:
+          type: boolean
+          description: States if an error has occurred
+          example: true
+        value:
+          type: string
+    UpdatePolicyDto:
+      type: object
+      description: Policy to save. The supported format JSON
+      properties:
+        accountId:
+          type: integer
+          format: int64
+          description: The Account Id Of the Policy
+          example: 10
+        defaultPolicyConfig:
+          type: array
+          description: "Sets the specified policy as default for the account, or indicates\
+            \ that the policy is set as default. A default policy is used by any new\
+            \ website added to the account."
+          items:
+            $ref: '#/components/schemas/DefaultPolicyConfigDto'
+        description:
+          type: string
+          description: The Policy description
+          example: This is policy blocks all requests from Europe
+        enabled:
+          type: boolean
+          description: "Enable or disable the policy. A WAF Rules policy is always\
+            \ created in the enabled state, and cannot be disabled."
+        name:
+          type: string
+          description: The Policy name
+          example: Block ip Policy
+        policySettings:
+          type: array
+          description: The Policy settings configuration
+          items:
+            $ref: '#/components/schemas/PolicySettingsDto'
+        policyType:
+          type: string
+          description: The Policy type
+          enum:
+          - ACL
+          - WHITELIST
+          - WAF_RULES
+          - FILE_UPLOAD
+    UrlsDto:
+      type: object
+      properties:
+        pattern:
+          type: string
+          description: URL pattern for rule
+          enum:
+          - EQUALS
+          - NOT_EQUALS
+          - NOT_CONTAINS
+          - PREFIX
+          - SUFFIX
+          - NOT_PREFIX
+          - NOT_SUFFIX
+          - CONTAINS
+          - "EQUALS,NOT_EQUALS,NOT_CONTAINS,PREFIX,SUFFIX,NOT_PREFIX,NOT_SUFFIX,CONTAINS"
+        url:
+          type: string
+          description: URL value
+          example: /test
+    value:
+      type: object
+      description: Policy Asset Mapping
+      properties:
+        assetId:
+          type: integer
+          format: int64
+        assetType:
+          type: string
+          description: The type of asset on which the policy is applied
+          enum:
+          - WEBSITE
+          - WEBSITE
+        id:
+          type: integer
+          format: int64
+          description: The PolicySettings ID
+          example: 10
+        policyId:
+          type: integer
+          format: int64
+  securitySchemes:
+    api_id:
+      description: An API ID created and managed in the Imperva Cloud Security Console
+        and used for authentication
+      in: header
+      name: x-API-Id
+      type: apiKey
+    api_key:
+      description: An API key created and managed in the Imperva Cloud Security Console
+        and used for authentication
+      in: header
+      name: x-API-Key
+      type: apiKey

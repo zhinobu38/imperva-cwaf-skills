@@ -1,0 +1,1648 @@
+openapi: 3.0.1
+info:
+  title: Cloud Application Security API
+  description: 'Imperva provides customers and partners with the ability to manage
+    accounts and sites via an API.
+
+    For more information, see <a style="text-decoration:none" href="https://docs.imperva.com/csh?context=my_api">Cloud
+    Application Security API Reference</a>.'
+  license:
+    name: Imperva License Agreement.
+    url: http://www.imperva.com/other/license_agreement.asp
+  version: '1.0'
+servers:
+- url: https://my.imperva.com
+  description: Imperva API server
+components:
+  schemas:
+    IncapRule:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        action:
+          type: string
+          example: Require Javascript Support
+        incidents:
+          type: integer
+          format: int64
+          example: 3451
+        createdAt:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+          example: example@imperva.com
+    ActionItem:
+      type: object
+      properties:
+        queryString:
+          type: string
+          example: ?jobSYapi_password\u003dXXXXX
+        postData:
+          type: string
+        requestResult:
+          type: string
+          description: requestResult
+          example: api.request_result.req_challenge_javascript
+        isSecured:
+          type: boolean
+          example: false
+        url:
+          type: string
+          example: www.google.com/ddos/ddos-mitigation-services
+        httpStatus:
+          type: integer
+          format: int32
+          example: 200
+        responseTime:
+          type: integer
+          format: int64
+          example: 170
+        thinkTime:
+          type: integer
+          format: int64
+          example: 169
+        incidentId:
+          type: string
+          example: 3411008890000033213-29571073433152
+        threats:
+          type: array
+          items:
+            $ref: '#/components/schemas/ThreatItem'
+    TopGraphPayloads:
+      type: object
+      properties:
+        interval:
+          type: string
+          example: '15000'
+        startTime:
+          type: string
+          format: date-time
+        data:
+          type: array
+          example:
+          - 5462
+          - 7563
+          items:
+            type: object
+            example:
+            - 5462
+            - 7563
+        metric:
+          type: string
+          example: pps
+        dataType:
+          type: string
+          example: ip
+        item:
+          type: string
+          example: 10.13.0.1
+        traffic:
+          type: string
+          example: blocked
+    Caching:
+      type: object
+      properties:
+        saved_requests:
+          type: integer
+          format: int64
+          example: 23984923
+        total_requests:
+          type: integer
+          format: int64
+          example: 48723648
+        saved_bytes:
+          type: integer
+          format: int64
+          example: 762394786
+        total_bytes:
+          type: integer
+          format: int64
+          example: 1098349834
+    ApiResultSessions:
+      type: object
+      properties:
+        res:
+          type: integer
+          description: res - contains specific error code
+          format: int32
+          example: 0
+        res_message:
+          type: string
+          example: OK
+        debug_info:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+              description: General information which is not strictly required for
+                using the API
+            description: General information which is not strictly required for using
+              the API
+        visits:
+          type: array
+          items:
+            $ref: '#/components/schemas/SessionItem'
+    AnalyticsHistogramApiResponse:
+      type: object
+      properties:
+        res:
+          type: integer
+          description: res - contains specific error code
+          format: int32
+          example: 0
+        res_message:
+          type: string
+          example: OK
+        debug_info:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+              description: General information which is not strictly required for
+                using the API
+            description: General information which is not strictly required for using
+              the API
+        stats:
+          type: array
+          example:
+            PL_100: '366450640'
+            PL_200: '305475960'
+            PL_300: '0'
+            PL_400: '0'
+            PL_500: '0'
+            PL_600: '0'
+            PL_700: '0'
+            PL_800: '0'
+            PL_900: '0'
+            PL_1000: '0'
+            PL_1100: '0'
+            PL_1200: '0'
+            PL_1300: '0'
+            PL_1400: '0'
+            PL_1500: '0'
+          items:
+            type: object
+            additionalProperties:
+              type: object
+    VisitsItem:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        data:
+          type: array
+          example:
+          - - 1344247200000
+            - 50
+          - - 1344247500000
+            - 40
+          items:
+            type: object
+    ADRuleSeries:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        action:
+          type: string
+          example: Redirect
+        createdAt:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+          example: example@imperva.com
+        hits:
+          type: array
+          example:
+          - - 1478613600000
+            - 6
+          - - 1478617200000
+            - 3
+          items:
+            type: object
+    ApiResult:
+      type: object
+      properties:
+        res:
+          type: integer
+          description: res - contains specific error code
+          format: int32
+          example: 0
+        res_message:
+          type: string
+          example: OK
+        debug_info:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+              description: General information which is not strictly required for
+                using the API
+            description: General information which is not strictly required for using
+              the API
+    InfraStatsApiResponse:
+      type: object
+      properties:
+        res:
+          type: integer
+          description: res - contains specific error code
+          format: int32
+          example: 0
+        res_message:
+          type: string
+          example: OK
+        debug_info:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+              description: General information which is not strictly required for
+                using the API
+            description: General information which is not strictly required for using
+              the API
+      example:
+        stats:
+        - objectId: 607074
+          payload:
+          - interval: 15000
+            startTime: 1509936300000
+            data:
+            - 0
+            - 15
+            metric: pps
+            pop: tko
+            ipPrefix: 192.168.205.0/24
+            ipPrefixType: bgp
+            traffic: passed
+          - interval: 15000
+            startTime: 1509936300000
+            data:
+            - 7968575
+            - 8484564
+            metric: bw
+            pop: tko
+            ipPrefix: 192.168.205.0/24
+            ipPrefixType: bgp
+            traffic: passed
+        res: 0
+        res_message: OK
+        debug_info: {}
+    SessionItem:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '133077760038625792'
+        siteId:
+          type: integer
+          format: int64
+          example: 7
+        startTime:
+          type: integer
+          format: int64
+          example: 1361468485000
+        endTime:
+          type: integer
+          format: int64
+          example: 1361468486000
+        clientIPs:
+          type: array
+          items:
+            type: object
+            example: 12.13.14.15
+        country:
+          uniqueItems: true
+          type: array
+          items:
+            type: object
+            example: Sweden
+        countryCode:
+          uniqueItems: true
+          type: array
+          items:
+            type: object
+            example: SE
+        clientType:
+          type: string
+          example: Unclassified
+        clientApplication:
+          type: string
+          example: Bot
+        clientApplicationId:
+          type: integer
+          format: int64
+          example: 0
+        httpVersion:
+          type: string
+          example: '2.0'
+        clientApplicationVersion:
+          type: string
+          example: '0'
+        userAgent:
+          type: string
+          example: Mozilla/4.0 (compatible; MSIE 5.0; Windows 95; DigExt)
+        os:
+          type: string
+          example: Windows
+        osVersion:
+          type: string
+          example: Windows
+        supportsCookies:
+          type: boolean
+          example: true
+        supportsJavaScript:
+          type: boolean
+          example: true
+        hits:
+          type: integer
+          format: int64
+          example: 1
+        pageViews:
+          type: integer
+          format: int64
+          example: 1
+        entryReferer:
+          type: string
+          example: http://lp.usafis.org/_Incapsula_Resource?CWUDNSAI=9_E1521557&incident_id=133077760038102423-139906691365201416&edet=12&cinfo=2ef678e2c753856785000000
+        entryPage:
+          type: string
+          example: www.incapsula.com/ddos/ddos-mitigation-services
+        servedVia:
+          type: array
+          items:
+            type: object
+            example: Los Angeles, CA
+        securitySummary:
+          type: array
+          example:
+            api.threats.sql_injection: '2'
+            api.threats.cross_site_scripting: '1'
+            api.threats.illegal_resource_access: '3'
+            api.threats.remote_file_inclusion: '2'
+            api.threats.customRule: '3'
+            api.threats.ddos=DDoS: '4'
+            api.threats.backdoor: '2'
+            api.threats.bot_access_control: '1'
+            api.acl.blacklisted_countries: '1'
+            api.acl.blacklisted_urls: '1'
+            api.acl.blacklisted_ips: '1'
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActionItem'
+    Stats:
+      type: object
+      properties:
+        res:
+          type: integer
+          description: res - contains specific error code
+          format: int32
+          example: 0
+        res_message:
+          type: string
+          example: OK
+        debug_info:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+              description: General information which is not strictly required for
+                using the API
+            description: General information which is not strictly required for using
+              the API
+        objectid:
+          type: string
+          example: '200'
+        time:
+          type: string
+          example: '1522761000000'
+        payload:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopGraphPayloads'
+    ThreatItem:
+      type: object
+      properties:
+        securityRule:
+          type: string
+          example: api.threats.illegal_resource_access
+        alertLocation:
+          type: string
+          example: api.alert_location.alert_location_path
+        attackCodes:
+          uniqueItems: true
+          type: array
+          items:
+            type: object
+            example: 9070
+        securityRuleAction:
+          type: string
+          example: api.rule_action_type.rule_action_block
+      description: threats
+    ApiResultSiteStats:
+      type: object
+      properties:
+        res:
+          type: integer
+          description: res - contains specific error code
+          format: int32
+          example: 0
+        res_message:
+          type: string
+          example: OK
+        debug_info:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+              description: General information which is not strictly required for
+                using the API
+            description: General information which is not strictly required for using
+              the API
+        visits_timeseries:
+          type: array
+          items:
+            $ref: '#/components/schemas/VisitsItem'
+        requests_geo_dist_summary:
+          $ref: '#/components/schemas/RequestsGeo'
+        visits_dist_summary:
+          type: array
+          items:
+            $ref: '#/components/schemas/VisitsSummary'
+        caching:
+          $ref: '#/components/schemas/Caching'
+        caching_timeseries:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeSeriesItem'
+        hits_timeseries:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeSeriesItem'
+        bandwidth_timeseries:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimeSeriesItem'
+        threats:
+          type: array
+          items:
+            $ref: '#/components/schemas/Threat'
+        incap_rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncapRule'
+        incap_rules_timeseries:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncapRuleSeries'
+        delivery_rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ADRule'
+        delivery_rules_timeseries:
+          type: array
+          items:
+            $ref: '#/components/schemas/ADRuleSeries'
+    RequestsGeo:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        data:
+          type: array
+          example: '[[''Tokyo, JA'',24365435],[''Los Angeles, CA'',98762738]]'
+          items:
+            type: object
+    AnalyticsTopTableApiResponse:
+      type: object
+      properties:
+        res:
+          type: integer
+          description: res - contains specific error code
+          format: int32
+          example: 0
+        res_message:
+          type: string
+          example: OK
+        debug_info:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+              description: General information which is not strictly required for
+                using the API
+            description: General information which is not strictly required for using
+              the API
+        stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalyticsTopTableData'
+    AnalyticsTopGraphDataResponse:
+      type: object
+      properties:
+        res:
+          type: integer
+          description: res - contains specific error code
+          format: int32
+          example: 0
+        res_message:
+          type: string
+          example: OK
+        debug_info:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+              description: General information which is not strictly required for
+                using the API
+            description: General information which is not strictly required for using
+              the API
+        stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/Stats'
+    AnalyticsTopTableData:
+      type: object
+      properties:
+        object:
+          type: string
+          example: 10.200.98.3
+        value:
+          type: number
+          format: double
+          example: 334160
+    InfraEventsApiResponse:
+      type: object
+      properties:
+        res:
+          type: integer
+          description: res - contains specific error code
+          format: int32
+          example: 0
+        res_message:
+          type: string
+          example: OK
+        debug_info:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+              description: General information which is not strictly required for
+                using the API
+            description: General information which is not strictly required for using
+              the API
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/InfraProtectEvent'
+    Threat:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        incidents:
+          type: integer
+          format: int64
+          example: 12
+        status:
+          type: string
+          example: ok
+        status_text_id:
+          type: string
+          example: api.threats.action.block_request
+        status_text:
+          type: string
+          example: Block Request
+        followup:
+          type: string
+          example: api.threats.followup.view
+        followup_text:
+          type: string
+          example: View Incidents
+        followup_url:
+          type: string
+          example: https://my.incapsula.com/sites/siteVisits?token=1123_103_13234435091_5d55197912387b94&timeFrame=last_7_days&extSiteId=123&threatFilters=badBot
+    InfraProtectEvent:
+      type: object
+      properties:
+        eventTime:
+          type: string
+          format: date-time
+        eventType:
+          type: string
+          example: DDOS_STOP_IP_RANGE
+          enum:
+          - GRE_TUNNEL_UP
+          - GRE_TUNNEL_DOWN
+          - ORIGIN_CONNECTION_GRE_UP
+          - ORIGIN_CONNECTION_GRE_DOWN
+          - ORIGIN_CONNECTION_ECX_UP
+          - ORIGIN_CONNECTION_ECX_DOWN
+          - ORIGIN_CONNECTION_CROSS_CONNECT_UP
+          - ORIGIN_CONNECTION_CROSS_CONNECT_DOWN
+          - IP_RANGE_ATTACK_START
+          - IP_RANGE_ATTACK_STOP
+          - DDOS_START_IP_RANGE
+          - DDOS_STOP_IP_RANGE
+          - DDOS_QUIET_TIME_IP_RANGE
+          - EXPORTER_NO_DATA
+          - EXPORTER_BAD_DATA
+          - EXPORTER_GOOD_DATA
+          - MONITORING_ATTACK
+          - MONITORING_CRITICAL_ATTACK
+          - PROTECTED_IP_STATUS_UP
+          - PROTECTED_IP_STATUS_DOWN
+          - PROTECTED_NETWORK_STATUS_ACTIVE
+          - PROTECTED_NETWORK_STATUS_INACTIVE
+          - PER_IP_DDOS_START_IP_RANGE
+          - PER_IP_DDOS_STOP_IP_RANGE
+          - IIP_ACCOUNT_SERVICE_SUSPENDED
+          - IIP_ACCOUNT_SERVICE_UNSUSPENDED
+          - INFRAPROTECT_NULL_ROUTE_STARTED
+          - INFRAPROTECT_NULL_ROUTE_ESCALATED
+          - INFRAPROTECT_NULL_ROUTE_ENDED
+          - INFRAPROTECT_RANGE_DIVERT
+          - INFRAPROTECT_RANGE_REVERT
+          - BGP_UP
+          - BGP_DOWN
+          - CONNECTION_PERFORMANCE_DEGRADED
+          - CONNECTION_PERFORMANCE_RESTORED
+        bwTotal:
+          type: integer
+          format: int64
+          example: 9000
+        ppsTotal:
+          type: integer
+          format: int64
+          example: 90
+        bwPassed:
+          type: integer
+          format: int64
+          example: 200
+        ppsPassed:
+          type: integer
+          format: int64
+          example: 87
+        bwBlocked:
+          type: integer
+          format: int64
+          example: 8800
+        ppsBlocked:
+          type: integer
+          format: int64
+          example: 3
+        eventTarget:
+          type: string
+          example: IP_RANGE
+          enum:
+          - GRE_TUNNEL
+          - IP_RANGE
+          - EXPORTER
+          - PROTECTED_IP
+          - INCAPSULA_IP
+          - NULL_ROUTE
+          - BGP
+        reportedByPop:
+          type: string
+          example: zrh
+    ADRule:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        action:
+          type: string
+          example: Redirect
+        createdAt:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+          example: example@imperva.com
+        hits:
+          type: integer
+          format: int64
+          example: 3451
+    TimeSeriesItem:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        data:
+          type: array
+          example:
+          - - 1344247200000
+            - 5
+          items:
+            type: object
+    VisitsSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        data:
+          type: array
+          example: '[[''np'',15],[''no'',778]]'
+          items:
+            type: array
+            items:
+              type: object
+    IncapRuleSeries:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        action:
+          type: string
+          example: Require Javascript Support
+        createdAt:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+          example: example@imperva.com
+        incidents:
+          type: array
+          example:
+          - - 1478613600000
+            - 6
+          - - 1478617200000
+            - 3
+          items:
+            type: object
+  securitySchemes:
+    api_id:
+      type: apiKey
+      name: x-API-Id
+      in: header
+    api_key:
+      type: apiKey
+      name: x-API-Key
+      in: header
+security:
+- api_key: []
+- api_id: []
+paths:
+  /api/v1/infra/events:
+    post:
+      tags:
+      - Traffic Statistics and Logs
+      summary: Get infrastructure protection events
+      description: Use this operation to get Infrastructure Protection event information
+        for an account
+      operationId: getInfraEvents
+      parameters:
+      - name: account_id
+        in: query
+        description: Numeric identifier of the account to operate on.<br/>If not specified,
+          operation will be performed on the account identified by the authentication
+          parameters.
+        schema:
+          type: string
+        example: 10
+      - name: event_type
+        in: query
+        description: 'A comma separated list of specific event types. Any of: GRE_TUNNEL_UP,
+          GRE_TUNNEL_DOWN, ORIGIN_CONNECTION_GRE_UP, ORIGIN_CONNECTION_GRE_DOWN, ORIGIN_CONNECTION_ECX_UP,
+          ORIGIN_CONNECTION_ECX_DOWN, ORIGIN_CONNECTION_CROSS_CONNECT_UP, ORIGIN_CONNECTION_CROSS_CONNECT_DOWN,
+          DDOS_START_IP_RANGE, DDOS_STOP_IP_RANGE, DDOS_QUIET_TIME_IP_RANGE, EXPORTER_NO_DATA,
+          EXPORTER_BAD_DATA, EXPORTER_GOOD_DATA, MONITORING_CRITICAL_ATTACK, PROTECTED_IP_STATUS_UP,
+          PROTECTED_IP_STATUS_DOWN, PER_IP_DDOS_START_IP_RANGE.'
+        schema:
+          type: string
+        example: GRE_TUNNEL_UP
+      - name: ip_prefix
+        in: query
+        description: Specific Protected IP or IP range. For example, 1.1.1.0/24.
+        schema:
+          type: string
+        example: 1.1.1.0/24
+      - name: page_size
+        in: query
+        description: 'The number of objects to return in the response.<br/>Default:
+          50<br/>Maximum: 100'
+        schema:
+          type: string
+        example: 2
+      - name: page_num
+        in: query
+        description: 'The page to return starting from 0. Default: 0'
+        schema:
+          type: string
+        example: 1
+      - name: start
+        in: query
+        description: 'The start date in milliseconds, since 1970.<br/>Some operations
+          require the user to specify a time range. This is done via the time_range
+          parameter, which accepts the following values:<br/><ul><li><b>today</b>
+          Retrieve data from midnight today until the current time.</li><li><b>last_7_days</b>
+          Retrieve data from midnight of 7 days ago until the current time.</li><li><b>last_30_days</b>
+          Retrieve data from midnight of 30 days ago until the current time.</li><li><b>last_90_days</b>
+          Retrieve data from midnight of 90 days ago until the current time.</li><li><b>month_to_date</b>
+          Retrieve data from midnight of the first day of the month until the current
+          time.</li><li><b>custom</b> Specify a custom time range using two additional
+          parameters: start and end.<br/>Results are provided for full days only,
+          starting from midnight. A time range of less than 24 hours gives results
+          for the full day.<br/>For example:<ul><li>A time range of 14:00 - 20:00
+          yesterday gives results for all of yesterday (midnight to midnight) - a
+          full day.</li><li>A time range of 14:00 last Tuesday to 14:00 last Wednesday
+          gives results for all of Tuesday and Wednesday - two full days.</li> <li>A
+          time range of 14:00 yesterday to 14:00 today gives results for all of yesterday
+          starting from midnight until the current time today.</li></ul></li></ul>'
+        schema:
+          type: string
+        example: 1610356734
+      - name: end
+        in: query
+        description: 'The end date in milliseconds, since 1970.<br/>Some operations
+          require the user to specify a time range. This is done via the time_range
+          parameter, which accepts the following values:<br/><ul><li><b>today</b>
+          Retrieve data from midnight today until the current time.</li><li><b>last_7_days</b>
+          Retrieve data from midnight of 7 days ago until the current time.</li><li><b>last_30_days</b>
+          Retrieve data from midnight of 30 days ago until the current time.</li><li><b>last_90_days</b>
+          Retrieve data from midnight of 90 days ago until the current time.</li><li><b>month_to_date</b>
+          Retrieve data from midnight of the first day of the month until the current
+          time.</li><li><b>custom</b> Specify a custom time range using two additional
+          parameters: start and end.<br/>Results are provided for full days only,
+          starting from midnight. A time range of less than 24 hours gives results
+          for the full day.<br/>For example:<ul><li>A time range of 14:00 - 20:00
+          yesterday gives results for all of yesterday (midnight to midnight) - a
+          full day.</li><li>A time range of 14:00 last Tuesday to 14:00 last Wednesday
+          gives results for all of Tuesday and Wednesday - two full days.</li> <li>A
+          time range of 14:00 yesterday to 14:00 today gives results for all of yesterday
+          starting from midnight until the current time today.</li></ul></li></ul>'
+        schema:
+          type: string
+        example: 1610356734
+      responses:
+        '200':
+          description: res - contains the specific error code:<br/>2 - Invalid input
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/InfraEventsApiResponse'
+                - $ref: '#/components/schemas/ApiResult'
+  /api/v1/infra/histogram:
+    post:
+      tags:
+      - Traffic Statistics and Logs
+      summary: Get infrastructure protection histogram
+      description: Use this operation to view the highest packet size values for a
+        protected IP range during a selected time period.
+      operationId: getInfraProtectHistogram
+      parameters:
+      - name: account_id
+        in: query
+        description: Numeric identifier of the account to operate on.<br/>If not specified,
+          operation will be performed on the account identified by the authentication
+          parameters.
+        schema:
+          type: integer
+          format: int64
+        example: 10
+      - name: ip_range
+        in: query
+        description: The customer's IP range.
+        required: true
+        schema:
+          type: string
+        example: INCAPSULA_IP
+      - name: range_type
+        in: query
+        description: 'One of the following: BGP, PROTECTED_IP, NETFLOW'
+        required: true
+        schema:
+          type: string
+        example: PROTECTED_IP
+      - name: start
+        in: query
+        description: 'The start date in milliseconds, since 1970.<br/>Some operations
+          require the user to specify a time range. This is done via the time_range
+          parameter, which accepts the following values:<br/><ul><li><b>today</b>
+          Retrieve data from midnight today until the current time.</li><li><b>last_7_days</b>
+          Retrieve data from midnight of 7 days ago until the current time.</li><li><b>last_30_days</b>
+          Retrieve data from midnight of 30 days ago until the current time.</li><li><b>last_90_days</b>
+          Retrieve data from midnight of 90 days ago until the current time.</li><li><b>month_to_date</b>
+          Retrieve data from midnight of the first day of the month until the current
+          time.</li><li><b>custom</b> Specify a custom time range using two additional
+          parameters: start and end.<br/>Results are provided for full days only,
+          starting from midnight. A time range of less than 24 hours gives results
+          for the full day.<br/>For example:<ul><li>A time range of 14:00 - 20:00
+          yesterday gives results for all of yesterday (midnight to midnight) - a
+          full day.</li><li>A time range of 14:00 last Tuesday to 14:00 last Wednesday
+          gives results for all of Tuesday and Wednesday - two full days.</li> <li>A
+          time range of 14:00 yesterday to 14:00 today gives results for all of yesterday
+          starting from midnight until the current time today.</li></ul></li></ul>'
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1610356734
+      - name: end
+        in: query
+        description: 'The end date in milliseconds, since 1970.<br/>Some operations
+          require the user to specify a time range. This is done via the time_range
+          parameter, which accepts the following values:<br/><ul><li><b>today</b>
+          Retrieve data from midnight today until the current time.</li><li><b>last_7_days</b>
+          Retrieve data from midnight of 7 days ago until the current time.</li><li><b>last_30_days</b>
+          Retrieve data from midnight of 30 days ago until the current time.</li><li><b>last_90_days</b>
+          Retrieve data from midnight of 90 days ago until the current time.</li><li><b>month_to_date</b>
+          Retrieve data from midnight of the first day of the month until the current
+          time.</li><li><b>custom</b> Specify a custom time range using two additional
+          parameters: start and end.<br/>Results are provided for full days only,
+          starting from midnight. A time range of less than 24 hours gives results
+          for the full day.<br/>For example:<ul><li>A time range of 14:00 - 20:00
+          yesterday gives results for all of yesterday (midnight to midnight) - a
+          full day.</li><li>A time range of 14:00 last Tuesday to 14:00 last Wednesday
+          gives results for all of Tuesday and Wednesday - two full days.</li> <li>A
+          time range of 14:00 yesterday to 14:00 today gives results for all of yesterday
+          starting from midnight until the current time today.</li></ul></li></ul>'
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1610356734
+      - name: mitigation_type
+        in: query
+        description: 'One of the following: BLOCK, PASS'
+        required: true
+        schema:
+          type: string
+        example: BLOCK
+      - name: data_storage_region
+        in: query
+        description: The data region to use. If not specified, account's default data
+          region will be used.
+        schema:
+          type: string
+        example: EU
+      responses:
+        '200':
+          description: res - contains the specific error code:<br/>2 - Invalid input<br/>1
+            - Unexpected error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/AnalyticsHistogramApiResponse'
+                - $ref: '#/components/schemas/ApiResult'
+  /api/v1/infra/top-graph:
+    post:
+      tags:
+      - Traffic Statistics and Logs
+      summary: Get infrastructure protection top items (graph view)
+      description: Use this operation to view the highest peak values and highest
+        average values for a protected IP range during a selected time period.
+      operationId: getInfraProtectTopData
+      parameters:
+      - name: account_id
+        in: query
+        description: Numeric identifier of the account to operate on.<br/>If not specified,
+          operation will be performed on the account identified by the authentication
+          parameters.
+        schema:
+          type: integer
+          format: int64
+        example: 10
+      - name: ip_range
+        in: query
+        description: The customer's IP range.
+        required: true
+        schema:
+          type: string
+        example: INCAPSULA_IP
+      - name: range_type
+        in: query
+        description: 'One of the following: BGP, PROTECTED_IP, NETFLOW'
+        required: true
+        schema:
+          type: string
+        example: PROTECTED_IP
+      - name: start
+        in: query
+        description: 'The start date in milliseconds, since 1970.<br/>Some operations
+          require the user to specify a time range. This is done via the time_range
+          parameter, which accepts the following values:<br/><ul><li><b>today</b>
+          Retrieve data from midnight today until the current time.</li><li><b>last_7_days</b>
+          Retrieve data from midnight of 7 days ago until the current time.</li><li><b>last_30_days</b>
+          Retrieve data from midnight of 30 days ago until the current time.</li><li><b>last_90_days</b>
+          Retrieve data from midnight of 90 days ago until the current time.</li><li><b>month_to_date</b>
+          Retrieve data from midnight of the first day of the month until the current
+          time.</li><li><b>custom</b> Specify a custom time range using two additional
+          parameters: start and end.<br/>Results are provided for full days only,
+          starting from midnight. A time range of less than 24 hours gives results
+          for the full day.<br/>For example:<ul><li>A time range of 14:00 - 20:00
+          yesterday gives results for all of yesterday (midnight to midnight) - a
+          full day.</li><li>A time range of 14:00 last Tuesday to 14:00 last Wednesday
+          gives results for all of Tuesday and Wednesday - two full days.</li> <li>A
+          time range of 14:00 yesterday to 14:00 today gives results for all of yesterday
+          starting from midnight until the current time today.</li></ul></li></ul>'
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1610356734
+      - name: end
+        in: query
+        description: 'The end date in milliseconds, since 1970.<br/>Some operations
+          require the user to specify a time range. This is done via the time_range
+          parameter, which accepts the following values:<br/><ul><li><b>today</b>
+          Retrieve data from midnight today until the current time.</li><li><b>last_7_days</b>
+          Retrieve data from midnight of 7 days ago until the current time.</li><li><b>last_30_days</b>
+          Retrieve data from midnight of 30 days ago until the current time.</li><li><b>last_90_days</b>
+          Retrieve data from midnight of 90 days ago until the current time.</li><li><b>month_to_date</b>
+          Retrieve data from midnight of the first day of the month until the current
+          time.</li><li><b>custom</b> Specify a custom time range using two additional
+          parameters: start and end.<br/>Results are provided for full days only,
+          starting from midnight. A time range of less than 24 hours gives results
+          for the full day.<br/>For example:<ul><li>A time range of 14:00 - 20:00
+          yesterday gives results for all of yesterday (midnight to midnight) - a
+          full day.</li><li>A time range of 14:00 last Tuesday to 14:00 last Wednesday
+          gives results for all of Tuesday and Wednesday - two full days.</li> <li>A
+          time range of 14:00 yesterday to 14:00 today gives results for all of yesterday
+          starting from midnight until the current time today.</li></ul></li></ul>'
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1610356734
+      - name: data_type
+        in: query
+        description: 'One of the following: SRC_IP, DST_IP, SRC_PORT_PROTOCOL, DST_PORT_PROTOCOL'
+        required: true
+        schema:
+          type: string
+        example: SRC_IP
+      - name: metric_type
+        in: query
+        description: 'One of the following: BW, PPS'
+        required: true
+        schema:
+          type: string
+        example: BPS
+      - name: mitigation_type
+        in: query
+        description: 'One of the following: BLOCK, PASS'
+        required: true
+        schema:
+          type: string
+        example: BLOCK
+      - name: data_storage_region
+        in: query
+        description: The data region to use. If not specified, account's default data
+          region will be used.
+        schema:
+          type: string
+        example: EU
+      - name: objects
+        in: query
+        description: A comma separated list of items to fetch data for. e.g., 10.10.10.10,
+          2.2.2.2. If not specified, top items are automatically fetched.
+        schema:
+          type: string
+        example: 1.1.1.1
+      responses:
+        '200':
+          description: res - contains the specific error code:<br/>2 - Invalid input<br/>1
+            - Unexpected error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/AnalyticsTopGraphDataResponse'
+                - $ref: '#/components/schemas/ApiResult'
+  /api/v1/infra/top-table:
+    post:
+      tags:
+      - Traffic Statistics and Logs
+      summary: Get infrastructure protection top items (table view)
+      description: Use this operation to view the highest peak values and highest
+        average values for a protected IP range during a selected time period.
+      operationId: getInfraProtectTopTable
+      parameters:
+      - name: account_id
+        in: query
+        description: Numeric identifier of the account to operate on.<br/>If not specified,
+          operation will be performed on the account identified by the authentication
+          parameters.
+        schema:
+          type: integer
+          format: int64
+        example: 10
+      - name: ip_range
+        in: query
+        description: The customer's IP range.
+        required: true
+        schema:
+          type: string
+        example: INCAPSULA_IP
+      - name: range_type
+        in: query
+        description: 'One of the following: BGP, PROTECTED_IP, NETFLOW'
+        required: true
+        schema:
+          type: string
+        example: PROTECTED_IP
+      - name: start
+        in: query
+        description: 'The start date in milliseconds, since 1970.<br/>Some operations
+          require the user to specify a time range. This is done via the time_range
+          parameter, which accepts the following values:<br/><ul><li><b>today</b>
+          Retrieve data from midnight today until the current time.</li><li><b>last_7_days</b>
+          Retrieve data from midnight of 7 days ago until the current time.</li><li><b>last_30_days</b>
+          Retrieve data from midnight of 30 days ago until the current time.</li><li><b>last_90_days</b>
+          Retrieve data from midnight of 90 days ago until the current time.</li><li><b>month_to_date</b>
+          Retrieve data from midnight of the first day of the month until the current
+          time.</li><li><b>custom</b> Specify a custom time range using two additional
+          parameters: start and end.<br/>Results are provided for full days only,
+          starting from midnight. A time range of less than 24 hours gives results
+          for the full day.<br/>For example:<ul><li>A time range of 14:00 - 20:00
+          yesterday gives results for all of yesterday (midnight to midnight) - a
+          full day.</li><li>A time range of 14:00 last Tuesday to 14:00 last Wednesday
+          gives results for all of Tuesday and Wednesday - two full days.</li> <li>A
+          time range of 14:00 yesterday to 14:00 today gives results for all of yesterday
+          starting from midnight until the current time today.</li></ul></li></ul>'
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1610356734
+      - name: end
+        in: query
+        description: 'The end date in milliseconds, since 1970.<br/>Some operations
+          require the user to specify a time range. This is done via the time_range
+          parameter, which accepts the following values:<br/><ul><li><b>today</b>
+          Retrieve data from midnight today until the current time.</li><li><b>last_7_days</b>
+          Retrieve data from midnight of 7 days ago until the current time.</li><li><b>last_30_days</b>
+          Retrieve data from midnight of 30 days ago until the current time.</li><li><b>last_90_days</b>
+          Retrieve data from midnight of 90 days ago until the current time.</li><li><b>month_to_date</b>
+          Retrieve data from midnight of the first day of the month until the current
+          time.</li><li><b>custom</b> Specify a custom time range using two additional
+          parameters: start and end.<br/>Results are provided for full days only,
+          starting from midnight. A time range of less than 24 hours gives results
+          for the full day.<br/>For example:<ul><li>A time range of 14:00 - 20:00
+          yesterday gives results for all of yesterday (midnight to midnight) - a
+          full day.</li><li>A time range of 14:00 last Tuesday to 14:00 last Wednesday
+          gives results for all of Tuesday and Wednesday - two full days.</li> <li>A
+          time range of 14:00 yesterday to 14:00 today gives results for all of yesterday
+          starting from midnight until the current time today.</li></ul></li></ul>'
+        required: true
+        schema:
+          type: integer
+          format: int64
+        example: 1610356734
+      - name: data_type
+        in: query
+        description: 'One of the following: SRC_IP, DST_IP, SRC_PORT_PROTOCOL, DST_PORT_PROTOCOL'
+        required: true
+        schema:
+          type: string
+        example: SRC_IP
+      - name: metric_type
+        in: query
+        description: 'One of the following: BW, PPS'
+        required: true
+        schema:
+          type: string
+        example: BW
+      - name: mitigation_type
+        in: query
+        description: 'One of the following: BLOCK, PASS'
+        required: true
+        schema:
+          type: string
+        example: BLOCK
+      - name: aggregation_type
+        in: query
+        description: 'One of the following: PEAK, AVERAGE'
+        required: true
+        schema:
+          type: string
+        example: AVERAGE
+      - name: data_storage_region
+        in: query
+        description: The data region to use. If not specified, account's default data
+          region will be used.
+        schema:
+          type: string
+        example: EU
+      responses:
+        '200':
+          description: res - contains the specific error code:<br/>2 - Invalid input<br/>1
+            - Unexpected error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/AnalyticsTopTableApiResponse'
+                - $ref: '#/components/schemas/ApiResult'
+  /api/v1/infra/stats:
+    post:
+      tags:
+      - Traffic Statistics and Logs
+      summary: Get infrastructure protection statistics
+      description: Use this operation to get Infrastructure Protection event information
+        for an account.
+      operationId: getInfraStats
+      parameters:
+      - name: account_id
+        in: query
+        description: Numeric identifier of the account to operate on.<br/>If not specified,
+          operation will be performed on the account identified by the authentication
+          parameters.
+        schema:
+          type: integer
+          format: int64
+        example: 10
+      - name: ip_prefix
+        in: query
+        description: Specific Protected IP or IP range. For example, 1.1.1.0/24.
+        schema:
+          type: string
+        example: 1.1.1.0/24
+      - name: traffic
+        in: query
+        description: 'Specific traffic. One of: Total, Passed, Blocked.'
+        schema:
+          type: string
+        example: Blocked
+      - name: traffic_type
+        in: query
+        description: 'A comma separated list of specific traffic types. Any of: UDP,
+          TCP, DNS, DNS_RESPONSE, ICMP, SYN, FRAG, LARGE_SYN, NTP, NETFLOW, SSDP,
+          GENERAL. Cannot be used together with the pop parameter.'
+        schema:
+          type: string
+        example: TCP
+      - name: pop
+        in: query
+        description: 'A comma separated list of specific PoP names. For example: iad,
+          tko. Cannot be used together with the traffic_type parameter. For the list
+          of PoP codes and locations, see <a href="https://docs.imperva.com/csh?context=pops">Imperva
+          Data Centers (PoPs)</a>.'
+        schema:
+          type: string
+        example: tko
+      - name: start
+        in: query
+        description: 'The start date in milliseconds, since 1970.<br/>Some operations
+          require the user to specify a time range. This is done via the time_range
+          parameter, which accepts the following values:<br/><ul><li><b>today</b>
+          Retrieve data from midnight today until the current time.</li><li><b>last_7_days</b>
+          Retrieve data from midnight of 7 days ago until the current time.</li><li><b>last_30_days</b>
+          Retrieve data from midnight of 30 days ago until the current time.</li><li><b>last_90_days</b>
+          Retrieve data from midnight of 90 days ago until the current time.</li><li><b>month_to_date</b>
+          Retrieve data from midnight of the first day of the month until the current
+          time.</li><li><b>custom</b> Specify a custom time range using two additional
+          parameters: start and end.<br/>Results are provided for full days only,
+          starting from midnight. A time range of less than 24 hours gives results
+          for the full day.<br/>For example:<ul><li>A time range of 14:00 - 20:00
+          yesterday gives results for all of yesterday (midnight to midnight) - a
+          full day.</li><li>A time range of 14:00 last Tuesday to 14:00 last Wednesday
+          gives results for all of Tuesday and Wednesday - two full days.</li> <li>A
+          time range of 14:00 yesterday to 14:00 today gives results for all of yesterday
+          starting from midnight until the current time today.</li></ul></li></ul>'
+        schema:
+          type: integer
+          format: int64
+        example: 1610356734
+      - name: end
+        in: query
+        description: 'The end date in milliseconds, since 1970.<br/>Some operations
+          require the user to specify a time range. This is done via the time_range
+          parameter, which accepts the following values:<br/><ul><li><b>today</b>
+          Retrieve data from midnight today until the current time.</li><li><b>last_7_days</b>
+          Retrieve data from midnight of 7 days ago until the current time.</li><li><b>last_30_days</b>
+          Retrieve data from midnight of 30 days ago until the current time.</li><li><b>last_90_days</b>
+          Retrieve data from midnight of 90 days ago until the current time.</li><li><b>month_to_date</b>
+          Retrieve data from midnight of the first day of the month until the current
+          time.</li><li><b>custom</b> Specify a custom time range using two additional
+          parameters: start and end.<br/>Results are provided for full days only,
+          starting from midnight. A time range of less than 24 hours gives results
+          for the full day.<br/>For example:<ul><li>A time range of 14:00 - 20:00
+          yesterday gives results for all of yesterday (midnight to midnight) - a
+          full day.</li><li>A time range of 14:00 last Tuesday to 14:00 last Wednesday
+          gives results for all of Tuesday and Wednesday - two full days.</li> <li>A
+          time range of 14:00 yesterday to 14:00 today gives results for all of yesterday
+          starting from midnight until the current time today.</li></ul></li></ul>'
+        schema:
+          type: integer
+          format: int64
+        example: 1610356734
+      - name: directionTypes
+        in: query
+        description: The type of direction(INGRESS/EGRESS) to filter the data
+        schema:
+          type: string
+        example: INGRESS
+      - name: range_type
+        in: query
+        description: 'Can be one of the following: BGP, PROTECTED_IP, NETFLOW'
+        schema:
+          type: string
+        example: INCAPSULA_IP
+      responses:
+        '200':
+          description: res - contains the specific error code:<br/>2 - Invalid input<br/>3015
+            - Internal error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/InfraStatsApiResponse'
+                - $ref: '#/components/schemas/ApiResult'
+  /api/stats/v1:
+    post:
+      tags:
+      - Traffic Statistics and Logs
+      summary: Get statistics
+      description: Get site statistics for one or more sites. This operation may return
+        multiple statistics, as specified in the stats parameter.
+      operationId: getStats
+      parameters:
+      - name: account_id
+        in: query
+        description: 'Numeric identifier of the account to fetch data for.<br/>Note:
+          You must specify either account_id or site_id.'
+        schema:
+          type: string
+        example: 10
+      - name: time_range
+        in: query
+        description: 'Time range to fetch data for.<br/>Some operations require the
+          user to specify a time range. This is done via the time_range parameter,
+          which accepts the following values:<br/><ul><li><b>today</b> Retrieve data
+          from midnight today until the current time.</li><li><b>last_7_days</b> Retrieve
+          data from midnight of 7 days ago until the current time.</li><li><b>last_30_days</b>
+          Retrieve data from midnight of 30 days ago until the current time.</li><li><b>last_90_days</b>
+          Retrieve data from midnight of 90 days ago until the current time.</li><li><b>month_to_date</b>
+          Retrieve data from midnight of the first day of the month until the current
+          time.</li><li><b>custom</b> Specify a custom time range using two additional
+          parameters: start and end.<br/>Results are provided for full days only,
+          starting from midnight. A time range of less than 24 hours gives results
+          for the full day.<br/>For example:<ul><li>A time range of 14:00 - 20:00
+          yesterday gives results for all of yesterday (midnight to midnight) - a
+          full day.</li><li>A time range of 14:00 last Tuesday to 14:00 last Wednesday
+          gives results for all of Tuesday and Wednesday - two full days.</li> <li>A
+          time range of 14:00 yesterday to 14:00 today gives results for all of yesterday
+          starting from midnight until the current time today.</li></ul></li></ul>'
+        required: true
+        schema:
+          type: string
+        example: last_7_days
+      - name: start
+        in: query
+        description: Start date in milliseconds since January 1, 1970 (midnight UTC/GMT).
+          Used together with the time_range parameter to specify a custom time range.
+        schema:
+          type: string
+        example: 1610356734
+      - name: end
+        in: query
+        description: End date in milliseconds since January 1, 1970 (midnight UTC/GMT).
+          Used together with the time_range parameter to specify a custom time range.
+        schema:
+          type: string
+        example: 1610356734
+      - name: site_id
+        in: query
+        description: 'Numeric identifier of the site to fetch data for. Multiple sites
+          can be specified in a comma separated list. For example: 123,124,125.<br/>Note:
+          You must specify either account_id or site_id.'
+        schema:
+          type: string
+        example: 123
+      - name: stats
+        in: query
+        description: Statistics to fetch, as specified in the table below. Multiple
+          statistics can be specified in a comma separated list.<br/>Values for the
+          stats parameters:<br/><ul><li><b>visits_timeseries</b> Number of sessions
+          by type (Humans/Bots) over time.</li><li><b>hits_timeseries</b> Number of
+          requests by type (Humans/Bots/Blocked) over time and per second.</li><li><b>bandwidth_timeseries</b>
+          Amount of bytes (bandwidth) and bits per second (throughput) transferred
+          via the Imperva network from clients to proxy servers and vice-versa over
+          time.</li><li><b>requests_geo_dist_summary</b> Total number of requests
+          routed via the Imperva network by data center location.</li><li><b>visits_dist_summary</b>
+          Total number of sessions per client application and country.</li><li><b>caching</b>
+          Total number of requests and bytes that were cached by the Imperva network.</li><li><b>caching_timeseries</b>
+          Number of requests and bytes that were cached by the Imperva network, with
+          one day resolution, with info regarding the caching mode (standard or advanced).</li><li><b>threats</b>
+          Total number of threats by type with additional information regarding the
+          security rules configuration.</li><li><b>incap_rules</b> List of security
+          rules with total number of reported incidents for each rule.</li><li><b>incap_rules_timeseries</b>
+          List of security rules with a series of reported incidents for each rule
+          with the specified granularity.</li><li><b>delivery_rules</b> List of delivery
+          rules with total number of hits for each rule.</li><li><b>delivery_rules_timeseries</b>
+          List of delivery rules with a series of hits for each rule with the specified
+          granularity.</li></ul>
+        required: true
+        schema:
+          type: string
+        example: threats
+      - name: granularity
+        in: query
+        description: 'Time interval in milliseconds between data points for time series
+          statistics. (See the timeseries values in the table below.)<br/>The default
+          granularity depends on the specified time range, as follows:<br/><ul><li>Time
+          range of less than 24 hours: Default granularity is 7200000 (2 hours).</li><li>Time
+          range of between 24 hours and 30 days: Default granularity is 86400000 (1
+          day).</li><li>Time range of more than 30 days: Default granularity is 259200000
+          (3 days).</li></ul>The response includes one result for each interval. For
+          example, if you specify a time range value of last_7_days, the default granularity
+          is 1 day, and the response will return 7 results.<br/>The response timestamps
+          are in milliseconds since January 1, 1970 (midnight UTC/GMT)<br/>Minimum
+          granularity is 5 minutes (300000).<br/>Note: Time series statistics are
+          presented oldest to newest.<br/>'
+        schema:
+          type: string
+        example: 7200000
+      responses:
+        '200':
+          description: res - contains the specific error code:<br/> 13001 (Timerange
+            invalid), 13002 (Granularity invalid)
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ApiResultSiteStats'
+                - $ref: '#/components/schemas/ApiResult'
+  /api/visits/v1:
+    post:
+      tags:
+      - Traffic Statistics and Logs
+      summary: Get visits
+      description: Use this operation to get a log of recent visits to a website.
+      operationId: getVisits
+      parameters:
+      - name: site_id
+        in: query
+        description: Numeric identifier of the site to operate on.
+        required: true
+        schema:
+          type: string
+        example: 10
+      - name: time_range
+        in: query
+        description: 'Time range to fetch data for. Default is last_7_days.<br/>Some
+          operations require the user to specify a time range. This is done via the
+          time_range parameter, which accepts the following values:<br/><ul><li><b>today</b>
+          Retrieve data from midnight today until the current time.</li><li><b>last_7_days</b>
+          Retrieve data from midnight of 7 days ago until the current time.</li><li><b>last_30_days</b>
+          Retrieve data from midnight of 30 days ago until the current time.</li><li><b>last_90_days</b>
+          Retrieve data from midnight of 90 days ago until the current time.</li><li><b>month_to_date</b>
+          Retrieve data from midnight of the first day of the month until the current
+          time.</li><li><b>custom</b> Specify a custom time range using two additional
+          parameters: start and end.<br/>Results are provided for full days only,
+          starting from midnight. A time range of less than 24 hours gives results
+          for the full day.<br/>For example:<ul><li>A time range of 14:00 - 20:00
+          yesterday gives results for all of yesterday (midnight to midnight) - a
+          full day.</li><li>A time range of 14:00 last Tuesday to 14:00 last Wednesday
+          gives results for all of Tuesday and Wednesday - two full days.</li> <li>A
+          time range of 14:00 yesterday to 14:00 today gives results for all of yesterday
+          starting from midnight until the current time today.</li></ul></li></ul>'
+        schema:
+          type: string
+        example: last_7_days
+      - name: start
+        in: query
+        description: 'Start date in milliseconds since 1970.<br/>Some operations require
+          the user to specify a time range. This is done via the time_range parameter,
+          which accepts the following values:<br/><ul><li><b>today</b> Retrieve data
+          from midnight today until the current time.</li><li><b>last_7_days</b> Retrieve
+          data from midnight of 7 days ago until the current time.</li><li><b>last_30_days</b>
+          Retrieve data from midnight of 30 days ago until the current time.</li><li><b>last_90_days</b>
+          Retrieve data from midnight of 90 days ago until the current time.</li><li><b>month_to_date</b>
+          Retrieve data from midnight of the first day of the month until the current
+          time.</li><li><b>custom</b> Specify a custom time range using two additional
+          parameters: start and end.<br/>Results are provided for full days only,
+          starting from midnight. A time range of less than 24 hours gives results
+          for the full day.<br/>For example:<ul><li>A time range of 14:00 - 20:00
+          yesterday gives results for all of yesterday (midnight to midnight) - a
+          full day.</li><li>A time range of 14:00 last Tuesday to 14:00 last Wednesday
+          gives results for all of Tuesday and Wednesday - two full days.</li> <li>A
+          time range of 14:00 yesterday to 14:00 today gives results for all of yesterday
+          starting from midnight until the current time today.</li></ul></li></ul>'
+        schema:
+          type: string
+        example: 1610356734
+      - name: end
+        in: query
+        description: 'End date in milliseconds since 1970.<br/>Some operations require
+          the user to specify a time range. This is done via the time_range parameter,
+          which accepts the following values:<br/><ul><li><b>today</b> Retrieve data
+          from midnight today until the current time.</li><li><b>last_7_days</b> Retrieve
+          data from midnight of 7 days ago until the current time.</li><li><b>last_30_days</b>
+          Retrieve data from midnight of 30 days ago until the current time.</li><li><b>last_90_days</b>
+          Retrieve data from midnight of 90 days ago until the current time.</li><li><b>month_to_date</b>
+          Retrieve data from midnight of the first day of the month until the current
+          time.</li><li><b>custom</b> Specify a custom time range using two additional
+          parameters: start and end.<br/>Results are provided for full days only,
+          starting from midnight. A time range of less than 24 hours gives results
+          for the full day.<br/>For example:<ul><li>A time range of 14:00 - 20:00
+          yesterday gives results for all of yesterday (midnight to midnight) - a
+          full day.</li><li>A time range of 14:00 last Tuesday to 14:00 last Wednesday
+          gives results for all of Tuesday and Wednesday - two full days.</li> <li>A
+          time range of 14:00 yesterday to 14:00 today gives results for all of yesterday
+          starting from midnight until the current time today.</li></ul></li></ul>'
+        schema:
+          type: string
+        example: 1610356734
+      - name: page_size
+        in: query
+        description: The number of objects to return in the response. Defaults to
+          10. Maximum is 100.
+        schema:
+          type: string
+        example: 15
+      - name: page_num
+        in: query
+        description: The page to return starting from 0. Default to 0.
+        schema:
+          type: string
+        example: 1
+      - name: security
+        in: query
+        description: 'Filter the sessions that were handled according to the security-related
+          specifications. Multiple values are supported, e.g.: "api.threats.sql_injection,
+          api.acl.blacklisted_ips".'
+        schema:
+          type: string
+        example: api.threats.sql_injection
+      - name: country
+        in: query
+        description: Filter the sessions coming from the specified country.
+        schema:
+          type: string
+        example: SE
+      - name: ip
+        in: query
+        description: Filter the sessions coming from the specified IP.
+        schema:
+          type: string
+        example: 1.2.3.4
+      - name: visit_id
+        in: query
+        description: Comma separated list of visit IDs to load.
+        schema:
+          type: string
+        example: 133077760038625800
+      - name: list_live_visits
+        in: query
+        description: 'Whether or not to list visits that did not end and that may
+          still be updated.<br/>Possible values: true, false<br/>Default: true'
+        schema:
+          type: string
+        example: true
+      - name: use_previous_region
+        in: query
+        description: 'Whether or not to list visits from old region data. Valid only
+          if a data region was changed in the last 90 days. One of: true | false.
+          Default: false'
+        schema:
+          type: string
+        example: true
+      responses:
+        '200':
+          description: res - contains the specific error code:<br/>1 - Unexpected
+            error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ApiResultSessions'
+                - $ref: '#/components/schemas/ApiResult'

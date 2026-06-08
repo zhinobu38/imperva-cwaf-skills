@@ -1,0 +1,596 @@
+swagger: "2.0"
+info:
+  title: "Imperva API2 Cache Settings"
+  description: "Define content caching policies and caching rules for your websites. For full feature documentation, see [Cache Settings](https://docs.imperva.com/bundle/cloud-application-security/page/settings/caching-settings.htm)."
+  version: "2.2.2"
+  termsOfService: "https://www.imperva.com/legal/terms-of-use/"
+host: "my.imperva.com"
+basePath: /api/prov/v2
+schemes:
+  - "https"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+securityDefinitions:
+  api_id:
+    type: "apiKey"
+    in: "header"
+    name: "x-API-Id"
+  api_key:
+    type: "apiKey"
+    in: "header"
+    name: "x-API-Key"
+security:
+  - api_id: []
+    api_key: []
+
+tags:
+  - name: General Cache Settings
+    description: 'Define content caching policies for your websites.'
+
+  - name: Cache Rules
+    description: Define exceptions to the overall caching rules to specify when and if specific resources should be cached.
+
+paths:
+  /sites/{siteId}/settings/cache:
+    get:
+      tags:
+        - General Cache Settings
+      summary: Get cache settings
+      description: Retrieves cache settings for a given website according to site ID.
+      parameters:
+        - name: "siteId"
+          in: "path"
+          description: Numeric identifier of the site to operate on
+          required: true
+          type: "integer"
+        - name: "sections"
+          in: "query"
+          description: "The sections of configurations to get, separated by comma. If not passed, all sections will be returned."
+          type: "string"
+          enum:
+            - mode
+            - key
+            - response
+            - ttl
+            - client_side
+          uniqueItems: true
+          required: false
+      responses:
+        '200':
+          description: OK. An array of cache settings is returned.
+          schema:
+            $ref: "#/definitions/CacheSettingsObject"
+        '401':
+          description: Unauthorized siteId
+        '406':
+          description: Invalid Input
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Change cache settings (partial update)
+      description: Modifies cache settings for a given website according to site ID. Only specified fields are modified.
+      parameters:
+        - name: "siteId"
+          in: "path"
+          description: Numeric identifier of the site to operate on
+          required: true
+          type: "integer"
+        - name: "body"
+          in: "body"
+          description: The cache settings to use
+          required: true
+          schema:
+            $ref: "#/definitions/CacheSettingsObject"
+        - name: "Force-Risky-Operation"
+          in: "header"
+          description: Some operations, while allowed, are risky and may potentially expose your site to security risks.
+            Doing these operations requires that you pass the header 'Force-Risky-Operation:true' with your request. For more information please
+            refer to <a href="http://docs.imperva.com">the documentation</a>.
+          required: false
+          type: "boolean"
+      responses:
+        '200':
+          description: OK. The cache settings that were updated are returned.
+          schema:
+            $ref: "#/definitions/CacheSettingsObject"
+        '401':
+          description: Unauthorized siteId
+        '406':
+          description: Invalid Input
+        '500':
+          description: Internal server error
+      tags:
+        - General Cache Settings
+
+    delete:
+      summary: Restore default cache settings
+      description: Restore default cache settings
+      parameters:
+        - name: "siteId"
+          in: "path"
+          description: Numeric identifier of the site to operate on
+          required: true
+          type: "integer"
+      responses:
+        '200':
+          description: OK. The cache settings restored to default
+        '401':
+          description: Unauthorized siteId
+        '406':
+          description: Invalid Input
+        '500':
+          description: Internal server error
+      tags:
+        - General Cache Settings
+
+  /sites/{siteId}/cache:
+    delete:
+      summary: Purge a site's cache
+      parameters:
+        - name: "siteId"
+          in: "path"
+          description: Numeric identifier of the site to operate on
+          required: true
+          type: "integer"
+        - name: "url_pattern"
+          in: "query"
+          type: "string"
+          required: false
+          description: "The url pattern of the resource to be purged from the cache.  For example:<br/>
+                        (1) Resource_name - resources that contain Resource_name will be purged,<br/>
+                        (2) ^Resource_name - resources that start with Resource_name will be purged, <br/>
+                        (3) Resource_name$ - resources that end with Resource_name will be purged"
+        - name: "tags"
+          in: "query"
+          type: "string"
+          required: false
+          description: "A comma separated list of tag names to be purged"
+
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized siteId
+        '406':
+          description: Invalid Input
+        '500':
+          description: Internal server error
+      tags:
+        - General Cache Settings
+
+  /sites/{siteId}/cache/xray:
+    get:
+      summary: Refresh and get a site's XRAY access URL.
+      description: Retrieves the XRAY Access URL which enables you to view specialized response headers for a single browser session.
+      parameters:
+        - name: "siteId"
+          in: "path"
+          description: Numeric identifier of the site to operate on
+          required: true
+          type: "integer"
+
+      responses:
+        '200':
+          description: OK. The site's XRAY access URL is returned.
+          schema:
+            type: "string"
+            example: "http://example.com/_Incapsula_Resource?SW_XRAY="
+        '401':
+          description: Unauthorized siteId
+        '406':
+          description: Invalid Input
+        '500':
+          description: Internal server error
+      tags:
+        - General Cache Settings
+
+  /sites/{siteId}/settings/cache/rules:
+
+    post:
+      summary: Create cache rules
+      description: Create custom cache rules to override general cache settings.
+      parameters:
+        - name: "siteId"
+          in: "path"
+          description: Numeric identifier of the site to operate on
+          required: true
+          type: "integer"
+        - name: "rules"
+          in: "body"
+          description: "The rule to create."
+          required: true
+          schema:
+            $ref: "#/definitions/CacheRule"
+      responses:
+        '200':
+          description: OK. The created cache rule id is returned.
+        '401':
+          description: Unauthorized siteId
+        '404':
+          description: Resource not found
+        '406':
+          description: Invalid Input
+        '500':
+          description: Internal server error
+      tags:
+        - Cache Rules
+
+    get:
+      summary: List all cache rules for specific site
+      description: List all cache rules for specific site
+      parameters:
+        - name: "siteId"
+          in: "path"
+          description: Numeric identifier of the site to operate on
+          required: true
+          type: "integer"
+      responses:
+        '200':
+          description: OK. All site cache rules are returned.
+          schema:
+            $ref: "#/definitions/CacheRule"
+        '401':
+          description: Unauthorized siteId
+        '404':
+          description: Resource not found
+      tags:
+        - Cache Rules
+
+  /sites/{siteId}/settings/cache/rules/{ruleId}:
+    get:
+      summary: Retrieve cache rule details
+      description: Retrieves details of a given cache rule according to the rule ID.
+      parameters:
+        - name: "siteId"
+          in: "path"
+          description: Numeric identifier of the site to operate on
+          required: true
+          type: "integer"
+        - name: "ruleId"
+          in: "path"
+          description: Numeric identifier of the rule to operate on
+          required: true
+          type: "integer"
+      responses:
+        '200':
+          description: OK. The requested rule is returned.
+          schema:
+            $ref: "#/definitions/CacheRule"
+        '401':
+          description: Unauthorized siteId
+        '404':
+          description: Resource not found
+        '406':
+          description: Invalid Input
+      tags:
+        - Cache Rules
+
+
+    put:
+      summary: Update cache rule (partial update)
+      description: Updates a given cache rule according to the rule ID. Only specified fields are modified.
+      parameters:
+        - name: "siteId"
+          in: "path"
+          description: Numeric identifier of the site to operate on
+          required: true
+          type: "integer"
+        - name: "ruleId"
+          in: "path"
+          description: Numeric identifier of the rule to operate on
+          required: true
+          type: "integer"
+        - name: "rule"
+          in: "body"
+          description: "The rule to update"
+          required: true
+          schema:
+            $ref: "#/definitions/CacheRule"
+      responses:
+        '200':
+          description: OK.
+        '401':
+          description: Unauthorized siteId
+        '404':
+          description: Resource not found
+        '406':
+          description: Invalid input
+        '500':
+          description: Internal server error
+      tags:
+        - Cache Rules
+
+    delete:
+      summary: Delete cache rule
+      description: Deletes a given cache rule according to the rule ID.
+      parameters:
+        - name: "siteId"
+          in: "path"
+          description: Numeric identifier of the site to operate on
+          required: true
+          type: "integer"
+        - name: "ruleId"
+          in: "path"
+          description: Numeric identifier of the rule to operate on
+          required: true
+          type: "integer"
+      responses:
+        '200':
+          description: OK.
+        '401':
+          description: Unauthorized siteId
+        '400':
+          description: Resource not found
+        '405':
+          description: Rule can not be deleted
+        '406':
+          description: Invalid Input
+      tags:
+        - Cache Rules
+
+  #####################
+  ### DEFINITIONS #####
+  #####################
+definitions:
+  CacheRule:
+    type: "object"
+    required: [name, action, enabled, filter]
+    properties:
+      rule_id:
+        type: "integer"
+        description: Rule id
+      name:
+        type: "string"
+        description: Rule name
+      action:
+        type: "string"
+        enum:
+          - HTTP_CACHE_MAKE_STATIC
+          - HTTP_CACHE_CLIENT_CACHE_CTL
+          - HTTP_CACHE_FORCE_UNCACHEABLE
+          - HTTP_CACHE_ADD_TAG
+          - HTTP_CACHE_ENABLE_ASYNC_VALIDATION
+          - HTTP_CACHE_DIFFERENTIATE_SSL
+          - HTTP_CACHE_DIFFERENTIATE_BY_HEADER
+          - HTTP_CACHE_DIFFERENTIATE_BY_COOKIE
+          - HTTP_CACHE_DIFFERENTIATE_BY_GEO
+          - HTTP_CACHE_IGNORE_PARAMS
+          - HTTP_CACHE_ENRICH_CACHE_KEY
+          - HTTP_CACHE_FORCE_VALIDATION
+          - HTTP_CACHE_IGNORE_AUTH_HEADER
+        description: "
+          Define the action you want to take for every request that matches the rule. <br/>
+          * HTTP_CACHE_MAKE_STATIC - Cache Resource. Always cache the resource. <br/>
+          * HTTP_CACHE_CLIENT_CACHE_CTL - Cache Resource on Client. Cache the resource on the client. <br/>
+          * HTTP_CACHE_FORCE_UNCACHEABLE - Don't Cache Resource. Never cache the resource. <br/>
+          * HTTP_CACHE_ADD_TAG - Create Tag. Tag the resources that match the rule conditions. This enables you to subsequently purge those
+                                resources according to the tag name. <br/>
+          * HTTP_CACHE_ENABLE_ASYNC_VALIDATION - When Imperva can't connect to the origin server, serve stale content instead of displaying an error to end users.
+          * HTTP_CACHE_DIFFERENTIATE_SSL - Differentiate Cache Key by HTTP/HTTPS Scheme. A resource is cached separately depending on whether it is accessed
+                                          over HTTP or HTTPS. <br/>
+          * HTTP_CACHE_DIFFERENTIATE_BY_HEADER - Differentiate Cache Key by Header. <br/>
+          * HTTP_CACHE_DIFFERENTIATE_BY_COOKIE - Differentiate Cache Key by Cookie. <br/>
+          * HTTP_CACHE_DIFFERENTIATE_BY_GEO - Differentiate Cache Key by Geolocation. Resources are cached separately based on geolocation of the request. <br/>
+          * HTTP_CACHE_IGNORE_PARAMS  - Ignore Parameters in Cache Key. If the parameters do not affect which resource is returned, you can choose to ignore them. <br/>
+          * HTTP_CACHE_ENRICH_CACHE_KEY  - Enrich Cache Key. Add text to the cache key as a suffix. <br/>
+          * HTTP_CACHE_FORCE_VALIDATION  - Force User Authentication. When this option is selected, credentials must be validated with the origin to confirm
+                                           that the request comes from an authorized client. <br/>
+          * HTTP_CACHE_IGNORE_AUTH_HEADER  - Cache Authenticated Resources. Selecting this option returns cached content if available without authenticating the client. <br/>
+        "
+      enabled:
+        type: "boolean"
+        description: "'true' if the rule is enabled."
+      filter:
+        type: "string"
+        description: The filter defines the conditions that trigger the rule action, if left empty, the rule is always run.
+      ttl:
+        type: "integer"
+        description: "TTL in seconds. Relevant for HTTP_CACHE_MAKE_STATIC and HTTP_CACHE_CLIENT_CACHE_CTL actions."
+      ignored_params:
+        description: "Parameters to ignore. Relevant for HTTP_CACHE_IGNORE_PARAMS action. An array containing '*' means all parameters are ignored."
+        type: "array"
+        items:
+          type: "string"
+      text:
+        type: "string"
+        description: "Tag name if action is HTTP_CACHE_ADD_TAG action, text to be added to the cache key as suffix if action is HTTP_CACHE_ENRICH_CACHE_KEY."
+      disabled_by_cache_mode:
+        type: "boolean"
+        description: "true if cache mode is 'No Caching'."
+      differentiate_by_value:
+        type: "string"
+        description: "Value to differentiate resources by. Relevant for HTTP_CACHE_DIFFERENTIATE_BY_HEADER, HTTP_CACHE_DIFFERENTIATE_BY_COOKIE and HTTP_CACHE_DIFFERENTIATE_BY_GEO actions"
+    example:
+      {
+        "name": "rule name",
+        "action": "HTTP_CACHE_FORCE_UNCACHEABLE",
+        "enabled": true,
+        "filter": "isMobile == Yes",
+        "ttl": 3600
+      }
+
+  CacheSettingsObject:
+    type: "object"
+    description: 'The overall caching policy configuration for your website.'
+    properties:
+      mode:
+        type: "object"
+        required: [level]
+        properties:
+          level:
+            type: "string"
+            enum:
+              - disabled
+              - custom_cache_rules_only
+              - standard
+              - smart
+              - all_resources
+            description: "
+              Caching level. <br/>
+              * disabled - Turn off site caching entirely, including user-defined custom cache rules.  <br/>
+              * custom_cache_rules_only - Disable caching, unless specified otherwise by a custom cache rule. <br/>
+              * standard - Cache according to standard HTTP headers.  <br/>
+              * smart - Cache according to standard HTTP headers as well as profile dynamic pages to identify and cache static content that was not marked as static.  <br/>
+                                    In addition to content that was marked by the site's developer / web server as static using standard HTTP headers,
+                                    Imperva also profiles other resources to identify and cache static content that was not marked as such. <br/>
+              * all_resources - Cache every resource on the web server for the specified amount of time. <br/>
+                                All site content is cached.
+              "
+          https:
+            type: "string"
+            enum:
+              - disabled
+              - dont_include_html
+              - include_html
+              - include_all_resources
+            description: "
+              The resources that are cached over HTTPS, the general level applies. <br/>
+              * disabled - No resources are cached over HTTPS. <br/>
+              * dont_include_html - Only images, css files, js files, and resources defined with the 'Cache-Control: public' header may be cached over HTTPS. <br/>
+              * include_html - Same as dont_include_html, also HTML files may be cached over HTTPS. <br/>
+              * include_all_resources - All resources may be cached over HTTPS. <br/>
+            "
+          time:
+            description: "The time, in seconds, that you set for this option determines how often the cache is refreshed. Relevant for the 'include_html' and
+                          'include_all_resources' levels only"
+            type: "integer"
+      key:
+        type: "object"
+        properties:
+          unite_naked_full_cache:
+            description: "Use the Same Cache for Full and Naked Domains. For example, use the same cached resource for www.example.com/a and example.com/a."
+            type: "boolean"
+          comply_vary:
+            description: "Comply with Vary. Cache resources in accordance with the Vary response header."
+            type: "boolean"
+      response:
+        type: "object"
+        properties:
+          stale_content:
+            description: "Serve stale content. When Imperva can't connect to the origin server, serve stale content instead of displaying an error to end users."
+            type: "object"
+            required: [mode]
+            properties:
+              mode:
+                type: "string"
+                enum:
+                  - disabled
+                  - adaptive
+                  - custom
+                description: "
+                  The working mode for serving stale content. <br/>
+                  * disabled - Disable serving of stale content. <br/>
+                  * adaptive - Stale content is served for a duration of 2 to 24 hours based on the time passed since the resource was last updated. <br/>
+                  * custom - Serve stale content for the specified amount of time. <br/>
+                "
+              time:
+                type: "integer"
+                description: "The time, in seconds, to serve stale content for when working in 'custom' work mode"
+          cache_shield:
+            description: "Adds an intermediate cache between other Imperva PoPs and your origin servers to protect your servers from redundant requests."
+            type: "boolean"
+          cache_response_header:
+            type: "object"
+            required: [mode]
+            properties:
+              mode:
+                type: "string"
+                enum:
+                  - disabled
+                  - all
+                  - custom
+                description: "
+                   The working mode for caching response headers. <br/>
+                   * all -  Cache all headers in responses. <br/>
+                   * custom - Specify which response headers should be cached along with the resource. <br/>
+                 "
+              headers:
+                description: "
+                  An array of strings representing the response headers to be cached when working in 'custom' mode. If empty, no response headers are cached.<br/>
+                  For example: [Access-Control-Allow-Origin,Access-Control-Allow-Methods].  <br/>
+                "
+                type: "array"
+                items:
+                  type: "string"
+          tag_response_header:
+            type: "string"
+            description: "Tag the response according to the value of this header. Specify which origin response header contains the cache tags in your resources."
+          cache_empty_responses:
+            description: "Cache responses that don’t have a message body."
+            type: "boolean"
+          cache_300x:
+            description: "When this option is checked Imperva will cache 301, 302, 303, 307, and 308 redirect response headers containing the target URI."
+            type: "boolean"
+          cache_http_10_responses:
+            description: "Cache HTTP 1.0 type responses that don’t include the Content-Length header or chunking."
+            type: "boolean"
+          cache_404:
+            type: "object"
+            required: [enabled]
+            properties:
+              enabled:
+                type: "boolean"
+              time:
+                type: "integer"
+      ttl:
+        type: "object"
+        properties:
+          use_shortest_caching:
+            description: "Use shortest caching duration in case of conflicts. By default, the longest duration is used in case of conflict between caching
+                          rules or modes. When this option is checked, Imperva uses the shortest duration in case of conflict."
+            type: "boolean"
+          prefer_last_modified:
+            description: "Prefer 'Last Modified' over eTag. When this option is checked, Imperva prefers using Last Modified values (if available) over eTag
+                          values (recommended on multi-server setups)."
+            type: "boolean"
+      client_side:
+        type: "object"
+        properties:
+          enable_client_side_caching:
+            description: "Cache content on client browsers or applications. When not enabled, content is cached only on the Imperva proxies."
+            type: "boolean"
+          comply_no_cache:
+            description: "Comply with No-Cache and Max-Age directives in client requests. By default, these cache directives are ignored.
+                          Resources are dynamically profiled and re-configured to optimize performance."
+            type: "boolean"
+          send_age_header:
+            description: "Send Cache-Control: max-age and Age headers."
+            type: "boolean"
+    example:
+      {
+        mode: {
+          level: "standard",
+          https: "include_html",
+          time: 360
+        },
+        key: {
+          unite_naked_full_cache: true,
+          comply_vary: false
+        },
+        response: {
+          stale_content: {
+            mode: "adaptive"
+          },
+          cache_shield: true,
+          cache_response_header: {
+            mode: "custom",
+            headers: ["Access-Control-Allow-Origin", "Access-Control-Allow-Methods"]
+          },
+          tag_response_header: "Some-Header-Name",
+          cache_empty_responses: true,
+          cache_300x: true,
+          cache_http_10_responses: false
+        },
+        ttl: {
+          use_shortest_caching: true,
+          prefer_last_modified: false,
+        },
+        client_side: {
+          enable_client_side_caching: true,
+          comply_no_cache: false,
+          send_age_header: false
+        }
+      }

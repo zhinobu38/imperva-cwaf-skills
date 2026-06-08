@@ -1,0 +1,105 @@
+swagger: '2.0'
+info:
+  title: Imperva API2 WAF
+  description: To better align with REST API standards and best practices, Imperva
+    is gradually rolling out a new version of APIs, available for your use in managing
+    your Cloud Application Security account and websites. These APIs provide either
+    an alternative to existing APIs, or provide APIs with new functionality. For more
+    details about Imperva APIs, see <a href=https://docs.imperva.com/bundle/api-docs/page/api/api-overview.htm>Imperva
+    API Documentation</a>.
+  version: 2.0.0
+host: my.imperva.com
+basePath: /api/prov/v2
+schemes:
+- https
+consumes:
+- application/json
+produces:
+- application/json
+securityDefinitions:
+  api_id:
+    type: apiKey
+    in: header
+    name: x-API-Id
+  api_key:
+    type: apiKey
+    in: header
+    name: x-API-Key
+security:
+- api_id: []
+  api_key: []
+paths:
+  /sites/{extSiteId}/customCertificate:
+    put:
+      summary: Upload custom certificate
+      description: 'Upload your own SSL certificate to Imperva for a specified website.
+        This certificate is presented to SNI-supporting clients only.<br> Supported
+        file formats: PFX, PEM, CER. The certificate and private key must be in Base64
+        format.'
+      produces:
+      - application/json
+      parameters:
+      - name: extSiteId
+        in: path
+        description: The Imperva ID of your website.
+        required: true
+        type: integer
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/customCertificateBody'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized siteId
+        500:
+          description: Internal Server Error
+      tags:
+      - Custom Certificate
+    delete:
+      summary: Remove custom certificate
+      description: Remove the custom certificate uploaded to Imperva for a specified
+        website.
+      produces:
+      - application/json
+      parameters:
+      - name: extSiteId
+        in: path
+        description: The Imperva ID of your website.
+        required: true
+        type: integer
+      - name: auth_type
+        in: query
+        type: string
+        required: true
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+      tags:
+      - Custom Certificate
+definitions:
+  customCertificateBody:
+    type: object
+    properties:
+      certificate:
+        type: string
+        description: The certificate content in base64 format.
+        example: LS0tLS1CRUdJTiBDRVJU...WS1BFZU1LbUk9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0=
+      private_key:
+        type: string
+        description: The private key of the certificate in base64 format.
+        example: LS0tLS1CRUdJTiBQUklW...VRFIFhSXp0bUcvN3RSTkJZY3NFMnpXZmtFZ0VOSzUyajNvcTYKTzVnNjhoTm1PQTk1dlpaclRTekJYa2M9Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0K
+      passphrase:
+        type: string
+        description: The passphrase used to protect your SSL certificate.
+        example: '1234'
+      auth_type:
+        type: string
+        description: The authentication type of the certificate (RSA or ECC)
+        example: RSA or ECC

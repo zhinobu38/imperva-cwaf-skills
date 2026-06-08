@@ -1,0 +1,482 @@
+swagger: '2.0'
+info:
+  title: Imperva API2 WAF
+  description: To better align with REST API standards and best practices, Imperva
+    is gradually rolling out a new version of APIs, available for your use in managing
+    your Cloud Application Security account and websites. These APIs provide either
+    an alternative to existing APIs, or provide APIs with new functionality. For more
+    details about Imperva APIs, see <a href=https://docs.imperva.com/bundle/api-docs/page/api/api-overview.htm>Imperva
+    API Documentation</a>.
+  version: 2.0.0
+host: my.imperva.com
+basePath: /api/prov/v2
+schemes:
+- https
+consumes:
+- application/json
+produces:
+- application/json
+securityDefinitions:
+  api_id:
+    type: apiKey
+    in: header
+    name: x-API-Id
+  api_key:
+    type: apiKey
+    in: header
+    name: x-API-Key
+security:
+- api_id: []
+  api_key: []
+paths:
+  /sites/{siteId}/rules:
+    post:
+      summary: Create rule
+      description: Create a custom rule. For full feature documentation, see [Rules](https://docs.imperva.com/bundle/cloud-application-security/page/rules/rules.htm).
+      parameters:
+      - name: siteId
+        in: path
+        description: Site id
+        required: true
+        type: integer
+      - name: rule
+        in: body
+        description: The rule to create
+        required: true
+        schema:
+          $ref: '#/definitions/Rule'
+      responses:
+        '200':
+          description: OK. The rule is returned.
+          schema:
+            $ref: '#/definitions/Rule'
+        '401':
+          description: Unauthorized siteId
+          schema:
+            $ref: '#/definitions/ApiResult'
+        '404':
+          description: Resource not found
+          schema:
+            $ref: '#/definitions/ApiResult'
+        '406':
+          description: Invalid Input
+          schema:
+            $ref: '#/definitions/ApiResult'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/ApiResult'
+      tags:
+      - Rules
+  /sites/{siteId}/rules/{ruleId}:
+    put:
+      summary: Overwrite rule - must contain valid rule id
+      description: Overwrite rule
+      parameters:
+      - name: siteId
+        in: path
+        description: Numeric identifier of the site to operate on
+        required: true
+        type: integer
+      - name: ruleId
+        in: path
+        description: Numeric identifier of the rule to operate on
+        required: true
+        type: integer
+      - name: rule
+        in: body
+        description: The rule to overwrite
+        required: true
+        schema:
+          $ref: '#/definitions/Rule'
+      responses:
+        '200':
+          description: OK. The rule is returned.
+          schema:
+            $ref: '#/definitions/Rule'
+        '401':
+          description: Unauthorized siteId
+          schema:
+            $ref: '#/definitions/ApiResult'
+        '404':
+          description: Resource not found
+          schema:
+            $ref: '#/definitions/ApiResult'
+        '406':
+          description: Invalid Input
+          schema:
+            $ref: '#/definitions/ApiResult'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/ApiResult'
+      tags:
+      - Rules
+    get:
+      summary: Read rule - must contain valid rule id
+      description: Read rule
+      parameters:
+      - name: siteId
+        in: path
+        description: Numeric identifier of the site to operate on
+        required: true
+        type: integer
+      - name: ruleId
+        in: path
+        description: Numeric identifier of the rule to operate on
+        required: true
+        type: integer
+      responses:
+        '200':
+          description: OK. The rule is returned.
+          schema:
+            $ref: '#/definitions/Rule'
+        '401':
+          description: Unauthorized siteId
+          schema:
+            $ref: '#/definitions/ApiResult'
+        '404':
+          description: Resource not found
+          schema:
+            $ref: '#/definitions/ApiResult'
+        '406':
+          description: Invalid Input
+          schema:
+            $ref: '#/definitions/ApiResult'
+      tags:
+      - Rules
+    post:
+      summary: Update rule - must contain valid rule id
+      description: Update rule
+      parameters:
+      - name: siteId
+        in: path
+        description: Numeric identifier of the site to operate on
+        required: true
+        type: integer
+      - name: ruleId
+        in: path
+        description: Numeric identifier of the rule to operate on
+        required: true
+        type: integer
+      - name: rule
+        in: body
+        description: The rule to update
+        required: true
+        schema:
+          $ref: '#/definitions/Rule'
+      responses:
+        '200':
+          description: OK. The rule is returned.
+          schema:
+            $ref: '#/definitions/Rule'
+        '401':
+          description: Unauthorized siteId
+          schema:
+            $ref: '#/definitions/ApiResult'
+        '404':
+          description: Resource not found
+          schema:
+            $ref: '#/definitions/ApiResult'
+        '406':
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/ApiResult'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/ApiResult'
+      tags:
+      - Rules
+    delete:
+      summary: Delete rule - must contain valid rule id
+      description: Delete rule
+      parameters:
+      - name: siteId
+        in: path
+        description: Numeric identifier of the site to operate on
+        required: true
+        type: integer
+      - name: ruleId
+        in: path
+        description: Numeric identifier of the rule to operate on
+        required: true
+        type: integer
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ApiResult'
+        '401':
+          description: Unauthorized siteId
+          schema:
+            $ref: '#/definitions/ApiResult'
+        '404':
+          description: Resource not found
+          schema:
+            $ref: '#/definitions/ApiResult'
+        '405':
+          description: Rule can not be deleted
+          schema:
+            $ref: '#/definitions/ApiResult'
+        '406':
+          description: Invalid Input
+          schema:
+            $ref: '#/definitions/ApiResult'
+      tags:
+      - Rules
+definitions:
+  Rule:
+    type: object
+    properties:
+      rule_id:
+        type: integer
+        description: Numeric identifier of the rule to operate on
+      name:
+        type: string
+        description: Rule name
+      action:
+        type: string
+        enum:
+        - RULE_ACTION_REDIRECT
+        - RULE_ACTION_SIMPLIFIED_REDIRECT
+        - RULE_ACTION_REWRITE_URL
+        - RULE_ACTION_REWRITE_HEADER
+        - RULE_ACTION_REWRITE_COOKIE
+        - RULE_ACTION_DELETE_HEADER
+        - RULE_ACTION_DELETE_COOKIE
+        - RULE_ACTION_RESPONSE_REWRITE_HEADER
+        - RULE_ACTION_RESPONSE_DELETE_HEADER
+        - RULE_ACTION_RESPONSE_REWRITE_RESPONSE_CODE
+        - RULE_ACTION_FORWARD_TO_DC
+        - RULE_ACTION_FORWARD_TO_PORT
+        - RULE_ACTION_ALERT
+        - RULE_ACTION_BLOCK
+        - RULE_ACTION_BLOCK_USER
+        - RULE_ACTION_BLOCK_IP
+        - RULE_ACTION_RETRY
+        - RULE_ACTION_INTRUSIVE_HTML
+        - RULE_ACTION_CAPTCHA
+        - RULE_ACTION_RATE
+        - RULE_ACTION_CUSTOM_ERROR_RESPONSE
+        - RULE_ACTION_WAF_OVERRIDE
+        description: "Rule action.\n * RULE_ACTION_REDIRECT - Redirect rule. Redirect\
+          \ the client to a different URL, responding with a 30X response.\n * RULE_ACTION_SIMPLIFIED_REDIRECT\
+          \ - Redirect the client to a different URL using restricted redirect settings.\n\
+          \ * RULE_ACTION_REWRITE_URL - Redirect rule. Modify the path to which a\
+          \ specific request is targeted.\n * RULE_ACTION_REWRITE_HEADER - Redirect\
+          \ rule. Modify or add a request header before passing traffic to the origin\
+          \ server.\n * RULE_ACTION_REWRITE_COOKIE - Redirect rule. Allows the modification\
+          \ and addition of cookies that are sent by the client to the origin server.\
+          \ The cookie name and value should be indicated.\n * RULE_ACTION_DELETE_HEADER\
+          \ - Redirect rule. Remove a specific request header, which means that it\
+          \ won\u2019t be sent to the origin server.\n * RULE_ACTION_DELETE_COOKIE\
+          \ - Redirect rule. Allows the removal a specific cookie set on the client,\
+          \ which means that it won\u2019t be sent to the origin server.\n * RULE_ACTION_RESPONSE_REWRITE_HEADER\
+          \ - Redirect rule. Modify or add a response header before passing traffic\
+          \ by the origin server to the client.\n * RULE_ACTION_RESPONSE_DELETE_HEADER\
+          \ - Redirect rule. Remove a specific response header, which means that it\
+          \ won\u2019t be sent to the client.\n * RULE_ACTION_RESPONSE_REWRITE_RESPONSE_CODE\
+          \ - Redirect rule. Modify the response status code before passing traffic\
+          \ by the origin server to the client.\n * RULE_ACTION_FORWARD_TO_DC - Redirect\
+          \ rule. Used to define the data center to which a specific request will\
+          \ be sent.\n * RULE_ACTION_FORWARD_TO_PORT - Redirect rule. Used to define\
+          \ the port to which a specific request will be sent.\n * RULE_ACTION_ALERT\
+          \ - Security rule. Generate a non blocking alert for this event.\n * RULE_ACTION_BLOCK\
+          \ - Security rule. Block the current request and generate an alert for this\
+          \ event.\n * RULE_ACTION_BLOCK_USER - Security rule. Block the current session\
+          \ and generate an alert for this event. Any subsequent request from the\
+          \ same Session will be blocked.\n * RULE_ACTION_BLOCK_IP - Security rule.\
+          \ Block the current IP and generate an alert for this event. Any subsequent\
+          \ request from the same IP will be blocked for a period of 10 minutes.\n\
+          \ * RULE_ACTION_RETRY - Security rule. Require any client matching the rule\
+          \ filters to support cookies in order to complete the request.\n * RULE_ACTION_INTRUSIVE_HTML\
+          \ - Security rule. Require any client matching the rule filters to support\
+          \ javascript in order to complete the request. Since the Javascript test\
+          \ is embedded in an HTML page, this action should only be enabled for HTML\
+          \ resources.\n * RULE_ACTION_CAPTCHA - Security rule. Require any client\
+          \ matching the rule filters to pass a CAPTCHA test in order to complete\
+          \ the request. Since the CAPTCHA test is embedded in an HTML page, this\
+          \ action should only be enabled for HTML resources.\n * RULE_ACTION_RATE\
+          \ -\tCount the number of requests received that match the rule filter.\n\
+          \ * RULE_ACTION_CUSTOM_ERROR_RESPONSE - Replace default error response &\
+          \ error code with custom ones. Once blocked a rule that matches the provided\
+          \ filter & error type will return a custom error & error code.\n * RULE_ACTION_WAF_OVERRIDE\
+          \ - Overrides the global WAF setting for a specific threat type.\n"
+      filter:
+        type: string
+        description: The filter defines the conditions that trigger the rule action.
+          For action RULE_ACTION_SIMPLIFIED_REDIRECT filter is not relevant. For other
+          actions, if left empty, the rule is always run.
+      response_code:
+        type: integer
+        description: For RULE_ACTION_REDIRECT or RULE_ACTION_SIMPLIFIED_REDIRECT rule's
+          response code, valid values are 302, 301, 303, 307, 308. For RULE_ACTION_RESPONSE_REWRITE_RESPONSE_CODE
+          rule's response code, valid values are all 3-digits numbers. For RULE_ACTION_CUSTOM_ERROR_RESPONSE,
+          valid values are [ 200, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409,
+          410, 411, 412, 413, 414, 415, 416, 417, 419, 420, 422, 423, 424, 429, 500,
+          501, 502, 503, 504, 505, 507 ]
+      add_missing:
+        type: boolean
+        description: Add cookie or header if it doesn't exist (Rewrite cookie rule
+          only)
+      rewrite_existing:
+        type: boolean
+        description: Rewrite cookie or header if it exists
+      from:
+        type: string
+        description: Pattern to rewrite. For RULE_ACTION_REWRITE_URL - Url to rewrite.
+          For RULE_ACTION_REWRITE_HEADER/RULE_ACTION_RESPONSE_REWRITE_HEADER - Header
+          value to rewrite. For RULE_ACTION_REWRITE_COOKIE - Cookie value to rewrite
+      to:
+        type: string
+        description: Pattern to change to. RULE_ACTION_REWRITE_URL - Url to change
+          to. RULE_ACTION_REWRITE_HEADER/RULE_ACTION_RESPONSE_REWRITE_HEADER - Header
+          value to change to. RULE_ACTION_REWRITE_COOKIE - Cookie value to change
+          to
+      rewrite_name:
+        type: string
+        description: Name of cookie or header to rewrite. Applies only for RULE_ACTION_REWRITE_COOKIE,
+          RULE_ACTION_REWRITE_HEADER and RULE_ACTION_RESPONSE_REWRITE_HEADER
+      dc_id:
+        type: integer
+        description: Data center to forward request to. Applies only for RULE_ACTION_FORWARD_TO_DC
+      port_forwarding_context:
+        type: string
+        description: Context for port forwarding. "Use Port Value" or "Use Header
+          Name". Applies only for RULE_ACTION_FORWARD_TO_PORT
+      port_forwarding_value:
+        type: string
+        description: Port number or header name for port forwarding. Applies only
+          for RULE_ACTION_FORWARD_TO_PORT
+      rate_context:
+        type: string
+        description: The context of the rate counter. Possible values IP or Session.
+          Applies only to rules using RULE_ACTION_RATE.
+        enum:
+        - IP
+        - Session
+      rate_interval:
+        type: integer
+        description: The interval in seconds of the rate counter. Possible values
+          is a multiple of 10 minimum 10 maximum 300. Applies only to rules using
+          RULE_ACTION_RATE.
+      error_type:
+        type: string
+        description: The error that triggers the rule. error.type.all triggers the
+          rule regardless of the error type. Applies only for RULE_ACTION_CUSTOM_ERROR_RESPONSE
+        enum:
+        - error.type.all
+        - error.type.connection_timeout
+        - error.type.access_denied
+        - error.type.parse_req_error
+        - error.type.parse_resp_error
+        - error.type.connection_failed
+        - error.type.deny_and_retry
+        - error.type.ssl_failed
+        - error.type.deny_and_captcha
+        - error.type.2fa_required
+        - error.type.no_ssl_config
+        - error.type.no_ipv6_config
+        - error.type.waiting_room
+      error_response_format:
+        type: string
+        description: The format of the given error response in the error_response_data
+          field. Applies only for RULE_ACTION_CUSTOM_ERROR_RESPONSE
+        enum:
+        - json
+        - xml
+      error_response_data:
+        type: string
+        description: The response returned when the request matches the filter and
+          is blocked. Applies only for RULE_ACTION_CUSTOM_ERROR_RESPONSE
+        example:
+          incidentId: $INCIDENT_ID$
+          hostName: $HOST_NAME$
+          errorCode: $RR_CODE$
+          description: $RR_DESCRIPTION$
+          timeUtc: $TIME_UTC$
+          clientIp: $CLIENT_IP$
+          proxyId: $PROXY_ID$
+          proxyIp: $PROXY_IP$
+      multiple_deletions:
+        type: boolean
+        description: Delete multiple header occurrences. Applies only to rules using
+          RULE_ACTION_DELETE_HEADER and RULE_ACTION_RESPONSE_DELETE_HEADER
+      overrideWafRule:
+        type: string
+        description: 'The setting to override. Possible values: SQL Injection, Remote
+          File Inclusion, Cross Site Scripting, Illegal Resource Access'
+      overrideWafAction:
+        type: string
+        description: 'The action for the override rule. Possible values: Alert Only,
+          Block Request, Block User, Block IP, Ignore'
+      enabled:
+        type: boolean
+        description: The setting enables or disables the rule.
+      blockDurationDetails:
+        type: object
+        description: Context for block duration. Valid only for rules with action
+          RULE_ACTION_BLOCK_IP or RULE_ACTION_BLOCK_USER
+        properties:
+          blockDurationPeriodType:
+            type: string
+            enum:
+            - fixed
+            - randomized
+            description: 'Block duration types: Fixed, Randomized. Time range: 1-1440
+              minutes.The Fixed type blocks the IP address or session for the duration
+              specified by the blockFixedDurationValue parameter. The Randomized type
+              generates a random duration for each block between the specified minimum
+              and maximum values.'
+          blockFixedDurationValue:
+            type: integer
+            minimum: 1
+            maximum: 1440
+            description: Value of the fixed block duration. Valid only for 'fixed'
+              blockDurationPeriodType
+          blockRandomizedDurationMinValue:
+            type: integer
+            minimum: 1
+            maximum: 1440
+            description: The lower limit for the randomized block duration. Valid
+              only for 'randomized' blockDurationPeriodType
+          blockRandomizedDurationMaxValue:
+            type: integer
+            minimum: 1
+            maximum: 1440
+            description: The upper limit for the randomized block duration. Valid
+              only for 'randomized' blockDurationPeriodType
+      sendNotifications:
+        type: boolean
+        description: Send an email notification whenever this rule is triggered. Available
+          for Security rules only.
+    required:
+    - name
+    - action
+    example:
+      name: rule name
+      action: RULE_ACTION_BLOCK_IP
+      filter: ASN == 1
+      blockDurationDetails:
+        blockDurationPeriodType: fixed
+        blockFixedDurationValue: 10
+  ApiResult:
+    type: object
+    properties:
+      res:
+        type: integer
+        description: res - contains specific error code
+        format: int32
+        example: 0
+      res_message:
+        type: string
+        example: OK
+      debug_info:
+        type: array
+        items:
+          type: object
+          additionalProperties:
+            type: object
+            description: General information which is not strictly required for using
+              the API

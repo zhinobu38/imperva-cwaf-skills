@@ -1,0 +1,391 @@
+{
+  "rule_filter_parameters": [
+    {
+      "name": "ASN",
+      "description": "The client IP Autonomous System Number (ASN).",
+      "example": "ASN == 71",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "City",
+      "description": "The name of the city where the client sending the request is located.",
+      "example": "City == \"Amsterdam\"",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "Client Certificate CN",
+      "description": "The common name of the client certificate, if one exists. This parameter value is case sensitive.",
+      "example": "ClientCrtCN == \"yoursite.com\"",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "ClientCertExist",
+      "description": "Checks whether the request includes an SSL client certificate.",
+      "example": "ClientCertExist == Yes & URL not-contains \"^/app\"",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "Client ID",
+      "description": "The Imperva ID for the client application.",
+      "example": "ClientId == 15",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "Client IP",
+      "description": "The client (source) IP of the current request. You can also enter an IP using CIDR notation.",
+      "example": "ClientIP == 120.0.0.1",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "Client Type",
+      "description": "The client application type, such as Browser or SpamBot.",
+      "example": "ClientType == Browser",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "Continent Code",
+      "description": "The client (source) IP origin continent.",
+      "example": "ContinentCode == \"EU\"",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "Country Code",
+      "description": "The client (source) IP origin country.",
+      "example": "CountryCode == GB",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "Declared Client Id",
+      "description": "The ID of the client application, according to the declaration in the UserAgent HTTP header.",
+      "example": "DecClientId == 77 (Java Developer Tool)",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "Declared Client Type",
+      "description": "Client type based on the client declaration in the UserAgent HTTP header.",
+      "example": "DecClientType == \"Browser\"",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "Epoch",
+      "description": "The UNIX timestamp of the request - the number of microseconds since midnight January 1, 1970.",
+      "example": "Epoch == 1502617252",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "IP Reputation Risk Level",
+      "description": "The risk level posed by this IP, based on the assessment of the Imperva Reputation Intelligence service.",
+      "example": "IPReputationRiskLevel >= Medium",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "Is Mobile",
+      "description": "Distinguishes between requests coming from mobile devices and requests coming from desktop clients based on the user-agent used in the request.",
+      "example": "URL == \"/welcome.html\" & isMobile == Yes",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "Latitude",
+      "description": "The approximate latitude coordinates of the client sending the request.",
+      "example": "Latitude == 4.863890",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "Longitude",
+      "description": "The approximate longitude coordinates of the client sending the request.",
+      "example": "Longitude == 4.863890",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "Malicious IP List",
+      "description": "The client (source) IP address of the request is identified as an anonymous proxy IP or a Tor exit node.",
+      "example": "MaliciousIPList == TorIPs | MaliciousIPList == AnonymousProxyIPs",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "Postal Code",
+      "description": "The postal/zip code of the client sending the request. May be available for requests from specific countries.",
+      "example": "PostalCode == 123456",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "Source Port",
+      "description": "The client's outgoing port number. It can be used, for example, to distinguish users behind NAT.",
+      "example": "SrcPort == 6000",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "State",
+      "description": "The state, province, or region where the client sending the request is located. The State parameter must be used together with the CountryCode parameter.",
+      "example": "CountryCode == US & State == NY for New York in the United States",
+      "category": "Client Parameters"
+    },
+    {
+      "name": "User Agent",
+      "description": "Checks for the specified string pattern in the User-Agent header in the client request.",
+      "example": "User-Agent contains \"googlebot\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "API Rate",
+      "description": "Measures the rate of API requests in a client session during a one minute period.",
+      "example": "Rate >= {api-rate;4}",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Accept",
+      "description": "Checks for the specified string pattern in the Accept HTTP header value.",
+      "example": "Accept == \"text/html\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Accept Charset",
+      "description": "Checks for the specified string pattern in the Accept-Charset HTTP header value.",
+      "example": "Accept-Charset == \"utf-8\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Accept Encoding",
+      "description": "Checks for the specified string pattern in the Accept-Encoding HTTP header value.",
+      "example": "Accept-Encoding == \"gzip\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Accept Language",
+      "description": "Checks for the specified string pattern in the Accept-Language HTTP header value.",
+      "example": "Accept-Language == \"en-us\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Connection",
+      "description": "Checks for the specified string pattern in the Connection HTTP header value.",
+      "example": "Connection == \"keep-alive\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Content Datacenter ID",
+      "description": "Checks for the Imperva ID of the destination origin data center for the request.",
+      "example": "ContentDcId == 43",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Content Type",
+      "description": "The value of the Content-Type HTTP header in the request.",
+      "example": "Content-Type contains \"json\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Cookie Exists",
+      "description": "Checks for the specified string pattern in the cookie names in the client request.",
+      "example": "CookieExists == \"SessionID\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Cookie Value",
+      "description": "Checks for the specified string pattern in the cookie values in the client request.",
+      "example": "CookieValue == {\"cookie_name\";\"cookie_value\"}",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Full-URL",
+      "description": "Checks for the specified string pattern in the full path in the client request, including the query string. The protocol (http:// or https://) is not included in the matching.",
+      "example": "Full-URL contains \"/uploads/upload.php?id=17\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Header Exists",
+      "description": "Checks whether a certain HTTP header exists.",
+      "example": "HeaderExists == \"Content-Length\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Header Value",
+      "description": "Checks for the specified string pattern in the HTTP header value.",
+      "example": "HeaderValue == {\"HeaderName\";\"HeaderValue\"}",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Header Value Length",
+      "description": "Checks the length of the specified HTTP header.",
+      "example": "HeaderValueLength > {\"Cookie\";1024}",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "HTTP Version",
+      "description": "The HTTP version of the request.",
+      "example": "Ver == \"1.1\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "IP Version",
+      "description": "The IP version of the request.",
+      "example": "IpVersion == 4",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "is-HTTPS",
+      "description": "Checks whether or not the request is HTTPS.",
+      "example": "is-HTTPS == No",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Is Naked Domain",
+      "description": "Checks if the domain name is a naked domain.",
+      "example": "IsNakedDomain == Yes",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Max Header Size",
+      "description": "The size of the largest HTTP header value.",
+      "example": "MaxHeaderSize >= 50",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "HTTP Method",
+      "description": "Checks for the specified string pattern in the HTTP method.",
+      "example": "Method == POST",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Num On Session",
+      "description": "The index of the current request in the current session.",
+      "example": "NumOnSession > 7",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Param Exists",
+      "description": "Checks for the specified string pattern in the parameter names in the query string and post data in the client request.",
+      "example": "ParamExists != \"test\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Param Value",
+      "description": "Checks for the specified string pattern in the parameter values in the query string and post data in the client request.",
+      "example": "ParamValue == {\"PNAME\";\"PVAL\"}",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Post Data",
+      "description": "Checks for the specified string pattern in the raw post data in the client request.",
+      "example": "PostData contains \"username=bob&password=alice\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Post Data Exists",
+      "description": "Checks for post data existence in the request.",
+      "example": "PostDataExists == Yes",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Post Size",
+      "description": "The length of POST body in bytes. If the Content-Length header is present, its value is used.",
+      "example": "PostSize >= 500",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Query String",
+      "description": "Checks for the specified string pattern in the query string.",
+      "example": "QueryString == \"type=gif\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Query String Param Exists",
+      "description": "Checks for the specified string pattern in the parameter names in the query string.",
+      "example": "QueryStringParamExists != \"test\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Query String Param Value",
+      "description": "Checks for the specified string pattern in the parameter values in the query string.",
+      "example": "QueryStringParamValue == {\"PNAME\";\"PVAL\"}",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Referer",
+      "description": "Checks for the specified string pattern in the Referer header in the client request.",
+      "example": "Referer contains \"google.com\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Request Size",
+      "description": "The size of request in bytes, including the URL, query string, and headers.",
+      "example": "RequestSize >= 3000",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Resource Type",
+      "description": "Checks for the resource type of the request.",
+      "example": "ResourceType == non-html",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Scheduler",
+      "description": "The times and days for a custom rule to be active. The rule is triggered when requests arrive during the specified times.",
+      "example": "Scheduler == {30-59;12;*;*;1,4}",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "SSL Cipher",
+      "description": "The cipher suite in the request.",
+      "example": "SslCipher == \"ECDHE-RSA-AES128-GCM-SHA256\";\"can-add-another-type-here\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "SSL Version",
+      "description": "The SSL(TLS) Version.",
+      "example": "SslVersion == tls1_2",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "URL",
+      "description": "Checks for the specified string pattern in the path in the client request (without the query string).",
+      "example": "URL contains \"/uploads/upload.php\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "ABP Action",
+      "description": "Checks for the action taken by Advanced Bot Protection (ABP).",
+      "example": "abp-action == \"captcha_cleared\"",
+      "category": "Request Parameters"
+    },
+    {
+      "name": "Response Code",
+      "description": "Checks for the response code sent by the origin server.",
+      "example": "ResponseCode == 201",
+      "category": "Response Parameters"
+    },
+    {
+      "name": "Response Content-Type",
+      "description": "Checks for the response Content-Type sent by the origin server.",
+      "example": "ResponseContentType == javascript",
+      "category": "Response Parameters"
+    }
+  ],
+  "operators": {
+    "equality": [
+      "==",
+      "!="
+    ],
+    "comparison": [
+      ">",
+      "<",
+      ">=",
+      "<="
+    ],
+    "string": [
+      "contains",
+      "not-contains"
+    ],
+    "logical": [
+      "is-in",
+      "is-not-in",
+      "exists",
+      "does-not-exist"
+    ],
+    "special": [
+      "&",
+      "|"
+    ]
+  },
+  "string_matching_note": "Full regex is not supported for string matching. However, you can use ^ for start of string (prefix) and $ for end of string (suffix) patterns within the contains/not-contains operators."
+}

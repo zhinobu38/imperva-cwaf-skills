@@ -1,0 +1,174 @@
+openapi: 3.0.1
+info:
+  title: WAF Settings
+  description: View and manage WAF settings in your account.
+  license:
+    name: >-
+      The terms in the absence of an applicable signed agreement between you and
+      Imperva
+    url: https://www.imperva.com/legal/license-agreement/
+  version: 1.0.0
+servers:
+  - url: https://api.imperva.com/waf-settings-v2
+    description: Imperva API server
+security:
+  - api_id: []
+    api_key: []
+tags:
+  - name: Session Release API
+    description: API to release blocked sessions.
+paths:
+  /v3/sites/{siteId}/sessions/{sessionId}/release:
+    post:
+      tags:
+        - Session Release API
+      summary: Release blocked session
+      description: Releases a blocked session by sessionId and siteId
+      operationId: releaseSession
+      parameters:
+        - name: siteId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: caid
+          in: query
+          description: >-
+            The Imperva Account ID. By default, the API operates on account (A)
+            associated with the API credentials used for authentication. To
+            operate on a different account (an account under the account (A)),
+            specify the account ID
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ExternalResponse'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Bad Request:
+                  description: Bad Request
+                  value:
+                    errors:
+                      - status: 400
+                        id: 358eebec0102e42c
+                        source:
+                          pointer: /v3/sites/123/sessions/1/release
+                        title: Bad Request
+                        detail: 'Invalid session id'
+        '404':
+          description: Not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Not found:
+                  description: Not found
+                  value:
+                    errors:
+                      - status: 404
+                        id: 358eebec0102e42c
+                        source:
+                          pointer: /v3/sites/123/sessions/1/release
+                        title: Not Found
+                        detail: 'Site 123 not found'
+        '500':
+          description: Internal Server Error
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Internal Server Error:
+                  description: Internal Server Error
+                  value:
+                    errors:
+                      - status: 500
+                        id: 1dce2fbdec3e60e2
+                        source:
+                          pointer: /v3/sites/123/sessions/1/release
+                        title: Internal Server Error
+                        detail: Internal Server Error
+components:
+  schemas:
+    APIError:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32
+          example: 400
+        id:
+          type: string
+          example: afec0aac0e30808f
+        code:
+          type: string
+          example: '2'
+        source:
+          type: object
+          additionalProperties:
+            type: object
+            example:
+              pointer: /v3/sites/16612920/settings/spa
+          example:
+            pointer: /v3/sites/16612920/settings/spa
+        title:
+          type: string
+          example: Invalid Input Error
+        detail:
+          type: string
+          example: state State must not be null!
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/APIError'
+    SessionReleaseResponseDto:
+      type: object
+      properties:
+        message:
+          type: string
+        successful:
+          type: boolean
+    ExternalResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items: 
+            $ref: '#/components/schemas/SessionReleaseResponseDto'
+          
+  securitySchemes:
+    api_id:
+      type: apiKey
+      description: >-
+        An API ID created and managed in the Imperva Cloud Security Console and
+        used for authentication
+      name: x-API-Id
+      in: header
+    api_key:
+      type: apiKey
+      description: >-
+        An API key created and managed in the Imperva Cloud Security Console and
+        used for authentication
+      name: x-API-Key
+      in: header

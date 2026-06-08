@@ -1,0 +1,295 @@
+openapi: 3.0.1
+info:
+  title: Load Balancing Monitoring Settings API Definition
+  description: "Configure settings to determine when origin servers should be considered\
+    \ “up” or “down” (active or inactive) by the Imperva Load Balancer. Select which\
+    \ failure scenarios you want to produce alarm messages, and how to send them.\
+    \ For full feature documentation, see <a style=\"text-decoration:none\" href=\"\
+    https://docs.imperva.com/csh?context=website_monitoring\">Load Balancing\
+    \ Monitoring Settings</a>"
+  license:
+    name: Imperva License Agreement.
+    url: https://www.imperva.com/legal/license-agreement/
+  version: 1.0.0
+servers:
+- url: https://api.imperva.com/appdlv-site-settings
+  description: Imperva API server
+security:
+- api_key: []
+- api_id: []
+- caid: []
+tags:
+- name: Site Monitoring Settings
+  description: Get or modify site monitoring settings
+paths:
+  /v2/site/{siteId}/monitoring:
+    get:
+      tags:
+      - Site Monitoring Settings
+      summary: Retrieve website monitoring settings for a given website
+      operationId: getSiteMonitoring
+      parameters:
+      - name: siteId
+        in: path
+        description: "The unique ID for the website, assigned by Imperva"
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Successfully updated site monitoring settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteMonitoringSuccessResponse'
+        "400":
+          description: Bad Request
+          content:
+            application/json: {}
+        "500":
+          description: Internal Server Error
+          content:
+            application/json: {}
+    put:
+      tags:
+      - Site Monitoring Settings
+      summary: Overwrite website monitoring settings (full update)
+      description: "Fully update site monitoring settings, if one of the fields are\
+        \ null will be updated to its default"
+      operationId: editSiteMonitoringFullUpdate
+      parameters:
+      - name: siteId
+        in: path
+        description: "The unique ID for the website, assigned by Imperva"
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteMonitoringModel'
+        required: true
+      responses:
+        "200":
+          description: Successfully updated site monitoring settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteMonitoringSuccessResponse'
+        "400":
+          description: Bad Request
+          content:
+            application/json: {}
+        "500":
+          description: Internal Server Error
+          content:
+            application/json: {}
+    post:
+      tags:
+      - Site Monitoring Settings
+      summary: Modify website monitoring settings (partial update)
+      description: Updates only provided fields
+      operationId: editSiteMonitoringPartiallyUpdate
+      parameters:
+      - name: siteId
+        in: path
+        description: "The unique ID for the website, assigned by Imperva"
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteMonitoringModel'
+        required: true
+      responses:
+        "200":
+          description: Successfully updated site monitoring settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteMonitoringSuccessResponse'
+        "400":
+          description: Bad Request
+          content:
+            application/json: {}
+        "500":
+          description: Internal Server Error
+          content:
+            application/json: {}
+components:
+  schemas:
+    FailedRequestCriteria:
+      type: object
+      properties:
+        httpRequestTimeout:
+          type: integer
+          description: The maximum time to wait for an HTTP response. 1-200 SECONDS
+            or 1-3 MINUTES
+          format: int32
+          default: 35
+        httpRequestTimeoutUnits:
+          type: string
+          description: Time unit
+          enum:
+          - SECONDS
+          - MINUTES
+          default: SECONDS
+        httpResponseError:
+          type: string
+          description: The HTTP response error codes or patterns that will be counted
+            as request failures
+          example: "501-510,530"
+          default: 501-599
+    MonitoringParameters:
+      type: object
+      properties:
+        failedRequestsPercentage:
+          maximum: 100
+          minimum: 0
+          type: integer
+          description: The percentage of failed requests to the origin server
+          format: int32
+          example: 30
+          default: 40
+        failedRequestsMinNumber:
+          maximum: 500
+          minimum: 1
+          type: integer
+          description: The minimum number of of failed requests to be considered as
+            failure
+          format: int32
+          example: 30
+          default: 3
+        failedRequestsDuration:
+          type: integer
+          description: The minimum duration of failures above the threshold to consider
+            server as down. 20-180 SECONDS or 1-2 MINUTES
+          format: int32
+          example: 30
+          default: 40
+        failedRequestsDurationUnits:
+          type: string
+          description: Time unit
+          enum:
+          - SECONDS
+          - MINUTES
+          default: SECONDS
+    Notifications:
+      type: object
+      properties:
+        alarmOnStandsByFailover:
+          type: boolean
+          description: Indicates whether or not an email will be sent upon failover. This parameter is relevant only for a multiple data center configuration that includes a standby data center.
+          example: false
+          default: true
+        alarmOnDcFailover:
+          type: boolean
+          description: Indicates whether or not an email will be sent upon data center failover. This parameter is relevant only for a multiple data center configuration.
+          example: false
+          default: true
+        alarmOnServerFailover:
+          type: boolean
+          description: Indicates whether or not an email will be sent upon server failover.
+          example: true
+          default: false
+        requiredMonitors:
+          type: string
+          description: Monitors required to report server / data center as down
+          example: MANY
+          enum:
+          - ONE
+          - MANY
+          - MOST
+          - ALL
+          default: MOST
+    SiteMonitoringModel:
+      type: object
+      properties:
+        monitoringParameters:
+          $ref: '#/components/schemas/MonitoringParameters'
+        failedRequestCriteria:
+          $ref: '#/components/schemas/FailedRequestCriteria'
+        upDownVerification:
+          $ref: '#/components/schemas/UpDownVerification'
+        notifications:
+          $ref: '#/components/schemas/Notifications'
+    UpDownVerification:
+      type: object
+      properties:
+        useVerificationForDown:
+          type: boolean
+          description: "If Imperva determines that an origin server is down according\
+            \ to failed request criteria, it will initiate another request to verify\
+            \ that the origin server is down"
+          example: false
+          default: true
+        monitoringUrl:
+          type: string
+          description: The URL to use for monitoring your website.
+          example: /health
+          default: /
+        expectedReceivedString:
+          type: string
+          description: "The expected string. If left empty, any response, except for\
+            \ the codes defined in the HTTP response error codes to be treated as\
+            \ Down parameter, will be considered successful. If the value is non-empty,\
+            \ then the defined value must appear within the response string for the\
+            \ response to be considered successful."
+          example: Am Alive
+        upChecksInterval:
+          type: integer
+          description: "After an origin server was identified as down, Imperva will\
+            \ periodically test it to see whether it has recovered, according to the\
+            \ frequency defined in this parameter. 10-120 SECONDS or 1-2 MINUTES"
+          format: int32
+          default: 20
+        upChecksIntervalUnits:
+          type: string
+          description: Time unit
+          enum:
+          - SECONDS
+          - MINUTES
+          default: SECONDS
+        upCheckRetries:
+          maximum: 50
+          minimum: 1
+          type: integer
+          description: "Every time an origin server is tested to see whether it’s\
+            \ back up, the test will be retried this number of times."
+          format: int32
+          example: 30
+          default: 3
+    SiteMonitoringSuccessResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteMonitoringModel'
+  securitySchemes:
+    api_key:
+      type: apiKey
+      description: An API key created and managed in the Imperva Cloud Security Console
+        and used for authentication
+      name: x-API-Key
+      in: header
+    api_id:
+      type: apiKey
+      description: An API ID created and managed in the Imperva Cloud Security Console
+        and used for authentication
+      name: x-API-Id
+      in: header
+    caid:
+      type: apiKey
+      description: "The Imperva Account ID. By default, the API operates on account\
+        \ (A) associated with the API credentials used for authentication. To operate\
+        \ on a different account (an account under the account (A)), specify the account\
+        \ ID"
+      name: caid
+      in: query

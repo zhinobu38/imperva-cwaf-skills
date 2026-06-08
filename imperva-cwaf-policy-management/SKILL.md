@@ -472,7 +472,7 @@ When `isError` is `true`, `value` contains an error message string.
 
 ## Pitfalls
 
-- **No `data` wrapper in request body.** The Policies API v2 uses flat JSON for POST/PUT bodies — do NOT wrap in `{"data": {...}}`. This is different from the custom rules API v2 which does use a `data` wrapper.
+- **No `data` wrapper in ANY Imperva API request body.** All Imperva Cloud WAF APIs (Policies, Custom Rules, Cache, etc.) use flat JSON for POST/PUT bodies — do NOT wrap in `{"data": {...}}` anywhere.
 - **Always remove policy from site before deleting.** If you DELETE a policy that is still applied to a site, the API may return an error. Unassign first, then delete.
 - **Exception settings must reference the parent setting `id`.** When adding an exception via POST, you must include the `id` of the existing `policySettings` entry. GET the policy first to find it.
 - **Response `isError` is a boolean field**, not an HTTP status code. Check `isError` in the JSON body, not just HTTP status.

@@ -177,7 +177,7 @@ This error means the API key **authenticated but the operation was rejected**. C
 
 ## Pitfalls
 
-- **Body structure for POST/PUT**: The rules API v2 endpoint uses a flat JSON object (no `data` wrapper), unlike the policy API which requires `{"data": {...}}`.
+- **Body structure for POST/PUT**: All Imperva APIs use flat JSON (no `data` wrapper) — Policies, Custom Rules, Cache, everything. Never wrap request bodies in `{"data": {...}}`.
 - **ClientType enum values**: Must use exact PascalCase: Browser, SearchBot, SiteHelper, Unknown, AIBot, ClickBot, SpamBot, Crawler, etc. Lowercase values will return "Invalid value" error.
 - **JavaScript challenge action**: Use `RULE_ACTION_INTRUSIVE_HTML` (not `RULE_ACTION_CHALLENGE_JS` which does not exist in the API enum).
 - **Multiple value matching**: Use semicolon-separated values instead of multiple `&` conditions:

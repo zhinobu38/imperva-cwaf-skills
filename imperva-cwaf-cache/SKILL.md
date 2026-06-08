@@ -2,7 +2,7 @@
 name: imperva-cwaf-cache
 description: Manage Imperva Cloud WAF cache settings, custom cache rules, client-side caching, response header caching, and cache purging via the API.
 category: imperva-cwaf
-version: 1.0.0
+version: 1.1.0
 ---
 
 # Imperva CWAF Cache Management
@@ -49,6 +49,25 @@ x-API-Key: <api_key>
 Content-Type: application/json   (for PUT/POST/DELETE with body)
 ```
 
+## Response Format
+
+The Cache API uses a legacy response envelope (different from other Imperva APIs):
+```json
+{
+  "res": 0,
+  "res_message": "OK",
+  "debug_info": {
+    "id-info": "999999"
+  }
+}
+```
+
+- `res`: 0 = success, non-zero = error
+- `res_message`: human-readable status
+- GET responses return the actual object directly (not wrapped in `value`)
+- Cache rule POST returns `{"rule_id": N, "res": 0, ...}` (note: `rule_id` not `id`)
+- Empty cache rule list returns `{"res": 0, "res_message": "OK", "debug_info": {"Site has no Cache rules": "..."}}`
+
 ---
 
 ## 1. Cache Mode Settings
@@ -83,6 +102,8 @@ PUT /sites/{siteId}/settings/cache
 ```
 
 **Body is flat JSON** — no `data` wrapper. Only specified fields are modified.
+
+**Note:** PUT for cache settings works as partial update — only fields in the body are changed. Other fields retain their current values. No `Force-Risky-Operation` header needed for settings updates.
 
 ```bash
 bws run --project-id <BW_PROJECT_ID_WRITE> -- bash /tmp/update_cache_mode.sh
@@ -153,7 +174,14 @@ bws run --project-id <BW_PROJECT_ID_WRITE> -- bash /tmp/create_cache_rule.sh
 PUT /sites/{siteId}/settings/cache/rules/{ruleId}
 ```
 
-Only specified fields are modified.
+**Important:** Despite the spec saying "partial update", the cache rule PUT requires the **full rule object** in the body. Sending only changed fields will return `{"res": 2, "res_message": "Invalid input", "debug_info": {"params": "no parameters given"}}`. Include all fields: `name`, `action`, `enabled`, `filter`, and any action-specific parameters (`ttl`, `text`, `ignored_params`, `differentiate_by_value`).
+
+**Also:** Add the `Force-Risky-Operation: true` header to avoid 406 errors.
+
+```bash
+# Write full rule JSON to file, then:
+bws run --project-id <BW_PROJECT_ID_WRITE> -- python3 /tmp/update_rule.py
+```
 
 ### Delete a Cache Rule
 
@@ -334,7 +362,13 @@ The API key authenticated but the operation was rejected. Common causes:
 ## Pitfalls
 
 - **Flat JSON only**: All request bodies use flat JSON — no `{"data": {...}}` wrapper anywhere in the Cache API.
-- **PUT is partial update**: Only fields included in the body are modified; omitted fields retain their current values.
+- **PUT cache settings is partial**: Only fields in the body are modified; omitted fields retain their current values. No special header needed.
+- **PUT cache rules needs FULL object**: Despite API spec saying "partial", cache rule PUT requires the complete rule object. Omitting fields causes `{"res": 2, "res_message": "Invalid input"}`. Always GET the rule first, modify, then PUT the full object.
+- **Force-Risky-Operation header for rule PUT**: Cache rule PUT operations return HTTP 406 without `Force-Risky-Operation: true` header. Settings PUT does not need this header.
+- **Response format is legacy**: Uses `{"res": 0, "res_message": "OK"}` envelope, not `{"value": ..., "isError": false}` like other Imperva APIs.
+- **Cache rule field names use camelCase in response**: The API returns `disabledByCacheMode` (camelCase), not `disabled_by_cache_mode` (snake_case) as shown in the OpenAPI spec.
+- **Cache rule ID field is `rule_id` not `id`**: POST response returns `{"rule_id": N}`, and GET response includes `rule_id` field.
+- **Empty rule list is not an empty array**: When no rules exist, GET returns `{"res": 0, "debug_info": {"Site has no Cache rules": "..."}}` — not `[]` or `{"value": []}`.
 - **DELETE restores defaults**: `DELETE /sites/{siteId}/settings/cache` resets ALL cache settings to defaults — use with caution.
 - **Cache rules need filter**: Every cache rule requires a `filter` field. Use an empty string `""` for rules that should always match.
 - **TTL only for specific actions**: The `ttl` field is only relevant for `HTTP_CACHE_MAKE_STATIC` and `HTTP_CACHE_CLIENT_CACHE_CTL` actions.

@@ -36,6 +36,14 @@ single source of truth for all sub-skills. Do NOT duplicate their content.
 
 See `references/policy-types.md` for full details on each policy type and their settings.
 
+> **Looking up country/continent codes for GEO policies?** Use the integrations script:
+> ```bash
+> bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9 -- python3 \
+>   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-api-manual/scripts/integrations.py \
+>   geo [--country CODE] [--continent CODE] [--limit N]
+> ```
+> See `imperva-cwaf-api-manual` → `references/integrations-api-guide.md` section 2.
+
 ## API Base URLs
 
 - Policies API v2: `https://api.imperva.com/policies/v2`

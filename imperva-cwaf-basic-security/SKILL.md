@@ -51,6 +51,15 @@ single source of truth for all sub-skills. Do NOT duplicate their content.
 
 Base URL: `https://my.imperva.com`
 
+> **Looking up client app IDs/types for bot configuration?** Use the integrations script:
+> ```bash
+> bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9 -- python3 \
+>   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-api-manual/scripts/integrations.py \
+>   clapps [--type TYPE] [--limit N]
+> ```
+> Common types: `Browser`, `SearchBot`, `Crawler`, `HackingTool`, `VulnerabilityScanner`, `MaskingProxy`, `SiteHelper`, `Unknown`.
+> See `imperva-cwaf-api-manual` → `references/integrations-api-guide.md` section 1.
+
 All v1 POST endpoints use `Content-Type: application/x-www-form-urlencoded`.
 
 ---

@@ -181,5 +181,6 @@ All examples in this skill reference `$IMPERVA_API_ID` and `$IMPERVA_API_KEY` â€
 ## Support Files
 
 - `references/rule-filter-parameters.md`: Comprehensive list of rule filter parameters with examples and usage guidelines.
+- `references/integrations-api-guide.md`: Practical reference for `api-spec/integrations.yaml` â€” client apps, geo codes, Imperva IP ranges, and API text inventory endpoints with use cases.
 
 ---

@@ -68,6 +68,7 @@ curl -s -X PUT "https://my.imperva.com/api/prov/v2/sites/${SITE_ID}/settings/...
 | Custom rules | Flat JSON body (no `data` wrapper) | — |
 | Security v1 `/sites/configure/security` | POST with form-encoded params per rule | — |
 | Bot config v3 `/settings/botConfiguration` | POST with JSON body; full replacement | — |
+| Integrations `/api/integration/v1/*` | POST (or GET for /ips); read-only lookup, no site ID or CAID needed | — |
 
 ## Common Pitfalls
 

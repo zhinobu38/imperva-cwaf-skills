@@ -49,6 +49,15 @@ bws run --project-id <BW_PROJECT_ID_WRITE> -- bash /tmp/script.sh
 
 The rule filter parameters are documented in the `imperva-cwaf-api-manual` skill. For a quick reference, see the rule filter summary:
 
+> **Looking up client app IDs or client types?** Use the integrations script:
+> ```bash
+> bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9 -- python3 \
+>   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-api-manual/scripts/integrations.py \
+>   clapps [--type TYPE] [--name NAME] [--limit N]
+> ```
+> Common types: `Browser`, `SearchBot`, `Crawler`, `HackingTool`, `VulnerabilityScanner`, `MaskingProxy`, `SiteHelper`, `Unknown`.
+> See `imperva-cwaf-api-manual` → `references/integrations-api-guide.md` section 1.
+
 ```bash
 skill_view imperva-cwaf-custom-rule file_path=references/rule-filter-summary.md
 ```

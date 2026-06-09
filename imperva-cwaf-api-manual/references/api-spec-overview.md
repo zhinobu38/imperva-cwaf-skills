@@ -18,7 +18,8 @@ This document provides a brief overview of the various API specification files a
 ### Traffic & Performance
 - `traffic_statistics_and_logs.yaml` - Traffic statistics and logs API
 - `performance-statistics-api.json` - Performance statistics API
-- `load-balancing-api.yaml` - Load balancing configuration
+- `load-balancing-api.yaml` - Load balancing configuration (v2 API: resume DCs, edit DCs/servers)
+- `site_management.yaml` - Also contains v1 dataCenter/servers CRUD + v3 data-centers-configuration (GET/PUT)
 
 ### Security Intelligence
 - `reputation-intelligence-api.yaml` - IP reputation and threat intelligence

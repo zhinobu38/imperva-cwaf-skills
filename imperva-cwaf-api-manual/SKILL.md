@@ -23,6 +23,7 @@ Each file represents a specific API service or functional area. For example:
 - `cache-api.yaml` - Cache settings and cache rules API
 - `certificatesUI-api.yaml` - Certificate management API
 - `website-management-api.yaml` - Website settings (TLS/HSTS, etc.)
+- `load-balancing-api.yaml` - Load balancing and failover settings (data centers, servers, LB algorithms)
 - ... and others.
 
 ## How to List API Specs
@@ -175,6 +176,7 @@ All examples in this skill reference `$IMPERVA_API_ID` and `$IMPERVA_API_KEY` â€
 - `imperva-cwaf-status-check`: For checking Imperva service status.
 - `imperva-cwaf-ssl-management`: For managing SSL certificates and TLS/HSTS settings.
 - `imperva-cwaf-cache`: For managing cache settings, cache rules, client-side caching, response header caching, and cache purging.
+- `imperva-cwaf-load-balancing`: For managing load balancing, data centers, origin servers, LB algorithms, geo routing, failover, and traffic resume.
 
 ## Support Files
 

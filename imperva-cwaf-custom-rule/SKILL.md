@@ -9,6 +9,17 @@ version: 1.2.0
 
 This skill provides functionality to create, update, delete, and test custom rules in Imperva Cloud WAF via the API. It leverages the rule filter parameters documented in the `imperva-cwaf-api-manual` skill.
 
+## Shared References
+
+These files are maintained at the `imperva-cwaf/` skill group level and are the
+single source of truth for all sub-skills. Do NOT duplicate their content.
+
+| Reference | Description |
+|-----------|-------------|
+| `../references/skill-dev-standard.md` | Dev standard: template structure, credential rules, known API behaviors, pitfalls |
+| `../references/credential-and-identifier-policy.md` | Credential/identifier sourcing rules (Bitwarden bws run) |
+| `../references/shell-template-pattern.md` | Shell template patterns (GET→modify→PUT, form-encoded POST, header format) |
+
 ## Prerequisites
 
 - You must have API credentials (ID and Key) for Imperva Cloud WAF.
@@ -21,7 +32,7 @@ This skill provides functionality to create, update, delete, and test custom rul
 
 **CRITICAL**: Use project `hermes-aws` (ID: `<BW_PROJECT_ID_WRITE>`), NOT the `hermes` project. The `hermes` project has different credentials that may authenticate but lack write permissions, causing 9415 errors.
 
-See `references/credential-retrieval.md` for full details.
+See `../references/credential-and-identifier-policy.md` for full details.
 
 Quick pattern:
 ```bash
@@ -215,7 +226,7 @@ This error means the API key **authenticated but the operation was rejected**. C
 - For complex filters, consider using a heredoc or a JSON file to avoid escaping issues in the command line.
 - **Cleanup**: Delete temporary script files from `/tmp/` after use.
 - See `templates/create-rule.sh` for a reusable curl-based rule creation script.
-- See `references/credential-retrieval.md` for full credential retrieval details and debugging.
+- See `../references/credential-and-identifier-policy.md` for full credential retrieval details and debugging.
 
 ## Example: Creating a Rule via Shell Script
 

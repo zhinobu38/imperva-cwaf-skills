@@ -48,7 +48,7 @@ api_key = os.environ["IMPERVA_API_KEY"]
 
 ```bash
 # ❌ Hardcoded credentials
-curl -H "x-API-Id: 214929" -H "x-API-key: da98b3..." ...
+curl -H "x-API-Id: 214929" -H "x-API-key: da98b3 ..." ...
 
 # ❌ Hardcoded identifiers in template
 SITE_ID="852056322"  # inside a shared template file
@@ -59,36 +59,3 @@ echo "Using key: $IMPERVA_API_KEY"
 # ❌ Using wrong Bitwarden project
 bws run --project-id <hermes_project_id> -- ...
 ```
-
-## Template Pattern for API Operations
-
-For any Imperva API that uses GET→modify→PUT:
-
-```bash
-#!/bin/bash
-# 1. Validate required env vars (identifiers from user)
-SITE_ID="${SITE_ID:?Set SITE_ID}"
-CAID="${CAID:?Set CAID}"
-
-# 2. GET current settings
-CURRENT=$(curl -s -X GET "https://my.imperva.com/api/prov/v2/sites/${SITE_ID}/settings/xxx?caid=${CAID}" \
-  -H "Accept: application/json" \
-  -H "x-API-Id: ${IMPERVA_API_ID}" \
-  -H "x-API-Key: ${IMPERVA_API_KEY}")
-
-# 3. Modify with jq
-PAYLOAD=$(echo "${CURRENT}" | jq '...modify...')
-
-# 4. PUT updated settings
-curl -s -X PUT "https://my.imperva.com/api/prov/v2/sites/${SITE_ID}/settings/xxx?caid=${CAID}" \
-  -H "Accept: application/json" \
-  -H "Content-Type: application/json" \
-  -H "x-API-Id: ${IMPERVA_API_ID}" \
-  -H "x-API-Key: ${IMPERVA_API_KEY}" \
-  -d "${PAYLOAD}"
-```
-
-Key principles:
-- Credentials referenced as `${IMPERVA_API_ID}` / `${IMPERVA_API_KEY}` — expanded by bws run
-- Identifiers referenced as `${SITE_ID}` / `${CAID}` — must be set by user before invocation
-- Always GET first, modify, then PUT full object (never partial for most Imperva APIs)

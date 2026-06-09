@@ -39,7 +39,6 @@ curl -s -X GET "https://my.imperva.com/api/prov/v2/sites/${SITE_ID}/settings/xxx
 #!/bin/bash
 SITE_ID="${SITE_ID:?Set SITE_ID}"
 CAID="${CAID:?Set CAID}"
-# Custom params
 PARAM="${PARAM:-default}"
 
 # 1. GET current settings
@@ -100,6 +99,25 @@ curl -s -X PUT "https://my.imperva.com/api/prov/v2/sites/${SITE_ID}/settings/xxx
   -H "x-API-Id: ${IMPERVA_API_ID}" \
   -H "x-API-Key: ${IMPERVA_API_KEY}" \
   -d "${PAYLOAD}" | jq .
+```
+
+## POST with Form-Encoded Params Template
+
+Used by v1 security endpoints (`/sites/configure/security`):
+
+```bash
+#!/bin/bash
+SITE_ID="${SITE_ID:?Set SITE_ID}"
+CAID="${CAID:?Set CAID}"
+
+curl -s -X POST "https://my.imperva.com/api/prov/v1/sites/configure/security" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "x-API-Id: ${IMPERVA_API_ID}" \
+  -H "x-API-Key: ${IMPERVA_API_KEY}" \
+  --data-urlencode "site_id=${SITE_ID}" \
+  --data-urlencode "rule_id=api.threats.xxx" \
+  --data-urlencode "param=value" | jq .
 ```
 
 ## Key Rules

@@ -9,6 +9,17 @@ version: 1.0.0
 
 Orchestrate a complete Imperva Cloud WAF site configuration using `delegate_task` for parallel execution. This workflow breaks the configuration into phases where independent tasks run concurrently.
 
+## Shared References
+
+These files are maintained at the `imperva-cwaf/` skill group level and are the
+single source of truth for all sub-skills. Do NOT duplicate their content.
+
+| Reference | Description |
+|-----------|-------------|
+| `../references/skill-dev-standard.md` | Dev standard: template structure, credential rules, known API behaviors, pitfalls |
+| `../references/credential-and-identifier-policy.md` | Credential/identifier sourcing rules (Bitwarden bws run) |
+| `../references/shell-template-pattern.md` | Shell template patterns (GET→modify→PUT, form-encoded POST, header format) |
+
 ## Architecture
 
 ```

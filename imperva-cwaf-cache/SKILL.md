@@ -9,6 +9,17 @@ version: 1.2.0
 
 Manage all cache-related settings for Imperva Cloud WAF sites via the Cache API v2.
 
+## Shared References
+
+These files are maintained at the `imperva-cwaf/` skill group level and are the
+single source of truth for all sub-skills. Do NOT duplicate their content.
+
+| Reference | Description |
+|-----------|-------------|
+| `../references/skill-dev-standard.md` | Dev standard: template structure, credential rules, known API behaviors, pitfalls |
+| `../references/credential-and-identifier-policy.md` | Credential/identifier sourcing rules (Bitwarden bws run) |
+| `../references/shell-template-pattern.md` | Shell template patterns (GET→modify→PUT, form-encoded POST, header format) |
+
 ## Prerequisites
 
 - API credentials (ID and Key) for Imperva Cloud WAF — always retrieve from Bitwarden.

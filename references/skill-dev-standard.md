@@ -1,5 +1,8 @@
 # Imperva CWAF Skill Development Standard
 
+This document is the **authoritative development standard** for ALL `imperva-cwaf` skills.
+Every sub-skill references this file — do not duplicate its content.
+
 ## Template Structure
 
 All Imperva CWAF skills use shell script templates with this standard header:
@@ -33,7 +36,7 @@ All Imperva CWAF skills use shell script templates with this standard header:
 
 ## Template Pattern: GET → Modify → PUT
 
-For APIs that require full-object PUT (delivery, cache rules):
+For APIs that require full-object PUT:
 
 ```bash
 # 1. GET current settings
@@ -63,6 +66,8 @@ curl -s -X PUT "https://my.imperva.com/api/prov/v2/sites/${SITE_ID}/settings/...
 | Cache rules `/settings/cache/rules/{id}` | Requires FULL object. Partial -> error | `Force-Risky-Operation: true` |
 | Policies | POST appends, PUT replaces entirely | — |
 | Custom rules | Flat JSON body (no `data` wrapper) | — |
+| Security v1 `/sites/configure/security` | POST with form-encoded params per rule | — |
+| Bot config v3 `/settings/botConfiguration` | POST with JSON body; full replacement | — |
 
 ## Common Pitfalls
 
@@ -72,6 +77,8 @@ curl -s -X PUT "https://my.imperva.com/api/prov/v2/sites/${SITE_ID}/settings/...
 - **Compression type**: Only `GZIP` and `BROTLI` (case-sensitive).
 - **Cache rule response**: Uses legacy envelope `{"res": 0, "res_message": "OK"}`.
 - **Cache rule ID field**: `rule_id` not `id` in POST response.
+- **Security v1 uses form-encoded POST**: Not JSON body; use `--data-urlencode` for params.
+- **Bot v3 uses POST for update**: Not PUT. GET first, modify, then POST the full object.
 
 ## Skill File Structure
 

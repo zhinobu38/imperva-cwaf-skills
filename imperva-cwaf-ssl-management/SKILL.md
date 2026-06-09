@@ -256,6 +256,17 @@ curl -s -G "https://api.imperva.com/certificates-ui/v3/certificates" \
 - HTTP 500: Internal server error
 - HTTP 504: Gateway timeout
 
+## Shared References
+
+These files are maintained at the `imperva-cwaf/` skill group level and are the
+single source of truth for all sub-skills. Do NOT duplicate their content.
+
+| Reference | Description |
+|-----------|-------------|
+| `../references/skill-dev-standard.md` | Dev standard: template structure, credential rules, known API behaviors, pitfalls |
+| `../references/credential-and-identifier-policy.md` | Credential/identifier sourcing rules (Bitwarden bws run) |
+| `../references/shell-template-pattern.md` | Shell template patterns (GET→modify→PUT, form-encoded POST, header format) |
+
 ## Required Environment Variables
 - `IMPERVA_API_ID`: Your Imperva API ID
 - `IMPERVA_API_KEY`: Your Imperva API key

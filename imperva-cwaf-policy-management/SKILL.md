@@ -14,6 +14,17 @@ Manage security policies (WAF Rules, ACL, Whitelist, File Upload) including poli
 - API Credentials: CAID, API ID, API Key (same as other Imperva CWAF skills)
 - Site ID of the target website (use `imperva-cwaf-get-site-detail` if unknown)
 
+## Shared References
+
+These files are maintained at the `imperva-cwaf/` skill group level and are the
+single source of truth for all sub-skills. Do NOT duplicate their content.
+
+| Reference | Description |
+|-----------|-------------|
+| `../references/skill-dev-standard.md` | Dev standard: template structure, credential rules, known API behaviors, pitfalls |
+| `../references/credential-and-identifier-policy.md` | Credential/identifier sourcing rules (Bitwarden bws run) |
+| `../references/shell-template-pattern.md` | Shell template patterns (GET→modify→PUT, form-encoded POST, header format) |
+
 ## Policy Types
 
 | Policy Type | Description | Apply To |

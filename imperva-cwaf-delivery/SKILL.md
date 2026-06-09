@@ -52,6 +52,17 @@ SITE_ID=852056322 CAID=2429928 COMPRESSION_TYPE=BROTLI \
 # ❌ WRONG: print $IMPERVA_API_KEY in log output
 ```
 
+## Shared References
+
+These files are maintained at the `imperva-cwaf/` skill group level and are the
+single source of truth for all sub-skills. Do NOT duplicate their content.
+
+| Reference | Description |
+|-----------|-------------|
+| `../references/skill-dev-standard.md` | Dev standard: template structure, credential rules, known API behaviors, pitfalls |
+| `../references/credential-and-identifier-policy.md` | Credential/identifier sourcing rules (Bitwarden bws run) |
+| `../references/shell-template-pattern.md` | Shell template patterns (GET→modify→PUT, form-encoded POST, header format) |
+
 ## API Endpoint
 
 ```
@@ -251,5 +262,6 @@ All operations return the full `DeliverySettingsObject`:
 ## Skill Development Reference
 
 For the standard Imperva CWAF skill development pattern:
-- `references/credential-and-identifier-policy.md` — credential/identifier sourcing rules (no hardcode)
-- `references/shell-template-pattern.md` — standard shell template structure (GET→modify→PUT)
+- `../references/credential-and-identifier-policy.md` — credential/identifier sourcing rules (no hardcode)
+- `../references/shell-template-pattern.md` — standard shell template structure (GET→modify→PUT)
+- `../references/skill-dev-standard.md` — full development standard (shared across all imperva-cwaf skills)

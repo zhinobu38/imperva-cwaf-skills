@@ -9,6 +9,17 @@ version: 1.0.0
 
 This skill provides functionality to onboard a new website to Imperva Cloud WAF using the Sites Management API.
 
+## Shared References
+
+These files are maintained at the `imperva-cwaf/` skill group level and are the
+single source of truth for all sub-skills. Do NOT duplicate their content.
+
+| Reference | Description |
+|-----------|-------------|
+| `../references/skill-dev-standard.md` | Dev standard: template structure, credential rules, known API behaviors, pitfalls |
+| `../references/credential-and-identifier-policy.md` | Credential/identifier sourcing rules (Bitwarden bws run) |
+| `../references/shell-template-pattern.md` | Shell template patterns (GET→modify→PUT, form-encoded POST, header format) |
+
 ## API Endpoint
 ```
 POST https://api.imperva.com/sites-mgmt/v3/sites/onboard
@@ -100,4 +111,4 @@ On success (HTTP 200), the response includes:
 - The onboarding process provides SSL and network configuration instructions that must be followed to complete setup
 - Part of the imperva-cwaf skill set for Imperva Cloud WAF API interactions
 - Always verify the CAID (account ID) you are targeting; providing an incorrect CAID may onboard the site to the wrong account.
-- See `references/credential-access.md` for techniques to securely access Imperva API credentials in Hermes environment.
+- See `../references/credential-and-identifier-policy.md` for credential sourcing standards.

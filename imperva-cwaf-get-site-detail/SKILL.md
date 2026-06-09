@@ -21,6 +21,17 @@ GET https://api.imperva.com/sites-mgmt/v3/sites/{siteId}
 GET https://api.imperva.com/sites-mgmt/v3/sites
 ```
 
+## Shared References
+
+These files are maintained at the `imperva-cwaf/` skill group level and are the
+single source of truth for all sub-skills. Do NOT duplicate their content.
+
+| Reference | Description |
+|-----------|-------------|
+| `../references/skill-dev-standard.md` | Dev standard: template structure, credential rules, known API behaviors, pitfalls |
+| `../references/credential-and-identifier-policy.md` | Credential/identifier sourcing rules (Bitwarden bws run) |
+| `../references/shell-template-pattern.md` | Shell template patterns (GET→modify→PUT, form-encoded POST, header format) |
+
 ## Parameters
 
 ### Path Parameters
@@ -42,7 +53,7 @@ GET https://api.imperva.com/sites-mgmt/v3/sites
 
 **ALWAYS retrieve API credentials from Bitwarden (bws).** Never use local env vars or hardcoded values.
 
-See `references/credential-retrieval.md` for full details.
+See `../references/credential-and-identifier-policy.md` for full details.
 
 Quick pattern:
 ```bash

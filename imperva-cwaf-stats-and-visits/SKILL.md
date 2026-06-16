@@ -322,7 +322,8 @@ Analysis report for visits. Shows:
 - Each matched session with: ID, time, IP, country, client type/app, entry page, PoP, action count, first result, triggered rules (as human-readable attack types, NOT raw attack codes)
 - Aggregate statistics: by country, client type, application, request result, security rules (as attack types), PoP, top paths
 - Suggested actions based on patterns detected (scanner tools, .git probing, country concentration, etc.)
-- Pointer to `imperva-cwaf-policy-management` skill for whitelist/exception
+- `imperva-cwaf-policy-management`: For whitelist/exception
+- `imperva-cwaf-troubleshoot`: Diagnose performance issues (latency, origin response time, error types)
 
 ⚠️ **Display rule:** Always show human-readable attack type (e.g. "SQL Injection", "Illegal Resource Access", "Custom Rule") — NEVER show raw attack codes like `501589.0` in user-facing output. Use the "Known Attack Codes → Attack Type Mapping" table above to translate.
 
@@ -421,6 +422,7 @@ Request results are found in `actions[].requestResult`.
 - **Use the skill, don't curl manually**: When working with Imperva CWAF, ALWAYS load the relevant skill first and use its provided scripts. Never hand-curl the API — you'll hit endpoints that don't exist, get HTML error pages, and waste time. The skill has the correct endpoints, auth patterns, and retry logic.
 - **WAF Error 15**: Imperva intermittently blocks cloud/AWS IPs. Script auto-retries with exponential backoff. Don't assume script is broken on first 15 error.
 - **Inline Python through bws run**: Complex Python must be in a script file, not inline `python3 -c "..."`. This skill uses a script file.
+- **Rich visual jq filters through bws run**: For complex formatted output with emoji/unicode, write jq to a temp file: `cat > /tmp/format.jq << 'JQEOF' ... JQEOF` then `jq -r -f /tmp/format.jq`. Single-quoted heredoc prevents shell expansion; temp file avoids double-shell quoting. See `imperva-cwaf-troubleshoot/scripts/get-performance-stats.sh` for working example.
 - **SITE_ID required**: Both commands require SITE_ID. CAID is optional but recommended.
 - **Time range `custom`**: Requires both `--start` and `--end` in milliseconds since epoch.
 - **Granularity minimum**: 300000ms (5 minutes). Values below this will be rejected.

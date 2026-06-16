@@ -106,3 +106,4 @@ Each site object contains:
 - `imperva-cwaf-site-onboard`: Onboard a new site
 - `imperva-cwaf-ssl-management`: Configure SSL/TLS
 - `imperva-cwaf-policy-management`: Apply policies
+- `imperva-cwaf-troubleshoot`: Diagnose performance and availability issues (latency, errors, origin response time)

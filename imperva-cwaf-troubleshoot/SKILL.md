@@ -17,6 +17,7 @@ Diagnose website performance and availability issues through Imperva Cloud WAF. 
 | `../references/credential-and-identifier-policy.md` | Credential rules |
 | `../references/shell-template-pattern.md` | Shell template patterns |
 | `../imperva-cwaf-api-manual/api-spec/performance-statistics-api.json` | Performance Statistics API spec |
+| `../imperva-cwaf-api-manual/references/common-pop-codes.md` | Common PoP codes reference |
 
 ## Credential & Identifier Policy (MANDATORY)
 
@@ -218,10 +219,7 @@ SITE_ID=852056322 CAID=2429928 POP=at bws run --project-id <bw_id> -- bash \
 
 ## Common PoP Codes
 
-| PoP Code | Location | Notes |
-|----------|----------|-------|
-| `DMK` | Thailand (Bangkok) | ใช้บ่อยสำหรับ traffic ในไทย |
-| `SIN` | Singapore | ใช้บ่อยสำหรับ traffic ในสิงคโปร์/เอเชียตะวันออกเฉียงใต้ |
+> See shared reference: [`../imperva-cwaf-api-manual/references/common-pop-codes.md`](../imperva-cwaf-api-manual/references/common-pop-codes.md) — includes `DMK` (Thailand/Bangkok), `SIN` (Singapore), and usage examples.
 
 ## Pitfalls
 

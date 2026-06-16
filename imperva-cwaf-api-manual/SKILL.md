@@ -24,6 +24,7 @@ Each file represents a specific API service or functional area. For example:
 - `certificatesUI-api.yaml` - Certificate management API
 - `website-management-api.yaml` - Website settings (TLS/HSTS, etc.)
 - `load-balancing-api.yaml` - Load balancing and failover settings (data centers, servers, LB algorithms)
+- `performance-statistics-api.json` - Application Performance Statistics API v3 (popLatency, originResponseTime, errorResponseTypes per site/account)
 - ... and others.
 
 ## How to List API Specs
@@ -177,10 +178,13 @@ All examples in this skill reference `$IMPERVA_API_ID` and `$IMPERVA_API_KEY` �
 - `imperva-cwaf-ssl-management`: For managing SSL certificates and TLS/HSTS settings.
 - `imperva-cwaf-cache`: For managing cache settings, cache rules, client-side caching, response header caching, and cache purging.
 - `imperva-cwaf-load-balancing`: For managing load balancing, data centers, origin servers, LB algorithms, geo routing, failover, and traffic resume.
+- `imperva-cwaf-troubleshoot`: For troubleshooting website performance and availability — performance statistics (latency, origin response time, errors) with PoP filtering.
+- `imperva-cwaf-troubleshoot`: For diagnosing website performance and availability issues (popLatency, originResponseTime, errorResponseTypes).
 
 ## Support Files
 
 - `references/rule-filter-parameters.md`: Comprehensive list of rule filter parameters with examples and usage guidelines.
 - `references/integrations-api-guide.md`: Practical reference for `api-spec/integrations.yaml` — client apps, geo codes, Imperva IP ranges, and API text inventory endpoints with use cases.
+- `references/jq-tempfile-technique.md`: How to write jq filters to temp files to avoid double-shell quoting issues through `bws run`.
 
 ---

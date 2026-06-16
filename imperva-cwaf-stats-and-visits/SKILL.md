@@ -1,8 +1,8 @@
 ---
 name: imperva-cwaf-stats-and-visits
-description: Retrieve Imperva Cloud WAF site statistics and visit logs — threats, visits, bandwidth, caching, security rules, delivery rules, and session-level visit details with filtering, analysis report, and table/JSON output.
+description: Retrieve Imperva Cloud WAF site statistics and visit logs — threats, visits, bandwidth, caching, security rules, delivery rules, session-level visit details with filtering, analysis report, table/JSON output, and release blocked sessions.
 category: imperva-cwaf
-version: 1.3.0
+version: 1.4.0
 ---
 
 # Imperva CWAF — Statistics & Visits
@@ -24,10 +24,19 @@ Retrieve site-level statistics and visit session logs from Imperva Cloud WAF. Su
 |---------|----------|--------|
 | `stats` | `/api/stats/v1` | POST |
 | `visits` | `/api/visits/v1` | POST |
+| `release` | `/v3/sites/{siteId}/sessions/{sessionId}/release` | POST |
 
-**Base URL:** `https://my.imperva.com`
+**Base URLs:**
+- `stats`, `visits` → `https://my.imperva.com`
+- `release` → `https://api.imperva.com/waf-settings-v2`
 
 ## Operations
+
+> ⚠️ **Session Release vs Exception — คนละอย่างกัน**
+> - **Session Release** (`release`) — ปล่อย blocked session ที่ถูก WAF block อยู่แล้ว (user request) เป็นการ action ราย session ไม่ได้เปลี่ยน policy
+> - **Exception / Whitelist** — สร้างกฎยกเว้นใน security policy เพื่อไม่ block traffic ในอนาคต ใช้ `imperva-cwaf-policy-management` แทน
+>
+> อย่าสับสัน! Release session ไม่ได้สร้าง exception และ exception ไม่ได้ release session ที่ block อยู่แล้ว
 
 ### stats — Get Site Statistics
 
@@ -126,6 +135,42 @@ These filters are applied in Python after fetching visits from the API. Combine 
 2. All returned visits are scanned against client-side filters
 3. Only visits matching ALL specified client-side filters are shown
 4. Each visit must have at least one action matching path/result/ua/attack-code filters
+
+### release — Release Blocked Session
+
+```
+SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- \
+  bash scripts/imperva_release_session.sh --session-id <session_id>
+```
+
+**⚠️ ย้ำ: สำหรับ user request release blocked session เท่านั้น ไม่เกี่ยวกับ exception/whitelist**
+
+**Parameters:**
+
+| Parameter | Required | Default | Description |
+|-----------|----------|---------|-------------|
+| `--site-id` | Yes* | `SITE_ID` env | Site ID |
+| `--session-id` | Yes | — | Session ID to release (ได้จาก visits: `actions[].incidentId` หรือจาก `fields.id` ของ visit) |
+| `--caid` | No | `CAID` env | Account CAID |
+| `--format` | No | `table` | `table` (human-readable) หรือ `json` (raw) |
+
+**Session ID ได้จากไหน:**
+- จาก `visits` output → แต่ละ visit มี `fields.id` หรือ `actions[].incidentId`
+- จาก incident ID format: `<visit_id>-<number>` → ใช้ visit_id ส่วนแรกเป็น session_id
+
+**ตัวอย่าง flow จริง:**
+```
+# 1. ค้นหา blocked session ก่อน
+SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+  python3 scripts/imperva_get_stats.py visits \
+    --filter-result "req_blocked_security" \
+    --page-size 20 --format table
+
+# 2. เอา session/visit ID จากผลลัพธ์ → release
+SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+  bash scripts/imperva_release_session.sh \
+    --session-id "526000340320036642"
+```
 
 ## Response Structure
 
@@ -324,6 +369,7 @@ Request results are found in `actions[].requestResult`.
 - **Client-side filters**: When using `--filter-path`, `--filter-result`, `--filter-ua`, etc., increase `--page-size` to 100 to fetch enough data for post-filtering. Filters are applied per-visit: a visit matches if ANY of its actions match the filter criteria.
 - **Rich output required**: User expects visually formatted output with box-drawing, emoji, and bar charts. Never output plain text tables or raw data without formatting when in table mode.
 - **bws run quoting**: When passing arguments with spaces (e.g. `--filter-type "Hacking Tool"`) through `bws run`, the outer shell may split them. Use the wrapper script (`scripts/imperva-visits.sh`) or write args to a temp file. Single-word values (e.g. `HackingTool`) work without quoting.
+- **Release ≠ Exception**: `release` command ปล่อย blocked session ที่ถูก block อยู่แล้ว (user request) เท่านั้น — ไม่ได้สร้าง exception/whitelist ใน security policy ถ้าต้องการให้ traffic ไม่ถูก block ในอนาคต ให้ใช้ `imperva-cwaf-policy-management` แทน อย่าสับสัน!
 
 ## Examples
 
@@ -431,6 +477,31 @@ SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
     --filter-app "Go HTTP library" \
     --page-size 100 \
     --format report
+
+# ── Release blocked session ──
+
+# Release a specific blocked session (user request only, NOT exception)
+SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+  bash scripts/imperva_release_session.sh \
+    --session-id "526000340320036642"
+
+# Release with JSON output
+SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+  bash scripts/imperva_release_session.sh \
+    --session-id "526000340320036642" \
+    --format json
+
+# Typical flow: find blocked session → release
+# Step 1: Find blocked sessions
+SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+  python3 scripts/imperva_get_stats.py visits \
+    --filter-result "req_blocked_security" \
+    --page-size 20 --format table
+
+# Step 2: Release using session ID from step 1
+SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+  bash scripts/imperva_release_session.sh \
+    --session-id "<session_id_from_step1>"
 ```
 
 ## Related Skills

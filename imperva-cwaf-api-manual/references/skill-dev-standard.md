@@ -67,8 +67,37 @@ curl -s -X PUT "https://my.imperva.com/api/prov/v2/sites/${SITE_ID}/settings/...
 | Policies | POST appends, PUT replaces entirely | — |
 | Custom rules | Flat JSON body (no `data` wrapper) | — |
 | Security v1 `/sites/configure/security` | POST with form-encoded params per rule | — |
-| Bot config v3 `/settings/botConfiguration` | POST with JSON body; full replacement | — |
+| Bot v3 `/settings/botConfiguration` | POST with JSON body; full replacement | — |
 | Integrations `/api/integration/v1/*` | POST (or GET for /ips); read-only lookup, no site ID or CAID needed | — |
+| Session release `/v3/sites/{siteId}/sessions/{sessionId}/release` | POST only; base URL is `api.imperva.com/waf-settings-v2` (NOT `my.imperva.com`); returns `ExternalResponse` wrapper with `data[].successful` + `data[].message`; 400=invalid session, 404=site not found | — |
+
+## Script Language Selection
+
+**Prefer bash (.sh) for simple API operations**, Python only when needed:
+
+| Use Bash when... | Use Python when... |
+|------------------|-------------------|
+| Single POST/GET with curl | Client-side filtering of response data |
+| Simple JSON parse with `python3 -c` one-liner | Complex data transformation / aggregation |
+| No retry logic beyond simple loop | Rich formatted output (box-drawing, emoji, bar charts) |
+| Straightforward error code mapping | Multi-step API orchestration |
+
+**Rule of thumb:** If the script is mostly `curl` + a little `jq`/`python3 -c` for JSON parsing, use bash. If it's mostly data processing with a curl call inside, use Python.
+
+## Script-per-Operation Pattern
+
+Each distinct operation gets its own script file. Don't lump unrelated operations into one monolithic script:
+
+```
+scripts/
+├── imperva_get_stats.py          # stats + visits (shared API, shared client-side filter logic)
+├── imperva_release_session.sh    # release blocked session (different base URL, simple POST)
+├── imperva-visits.sh             # wrapper for visits (handles bws run quoting)
+└── update-<feature>.sh           # per-feature update scripts
+```
+
+**When to split:** Different base URL, different auth pattern, or operation is conceptually independent → separate file.
+**When to combine:** Shared API surface, shared helper functions, operations always used together → one file.
 
 ## Common Pitfalls
 
@@ -80,6 +109,7 @@ curl -s -X PUT "https://my.imperva.com/api/prov/v2/sites/${SITE_ID}/settings/...
 - **Cache rule ID field**: `rule_id` not `id` in POST response.
 - **Security v1 uses form-encoded POST**: Not JSON body; use `--data-urlencode` for params.
 - **Bot v3 uses POST for update**: Not PUT. GET first, modify, then POST the full object.
+- **Session release ≠ exception**: Release frees a blocked session (user request). It does NOT create a whitelist/exception policy. Use `imperva-cwaf-policy-management` for exceptions.
 
 ## Skill File Structure
 

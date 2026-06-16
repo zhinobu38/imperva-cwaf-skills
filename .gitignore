@@ -6,3 +6,4 @@ Thumbs.db
 *.swp
 *.swo
 *~
+imperva-cwaf-stats-and-visits/scripts/__pycache__/

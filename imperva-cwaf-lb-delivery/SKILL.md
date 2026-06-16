@@ -24,7 +24,7 @@ Manage origin servers, load balancing, compression, redirection, and error pages
 
 **ALWAYS use the provided scripts. Do NOT write inline curl or Python.**
 
-All scripts at: `~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/templates/`
+All scripts at: `~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/`
 
 ---
 
@@ -36,7 +36,7 @@ Manage delivery settings (compression, image compression, network, redirection, 
 
 ```bash
 SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
-  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/templates/get-delivery.sh
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/get-delivery.sh
 ```
 
 Optional: `SECTIONS=compression,image_compression,network,redirection,custom_error_page` to filter.
@@ -46,7 +46,7 @@ Optional: `SECTIONS=compression,image_compression,network,redirection,custom_err
 ```bash
 SITE_ID=<id> CAID=<caid> COMPRESSION_TYPE=BROTLI \
   bws run --project-id <bw_id> -- bash \
-  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/templates/update-delivery-mode.sh
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/update-delivery-mode.sh
 ```
 
 Env vars: `COMPRESSION_TYPE`, `FILE_COMPRESSION`, `MINIFY_JS`, `MINIFY_CSS`, `MINIFY_STATIC_HTML`
@@ -56,7 +56,7 @@ Env vars: `COMPRESSION_TYPE`, `FILE_COMPRESSION`, `MINIFY_JS`, `MINIFY_CSS`, `MI
 ```bash
 SITE_ID=<id> CAID=<caid> COMPRESS_JPEG=true COMPRESS_PNG=true \
   bws run --project-id <bw_id> -- bash \
-  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/templates/update-image-compression.sh
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/update-image-compression.sh
 ```
 
 ### Update Network Settings
@@ -64,7 +64,7 @@ SITE_ID=<id> CAID=<caid> COMPRESS_JPEG=true COMPRESS_PNG=true \
 ```bash
 SITE_ID=<id> CAID=<caid> ENABLE_HTTP2=true HTTP2_TO_ORIGIN=false \
   bws run --project-id <bw_id> -- bash \
-  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/templates/update-network.sh
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/update-network.sh
 ```
 
 ### Update Redirection Settings
@@ -72,7 +72,7 @@ SITE_ID=<id> CAID=<caid> ENABLE_HTTP2=true HTTP2_TO_ORIGIN=false \
 ```bash
 SITE_ID=<id> CAID=<caid> REDIRECT_HTTP_TO_HTTPS=true \
   bws run --project-id <bw_id> -- bash \
-  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/templates/update-redirection.sh
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/update-redirection.sh
 ```
 
 ### Set Custom Error Page
@@ -81,14 +81,14 @@ SITE_ID=<id> CAID=<caid> REDIRECT_HTTP_TO_HTTPS=true \
 SITE_ID=<id> CAID=<caid> ERROR_TYPE=access_denied \
   ERROR_HTML='<html><body>Access Denied</body></html>' \
   bws run --project-id <bw_id> -- bash \
-  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/templates/set-error-page.sh
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/set-error-page.sh
 ```
 
 ### Restore Default Delivery Settings
 
 ```bash
 SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
-  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/templates/restore-defaults.sh
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/restore-defaults.sh
 ```
 
 ### Delivery Settings Reference
@@ -115,7 +115,7 @@ Manage load balancing, data center, and origin server settings for a site.
 
 ```bash
 SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
-  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/templates/get-load-balancing.sh
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/get-load-balancing.sh
 ```
 
 ### Update Load Balancing Configuration
@@ -125,14 +125,14 @@ SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
 # Step 2: Modify JSON
 # Step 3: Pipe modified JSON into update script
 SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
-  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/templates/update-load-balancing.sh < modified.json
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/update-load-balancing.sh < modified.json
 ```
 
 ### Resume Traffic to Active DCs
 
 ```bash
 SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
-  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/templates/resume-dc.sh
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/resume-dc.sh
 ```
 
 ### Global LB Algorithms

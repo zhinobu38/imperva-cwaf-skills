@@ -2,12 +2,12 @@
 name: imperva-cwaf-basic-security
 description: Manage Imperva Cloud WAF basic security settings — backdoor protection, DDoS protection, and bot access control.
 category: imperva-cwaf
-version: 1.0.0
+version: 2.0.0
 ---
 
-# Imperva CWAF Basic Security Skill
+# Imperva CWAF Basic Security
 
-Manage basic security settings for a site via the Imperva Cloud WAF API.
+Manage basic security settings (backdoor, DDoS, bot control) for a site via the Imperva Cloud WAF API.
 
 ## Credential & Identifier Policy (MANDATORY)
 
@@ -15,256 +15,133 @@ Manage basic security settings for a site via the Imperva Cloud WAF API.
 |-------|--------|--------|
 | `IMPERVA_API_ID` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
 | `IMPERVA_API_KEY` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
-| `SITE_ID` | User / memory / `imperva-cwaf-get-site-detail` skill | Pass as env var |
-| `CAID` | User / memory / `imperva-cwaf-get-site-detail` skill | Pass as env var |
+| `SITE_ID` | User / memory / get-site-detail | Pass as env var |
+| `CAID` | User / memory / get-site-detail | Pass as env var |
 
-- **NEVER** hardcode credentials or identifiers
-- bws injects only `IMPERVA_API_ID` + `IMPERVA_API_KEY`
+**NEVER hardcode credentials or identifiers.**
 
-### Correct Usage Pattern
+## ⚡ MANDATORY: Use the Scripts
+
+**ALWAYS use the provided scripts. Do NOT write inline curl.**
+
+All scripts at: `~/.hermes/skills/imperva-cwaf/imperva-cwaf-basic-security/templates/`
+
+### Get Current Security Status
 
 ```bash
-SITE_ID=852056322 CAID=2429928 \
-  bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9 \
-  -- bash templates/set-backdoor.sh
+SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-basic-security/templates/get-security.sh
 ```
 
-## Shared References
-
-These files are maintained at the `imperva-cwaf/` skill group level and are the
-single source of truth for all sub-skills. Do NOT duplicate their content.
-
-| Reference | Description |
-|-----------|-------------|
-| `../references/skill-dev-standard.md` | Dev standard: template structure, credential rules, known API behaviors, pitfalls |
-| `../references/credential-and-identifier-policy.md` | Credential/identifier sourcing rules (Bitwarden bws run) |
-| `../references/shell-template-pattern.md` | Shell template patterns (GET→modify→PUT, form-encoded POST, header format) |
-
-## API Endpoints
-
-| Feature | Method | Endpoint |
-|---------|--------|----------|
-| Get security config | POST | `/api/prov/v1/sites/status` |
-| Backdoor / DDoS / Bot control | POST | `/api/prov/v1/sites/configure/security` |
-| Bot config (v3 lists) | GET | `/api/prov/v3/sites/{extSiteId}/settings/botConfiguration` |
-| Bot config (v3 lists) | POST | `/api/prov/v3/sites/{extSiteId}/settings/botConfiguration` |
-
-Base URL: `https://my.imperva.com`
-
-> **Looking up client app IDs/types for bot configuration?** Use the integrations script:
-> ```bash
-> bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9 -- python3 \
->   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-api-manual/scripts/integrations.py \
->   clapps [--type TYPE] [--limit N]
-> ```
-> Common types: `Browser`, `SearchBot`, `Crawler`, `HackingTool`, `VulnerabilityScanner`, `MaskingProxy`, `SiteHelper`, `Unknown`.
-> See `imperva-cwaf-api-manual` → `references/integrations-api-guide.md` section 1.
-
-All v1 POST endpoints use `Content-Type: application/x-www-form-urlencoded`.
-
----
-
-## Feature 1: Backdoor Protection
-
-### Parameters
-
-| Parameter | Required | Values |
-|-----------|----------|--------|
-| `rule_id` | ✅ | `api.threats.backdoor` |
-| `security_rule_action` | ✅ | `api.threats.action.quarantine_url` \| `api.threats.action.alert` \| `api.threats.action.disabled` |
-| `quarantined_urls` | ❌ | Full URL path to remove from quarantine |
-
-### Actions
-
-| Action | Description |
-|--------|-------------|
-| `api.threats.action.quarantine_url` | Auto-quarantine detected backdoor URLs |
-| `api.threats.action.alert` | Alert only, don't block |
-| `api.threats.action.disabled` | Disable backdoor protection |
-
-### Usage Examples
+### Backdoor Protection
 
 ```bash
-# Enable quarantine mode
+# Enable quarantine
 SITE_ID=<id> CAID=<caid> ACTION=api.threats.action.quarantine_url \
-  bws run ... -- bash templates/set-backdoor.sh
+  bws run --project-id <bw_id> -- bash templates/set-backdoor.sh
 
 # Alert only
 SITE_ID=<id> CAID=<caid> ACTION=api.threats.action.alert \
-  bws run ... -- bash templates/set-backdoor.sh
+  bws run --project-id <bw_id> -- bash templates/set-backdoor.sh
 
 # Disable
 SITE_ID=<id> CAID=<caid> ACTION=api.threats.action.disabled \
-  bws run ... -- bash templates/set-backdoor.sh
+  bws run --project-id <bw_id> -- bash templates/set-backdoor.sh
 
 # Remove URL from quarantine
 SITE_ID=<id> CAID=<caid> ACTION=api.threats.action.quarantine_url QUARANTINE_URL=/bad.php \
-  bws run ... -- bash templates/set-backdoor.sh
+  bws run --project-id <bw_id> -- bash templates/set-backdoor.sh
 ```
 
----
-
-## Feature 2: DDoS Protection
-
-### Parameters
-
-| Parameter | Required | Default | Values |
-|-----------|----------|---------|--------|
-| `rule_id` | ✅ | — | `api.threats.ddos` |
-| `activation_mode` | ❌ | `auto` | `off` \| `auto` \| `on` \| `adaptive` |
-| `ddos_traffic_threshold` | ❌ | `750` | 10–10000 (requests/sec) |
-| `unknown_clients_challenge` | ❌ | `none` | `none` \| `cookies` \| `javascript` \| `captcha` |
-| `block_non_essential_bots` | ❌ | `true` | `true` \| `false` |
-
-Full parameter name for activation_mode is `api.threats.ddos.activation_mode.{value}`.
-
-### Activation Modes
-
-| Mode | Description |
-|------|-------------|
-| `off` | Disabled even under attack |
-| `auto` | Activates automatically when attack suspected |
-| `on` | Always enabled |
-| `adaptive` | Adaptive threshold based on site traffic |
-
-### Usage Examples
+### DDoS Protection
 
 ```bash
-# Auto mode with defaults
+# Auto mode (default)
 SITE_ID=<id> CAID=<caid> ACTIVATION_MODE=auto \
-  bws run ... -- bash templates/set-ddos.sh
+  bws run --project-id <bw_id> -- bash templates/set-ddos.sh
+
+# Auto with custom threshold and challenge action
+SITE_ID=<id> CAID=<caid> ACTIVATION_MODE=auto TRAFFIC_THRESHOLD=100 UNKNOWN_CLIENTS_CHALLENGE=javascript \
+  bws run --project-id <bw_id> -- bash templates/set-ddos.sh
 
 # Adaptive with custom threshold
 SITE_ID=<id> CAID=<caid> ACTIVATION_MODE=adaptive TRAFFIC_THRESHOLD=1500 \
-  bws run ... -- bash templates/set-ddos.sh
+  bws run --project-id <bw_id> -- bash templates/set-ddos.sh
 
-# Disable DDoS protection
+# Disable
 SITE_ID=<id> CAID=<caid> ACTIVATION_MODE=off \
-  bws run ... -- bash templates/set-ddos.sh
-
-# Challenge unknown clients with CAPTCHA
-SITE_ID=<id> CAID=<caid> UNKNOWN_CLIENTS_CHALLENGE=captcha \
-  bws run ... -- bash templates/set-ddos.sh
+  bws run --project-id <bw_id> -- bash templates/set-ddos.sh
 ```
 
----
-
-## Feature 3: Bot Access Control
-
-Two API versions are available:
-
-### v1 — Block/Challenge Toggle (simple)
-
-| Parameter | Required | Default | Values |
-|-----------|----------|---------|--------|
-| `rule_id` | ✅ | — | `api.threats.bot_access_control` |
-| `block_bad_bots` | ❌ | `true` | `true` \| `false` |
-| `challenge_suspected_bots` | ❌ | `true` | `true` \| `false` |
+### Bot Access Control (v1 — simple toggle)
 
 ```bash
-# Block bad bots + challenge suspected bots
 SITE_ID=<id> CAID=<caid> BLOCK_BAD_BOTS=true CHALLENGE_SUSPECTED_BOTS=true \
-  bws run ... -- bash templates/set-bot-control.sh
-
-# Disable bot blocking
-SITE_ID=<id> CAID=<caid> BLOCK_BAD_BOTS=false \
-  bws run ... -- bash templates/set-bot-control.sh
+  bws run --project-id <bw_id> -- bash templates/set-bot-control.sh
 ```
 
-### v3 — Managed Bot Lists (granular)
+### Bot Configuration (v3 — managed lists)
 
-Use v3 endpoints for fine-grained control over specific bot IDs.
-
-Reference: https://docs.imperva.com/bundle/cloud-application-security/page/settings/client-classification.htm
-
-#### Get current bot config
 ```bash
-SITE_ID=<id> bws run ... -- bash templates/get-bot-config.sh
-```
+# Get current bot config
+SITE_ID=<id> bws run --project-id <bw_id> -- bash templates/get-bot-config.sh
 
-#### Update bot lists
-```bash
-# Block specific bad bots (by ID)
+# Update bot lists
 SITE_ID=<id> MODE=blockbadbots BOT_IDS=6,12,45 \
-  bws run ... -- bash templates/update-bot-config.sh
-
-# Cancel specific good bots (remove from allowlist)
-SITE_ID=<id> MODE=cancelgoodbots BOT_IDS=3 \
-  bws run ... -- bash templates/update-bot-config.sh
+  bws run --project-id <bw_id> -- bash templates/update-bot-config.sh
 ```
-
-**Modes:**
-- `blockbadbots` — Replace the bad bots block list
-- `cancelgoodbots` — Replace the canceled good bots list
 
 ---
 
-## Get Current Security Status
+## Action Reference
 
-```bash
-SITE_ID=<id> CAID=<caid> bws run ... -- bash templates/get-security.sh
-```
+### Backdoor Actions
+| Action | Description |
+|--------|-------------|
+| `api.threats.action.quarantine_url` | Auto-quarantine detected backdoor URLs |
+| `api.threats.action.alert` | Alert only |
+| `api.threats.action.disabled` | Disable backdoor protection |
 
-Returns the `security` section from site status, including current configurations for:
-- `waf.rules` — all WAF rules (bot_access_control, backdoor, ddos, sql_injection, xss, etc.)
-- `waf.acls` — ACL rules
-- `ssl` — SSL detection status
-
----
-
-## Response Structure
-
-v1 POST responses use the standard Imperva result envelope:
-
-```json
-{
-  "res": 0,
-  "res_message": "OK",
-  "debug_info": []
-}
-```
-
-v3 GET bot configuration:
-
-```json
-{
-  "data": [{
-    "badBots": [{"id": 6, "displayName": "BadBot (Scraper)"}],
-    "canceledGoodBots": [{"id": 3, "displayName": "CustomBot (Good Bot)"}]
-  }]
-}
-```
-
-Error codes:
-| Code | Description |
+### DDoS Activation Modes
+| Mode | Description |
 |------|-------------|
-| 9414 | Feature not permitted |
-| 9415 | Operation not allowed |
-| 2 | Invalid input |
+| `off` | Disabled |
+| `auto` | Auto-activate on attack |
+| `on` | Always enabled |
+| `adaptive` | Adaptive threshold |
 
-### Fixed Errors
-| Error | Code |
-|-------|------|
-| `{"code": "ERROR_2002", "status": "404"}` | Site not found |
-| `{"code": "ERROR_2014", "status": "404"}` | Sub-account not found |
+### DDoS Parameters
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `ACTIVATION_MODE` | `auto` | off / auto / on / adaptive |
+| `TRAFFIC_THRESHOLD` | `750` | 10–10000 requests/sec |
+| `UNKNOWN_CLIENTS_CHALLENGE` | `none` | none / cookies / javascript / captcha |
+| `BLOCK_NON_ESSENTIAL_BOTS` | `false` | true / false — do NOT change unless user explicitly asks |
+
+### DDoS Challenge Actions (UNKNOWN_CLIENTS_CHALLENGE)
+| Action | Description |
+|--------|-------------|
+| `none` | No challenge (default) |
+| `cookies` | Cookie challenge |
+| `javascript` | JavaScript challenge |
+| `captcha` | CAPTCHA challenge |
 
 ---
+
+## Response Format
+
+v1 POST: `{"res": 0, "res_message": "OK"}`
+v3 GET bot config: `{"data": [{"badBots": [...], "canceledGoodBots": [...]}]}`
 
 ## Pitfalls
-
-- **NEVER hardcode credentials** — always via `bws run`
-- **NEVER hardcode identifiers** — SITE_ID/CAID from user env var
-- **v1 uses form-encoded POST** — not JSON body; use `--data-urlencode`
-- **Bot v3 requires full replacement** — GET first, modify the array, then POST the whole object
-- **Bot v3 uses POST for update** — not PUT (despite being a full replacement)
-- **Bot v3 clear list** — pass empty BOT_IDS to clear (e.g. `BOT_IDS="" MODE=blockbadbots`)
-- **DDoS threshold range** — 10–10000 only; values outside this range return error 2
-- **DDoS adaptive mode** — requires specific license; returns error 13003 if not available. Use `auto`, `on`, or `off` instead
+- **v1 uses form-encoded POST** — not JSON body
+- **Bot v3 requires full replacement** — GET first, modify, POST whole object
+- **Bot v3 uses POST for update** — not PUT
+- **DDoS threshold range**: 10–10000 only
+- **DDoS adaptive mode** requires specific license — returns `res: 13003` with message "Unable to change DDoS activation mode to adaptive. Your plan does not support this operation." Fallback: use `ACTIVATION_MODE=auto` with explicit `TRAFFIC_THRESHOLD` and `UNKNOWN_CLIENTS_CHALLENGE` instead.
+- **WAF intermittent block (errorCode 15, HTTP 403)**: Imperva's WAF may intermittently block API requests from certain IPs (especially cloud/AWS IPs). Response: `{"errorCode":"15","description":"This request was blocked by our security service"}`. This is NOT a rate limit (rate limit returns HTTP 429) and NOT an auth failure (auth failure returns HTTP 401). It is an IP-based WAF block that typically resolves within seconds to minutes. **Retry with exponential backoff** (5s, 15s, 30s, 60s) until the request succeeds. Do NOT assume credentials are wrong when seeing errorCode 15.
 
 ## Related Skills
-
-- `imperva-cwaf-api-manual`: API specification browser (site_management.yaml)
-- `imperva-cwaf-get-site-detail`: Get site IDs and account info
+- `imperva-cwaf-get-site-detail`: Get site IDs
 - `imperva-cwaf-policy-management`: WAF policies (ACL, whitelist)
-- `imperva-cwaf-custom-rule`: Custom rules management
-- `imperva-cwaf-ssl-management`: SSL/TLS certificate and HSTS settings
+- `imperva-cwaf-custom-rule`: Custom rules

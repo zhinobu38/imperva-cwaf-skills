@@ -79,6 +79,12 @@ curl -s -X PUT "https://my.imperva.com/api/prov/v2/sites/${SITE_ID}/settings/...
 - **Cache rule ID field**: `rule_id` not `id` in POST response.
 - **Security v1 uses form-encoded POST**: Not JSON body; use `--data-urlencode` for params.
 - **Bot v3 uses POST for update**: Not PUT. GET first, modify, then POST the full object.
+- **Parameter passing**: Always support BOTH env var and positional arg: `${CAID:-${1:-default}}`. SKILL.md may document env var usage but users may pass positional args — script must handle both.
+- **bws run quoting**: Special characters (tab `\t`, newline) in multiline strings get mangled through `bws run`. Always test scripts through `bws run` for real — never assume from reading code alone.
+- **column -t with tab separator**: `column -s "\t"` breaks through `bws run` (expands to literal "t"). Use `awk -F'\t'` as intermediate step before `column -t`.
+- **jq @tsv output**: Pipe through `awk -F'\t'` before `column -t` to avoid multi-line array issues.
+- **Error 15 (WAF block) vs real API error**: Imperva WAF intermittently blocks requests from cloud/AWS IPs with errorCode 15. This is NOT a schema/auth error. Retry with exponential backoff (5s, 15s, 30s, 60s) before concluding the script is wrong.
+- **Test all output formats**: When script supports multiple output formats (table, json, etc.), test EVERY format through `bws run` — testing only one format does not guarantee others work.
 
 ## Skill File Structure
 

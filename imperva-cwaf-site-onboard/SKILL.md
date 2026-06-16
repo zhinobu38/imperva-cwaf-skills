@@ -2,17 +2,14 @@
 name: imperva-cwaf-site-onboard
 description: Onboard a new website to Imperva Cloud WAF using the API
 category: imperva-cwaf
-version: 1.0.0
+version: 2.0.0
 ---
 
 # Imperva CWAF Site Onboarding
 
-This skill provides functionality to onboard a new website to Imperva Cloud WAF using the Sites Management API.
+Onboard a new website to Imperva Cloud WAF using the Sites Management API.
 
 ## Shared References
-
-These files are maintained at the `imperva-cwaf/` skill group level and are the
-single source of truth for all sub-skills. Do NOT duplicate their content.
 
 | Reference | Description |
 |-----------|-------------|
@@ -20,95 +17,71 @@ single source of truth for all sub-skills. Do NOT duplicate their content.
 | `../references/credential-and-identifier-policy.md` | Credential/identifier sourcing rules (Bitwarden bws run) |
 | `../references/shell-template-pattern.md` | Shell template patterns (GET→modify→PUT, form-encoded POST, header format) |
 
-## API Endpoint
-```
-POST https://api.imperva.com/sites-mgmt/v3/sites/onboard
-```
+## Credential & Identifier Policy (MANDATORY)
 
-## Parameters
+| Value | Source | Method |
+|-------|--------|--------|
+| `IMPERVA_API_ID` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
+| `IMPERVA_API_KEY` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
+| `CAID` | User / memory | Pass as env var |
+| `DOMAIN` | User input | Pass as env var |
+| `ORIGIN_IP` | User input | Pass as env var |
 
-### Query Parameters
-- `caid` (required): The Imperva ID of the account or subaccount
+**NEVER hardcode credentials or identifiers.**
 
-### Request Body (JSON)
-- `domain` (required): The fully qualified domain name to onboard
-- `servers` (required): Array of origin server IP addresses
-- `name` (required): A friendly name for the site (usually same as domain)
-- `generateCertificate` (optional): Whether to generate a certificate for the site (default: true)
-- `type` (optional): The type of service, e.g., "CLOUD_WAF" (default: "CLOUD_WAF")
+## ⚡ MANDATORY: Use the Scripts
 
-### Headers
-- `Accept: application/json`
-- `Content-Type: application/json`
-- `x-API-Id`: Your Imperva API ID (environment variable `IMPERVA_API_ID`)
-- `x-API-Key`: Your Imperva API key (environment variable `IMPERVA_API_KEY`)
+**ALWAYS use the provided scripts. Do NOT write inline curl.**
 
-## Pre-run Checklist
-Before executing the onboarding, please verify the following parameters:
-- **CAID**: Ensure you are targeting the correct Imperva account/subaccount.
-- **Domain**: The fully qualified domain name (e.g., `testagent.thtechs.com`) must be correct and owned by you.
-- **Servers**: The origin server IP address(es) must be accurate and reachable.
-- **Name**: A friendly identifier for the site (typically same as domain).
-- **GenerateCertificate**: Set to `true` if you want Imperva to provision a certificate; otherwise provide an existing `certificateId`.
-- **Type**: Usually `CLOUD_WAF` unless you are using a different service.
+### Step 1: Check if site already exists
 
-Confirm all values are correct before proceeding to avoid misconfiguration.
+Use `imperva-cwaf-get-site-detail` skill first. If site exists, skip to Step 3.
 
-## Example Usage
+### Step 2: Onboard the site
 
-This skill provides reference information for Imperva CWAF site onboarding. To use this information:
-
-### Via Command Line (cURL)
 ```bash
-curl --request POST \\
-  --url 'https://api.imperva.com/sites-mgmt/v3/sites/onboard?caid=<YOUR_CAID>' \\
-  --header 'Accept: application/json' \\
-  --header 'Content-Type: application/json' \\
-  --header "x-API-Id: $IMPERVA_API_ID" \\
-  --header "x-API-Key: $IMPERVA_API_KEY" \\
-  --data '{
-    "domain": "thegreat.impervamtth.com",
-    "name": "thegreat.impervamtth.com",
-    "servers": ["119.110.254.25"],
-    "generateCertificate": true,
-    "type": "CLOUD_WAF"
-  }'
+CAID=<caid> DOMAIN=<domain> ORIGIN_IP=<ip> \
+  bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9 \
+  -- bash ~/.hermes/skills/imperva-cwaf/imperva-cwaf-site-onboard/scripts/onboard.sh
 ```
 
-### Via Hermes Agent (Reference Implementation)
-When building automation in Hermes Agent, reference this skill for:
-1. API endpoint and parameters
-2. Required headers and credentials
-3. Error handling and troubleshooting
-4. Pre-run checklist items
+Returns: `siteId`, `name`, `cname`, `siteStatus`
 
-You can then implement the API call using:
-- `terminal` tool with curl commands
-- `execute_code` tool with Python requests
-- Or other HTTP client methods available in your automation
-## Response
-On success (HTTP 200), the response includes:
-- Site configuration details
-- DNS validation instructions (SSL section)
-- Network configuration instructions
+### Step 3: Get CNAME for DNS configuration
+
+```bash
+SITE_ID=<id> CAID=<caid> \
+  bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9 \
+  -- bash ~/.hermes/skills/imperva-cwaf/imperva-cwaf-site-onboard/scripts/get-site-cname.sh
+```
+
+### Step 4: Update DNS at your provider
+
+Create CNAME record: `<domain> CNAME <cname from step 3>`
+
+### Step 5: Verify
+
+```bash
+dig CNAME <domain> +short
+```
+
+Site status will be `NOT_CONFIGURED` until DNS propagates.
 
 ## Error Handling
-- HTTP 403: Request blocked by Imperva security service (check status.imperva.com)
-- HTTP 400: Bad request (invalid parameters)
-- HTTP 401: Unauthorized (invalid credentials)
-- HTTP 404: Not found
-- HTTP 500: Internal server error
 
-## Troubleshooting
-- **Name already exists for account**: If you receive error `{"status":400,"detail":"Name already exists for account","field":"name"}`, it means the site name you specified already exists in the target Imperva account (CAID). To resolve:
-  1. Use a different site name (e.g., add a prefix/suffix or use a subdomain)
-  2. Or check existing sites in your account to manage the existing site instead of creating a new one
-  3. Verify you're targeting the correct CAID (account ID) - an incorrect CAID may cause unexpected conflicts
+| Error | Resolution |
+|-------|------------|
+| `400 "Name already exists for account"` | Site already onboarded — use get-site-detail instead |
+| `401 Unauthorized` | Check Bitwarden credentials |
+| `403 Forbidden` | Check Imperva status first |
 
-## Notes
-- Requires IMPERVA_API_ID and IMPERVA_API_KEY environment variables
-- May require IP whitelisting in your Imperva account
-- The onboarding process provides SSL and network configuration instructions that must be followed to complete setup
-- Part of the imperva-cwaf skill set for Imperva Cloud WAF API interactions
-- Always verify the CAID (account ID) you are targeting; providing an incorrect CAID may onboard the site to the wrong account.
-- See `../references/credential-and-identifier-policy.md` for credential sourcing standards.
+## Pitfalls
+- **Site already exists**: If you get `400 "Name already exists for account"`, the site is already onboarded — just retrieve its CNAME
+- **DNS propagation delay**: Site shows `NOT_CONFIGURED` until DNS propagates (minutes to hours)
+- **Origin IP**: Get current A record via `dig A <domain> +short` before onboarding
+
+## Related Skills
+- `imperva-cwaf-get-site-detail`: Check if site exists / get site ID
+- `imperva-cwaf-ssl-management`: Configure SSL/TLS after onboarding
+- `imperva-cwaf-policy-management`: Apply policies after onboarding
+- `imperva-cwaf-status-check`: Check service status first

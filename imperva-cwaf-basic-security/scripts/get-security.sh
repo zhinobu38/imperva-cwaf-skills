@@ -1,5 +1,7 @@
 #!/bin/bash
-# Get Site Security Configuration (WAF rules: backdoor, DDoS, bot access control)
+# Get Site Security Configuration
+# Endpoint: POST https://my.imperva.com/api/prov/v1/sites/status
+# Returns: security.waf.rules[] — backdoor, DDoS, bot control, and other WAF rules
 #
 # Credential source: Bitwarden (bws run) — DO NOT hardcode
 #   IMPERVA_API_ID, IMPERVA_API_KEY injected by bws run
@@ -13,7 +15,7 @@
 SITE_ID="${SITE_ID:?Set SITE_ID (from user input or imperva-cwaf-get-site-detail)}"
 CAID="${CAID:?Set CAID (from user input or imperva-cwaf-get-site-detail)}"
 
-# Get full site status which includes security config
+# POST /sites/status — response contains .security.waf.rules[] with all security rules
 curl -s -X POST "https://my.imperva.com/api/prov/v1/sites/status" \
   -H "Accept: application/json" \
   -H "Content-Type: application/x-www-form-urlencoded" \

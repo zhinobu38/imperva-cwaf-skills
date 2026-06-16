@@ -1,7 +1,10 @@
 # Policy Examples
 
 Practical end-to-end examples for common Imperva CWAF policy tasks.
-Replace `<caid>`, `<api_id>`, `<api_key>`, `<siteId>` with your values.
+All examples use **flat JSON** (NO `{"data": {...}}` wrapper) — this matches the actual API behavior.
+Replace `<caid>`, `<policyId>`, `<settingsId>`, `<siteId>` with real values.
+
+> These examples are for ad-hoc curl usage. For daily operations, prefer the scripts in `scripts/`.
 
 ---
 
@@ -11,41 +14,38 @@ Replace `<caid>`, `<api_id>`, `<api_key>`, `<siteId>` with your values.
 ```bash
 curl -s -X POST "https://api.imperva.com/policies/v2/policies?caid=<caid>" \
   -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
   -H "x-API-Id: <api_id>" \
   -H "x-API-Key: <api_key>" \
-  -H "Content-Type: application/json" \
   -d '{
-    "data": {
-      "name": "Block High-Risk Countries",
-      "policyType": "ACL",
-      "description": "Blocks traffic from high-risk countries",
-      "enabled": true
-    }
+    "name": "Block High-Risk Countries",
+    "policyType": "ACL",
+    "description": "Blocks traffic from high-risk countries",
+    "enabled": true
   }' | jq .
 ```
+Response: `{"value": {"id": 2106016, ...}, "isError": false}`
 
-### Step 2: Note the policy ID from response, then add GEO rule
+### Step 2: Add GEO rule (POST appends)
 ```bash
 curl -s -X POST "https://api.imperva.com/policies/v2/policies/<policyId>?caid=<caid>" \
   -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
   -H "x-API-Id: <api_id>" \
   -H "x-API-Key: <api_key>" \
-  -H "Content-Type: application/json" \
   -d '{
-    "data": {
-      "policySettings": [
-        {
-          "policySettingType": "GEO",
-          "settingsAction": "BLOCK",
-          "data": {
-            "geo": {
-              "countries": ["RU", "CN", "KP"],
-              "continents": []
-            }
+    "policySettings": [
+      {
+        "policySettingType": "GEO",
+        "settingsAction": "BLOCK",
+        "data": {
+          "geo": {
+            "countries": ["RU", "CN", "KP"],
+            "continents": []
           }
         }
-      ]
-    }
+      }
+    ]
   }' | jq .
 ```
 
@@ -62,28 +62,26 @@ curl -s -X POST "https://api.imperva.com/policies/v2/assets/WEBSITE/<siteId>/pol
 ## 2. Create ACL Policy to Block Specific IPs
 
 ```bash
-# Create policy
+# Create policy (flat JSON — no data wrapper)
 curl -s -X POST "https://api.imperva.com/policies/v2/policies?caid=<caid>" \
   -H "x-API-Id: <api_id>" -H "x-API-Key: <api_key>" \
   -H "Content-Type: application/json" \
-  -d '{"data":{"name":"Block Malicious IPs","policyType":"ACL","enabled":true}}' | jq .
+  -d '{"name":"Block Malicious IPs","policyType":"ACL","enabled":true}' | jq .
 
 # Add IP setting (POST to append)
 curl -s -X POST "https://api.imperva.com/policies/v2/policies/<policyId>?caid=<caid>" \
   -H "x-API-Id: <api_id>" -H "x-API-Key: <api_key>" \
   -H "Content-Type: application/json" \
   -d '{
-    "data": {
-      "policySettings": [
-        {
-          "policySettingType": "IP",
-          "settingsAction": "BLOCK",
-          "data": {
-            "ips": ["198.51.100.0/24", "203.0.113.50"]
-          }
+    "policySettings": [
+      {
+        "policySettingType": "IP",
+        "settingsAction": "BLOCK",
+        "data": {
+          "ips": ["198.51.100.0/24", "203.0.113.50"]
         }
-      ]
-    }
+      }
+    ]
   }' | jq .
 ```
 
@@ -97,12 +95,10 @@ curl -s -X POST "https://api.imperva.com/policies/v2/policies?caid=<caid>" \
   -H "x-API-Id: <api_id>" -H "x-API-Key: <api_key>" \
   -H "Content-Type: application/json" \
   -d '{
-    "data": {
-      "name": "Whitelist Health Checks",
-      "policyType": "WHITELIST",
-      "description": "Allows health check endpoints to bypass security checks",
-      "enabled": true
-    }
+    "name": "Whitelist Health Checks",
+    "policyType": "WHITELIST",
+    "description": "Allows health check endpoints to bypass security checks",
+    "enabled": true
   }' | jq .
 
 # Add URL whitelist setting
@@ -110,20 +106,18 @@ curl -s -X POST "https://api.imperva.com/policies/v2/policies/<policyId>?caid=<c
   -H "x-API-Id: <api_id>" -H "x-API-Key: <api_key>" \
   -H "Content-Type: application/json" \
   -d '{
-    "data": {
-      "policySettings": [
-        {
-          "policySettingType": "URL",
-          "settingsAction": "ALLOW",
-          "data": {
-            "urls": [
-              {"pattern": "PREFIX", "url": "/health/"},
-              {"pattern": "EQUALS", "url": "/ping"}
-            ]
-          }
+    "policySettings": [
+      {
+        "policySettingType": "URL",
+        "settingsAction": "ALLOW",
+        "data": {
+          "urls": [
+            {"pattern": "PREFIX", "url": "/health/"},
+            {"pattern": "EQUALS", "url": "/ping"}
+          ]
         }
-      ]
-    }
+      }
+    ]
   }' | jq .
 ```
 
@@ -132,33 +126,31 @@ curl -s -X POST "https://api.imperva.com/policies/v2/policies/<policyId>?caid=<c
 ## 4. Add Exception to Existing Policy
 
 ```bash
-# First, get the policy with extended=true to see current settings
+# First, get the policy with extended=true to see current settings + setting IDs
 curl -s -G "https://api.imperva.com/policies/v2/policies/<policyId>?caid=<caid>&extended=true" \
   -H "x-API-Id: <api_id>" -H "x-API-Key: <api_key>" | jq .
 
-# Find the policySettings ID you want to add exception to, then POST
+# Find the policySettings[].id you want to add exception to, then POST
 curl -s -X POST "https://api.imperva.com/policies/v2/policies/<policyId>?caid=<caid>" \
   -H "x-API-Id: <api_id>" -H "x-API-Key: <api_key>" \
   -H "Content-Type: application/json" \
   -d '{
-    "data": {
-      "policySettings": [
-        {
-          "id": <settingsId>,
-          "policyDataExceptions": [
-            {
-              "comment": "Allow monitoring IP - expires 2026-12-31",
-              "data": [
-                {
-                  "exceptionType": "IP",
-                  "values": ["10.0.0.0/8"]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+    "policySettings": [
+      {
+        "id": <settingsId>,
+        "policyDataExceptions": [
+          {
+            "comment": "Allow monitoring IP - expires 2026-12-31",
+            "data": [
+              {
+                "exceptionType": "IP",
+                "values": ["10.0.0.0/8"]
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }' | jq .
 ```
 
@@ -172,34 +164,30 @@ curl -s -X POST "https://api.imperva.com/policies/v2/policies?caid=<caid>" \
   -H "x-API-Id: <api_id>" -H "x-API-Key: <api_key>" \
   -H "Content-Type: application/json" \
   -d '{
-    "data": {
-      "name": "WAF Alert-Only Mode",
-      "policyType": "WAF_RULES",
-      "description": "WAF in monitoring/alert-only mode",
-      "enabled": true
-    }
+    "name": "WAF Alert-Only Mode",
+    "policyType": "WAF_RULES",
+    "description": "WAF in monitoring/alert-only mode",
+    "enabled": true
   }' | jq .
 
-# Set SQL Injection to Alert Only
+# Set SQL Injection and XSS to Alert Only
 curl -s -X POST "https://api.imperva.com/policies/v2/policies/<policyId>?caid=<caid>" \
   -H "x-API-Id: <api_id>" -H "x-API-Key: <api_key>" \
   -H "Content-Type: application/json" \
   -d '{
-    "data": {
-      "policySettings": [
-        {
-          "policySettingType": "SQL_INJECTION",
-          "settingsAction": "ALERT"
-        },
-        {
-          "policySettingType": "CROSS_SITE_SCRIPTING",
-          "settingsAction": "ALERT"
-        }
-      ]
-    }
+    "policySettings": [
+      {
+        "policySettingType": "SQL_INJECTION",
+        "settingsAction": "ALERT"
+      },
+      {
+        "policySettingType": "CROSS_SITE_SCRIPTING",
+        "settingsAction": "ALERT"
+      }
+    ]
   }' | jq .
 
-# Apply to site (replaces existing WAF policy)
+# Apply to site (PUT replaces existing WAF policy)
 curl -s -X PUT "https://api.imperva.com/policies/v2/assets/WEBSITE/<siteId>/policies/<policyId>?caid=<caid>" \
   -H "x-API-Id: <api_id>" -H "x-API-Key: <api_key>" | jq .
 ```
@@ -254,8 +242,6 @@ curl -s -X POST "https://api.imperva.com/policies/v2/policies/<newPolicyId>?caid
   -H "x-API-Id: <api_id>" -H "x-API-Key: <api_key>" \
   -H "Content-Type: application/json" \
   -d '{
-    "data": {
-      "name": "Cloned and Modified Policy"
-    }
+    "name": "Cloned and Modified Policy"
   }' | jq .
 ```

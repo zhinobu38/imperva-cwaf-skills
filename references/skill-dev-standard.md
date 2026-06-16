@@ -3,6 +3,8 @@
 This document is the **authoritative development standard** for ALL `imperva-cwaf` skills.
 Every sub-skill references this file — do not duplicate its content.
 
+**Related testing standard:** `testing-standard.md` — mandatory testing procedure after any modification.
+
 ## Template Structure
 
 All Imperva CWAF skills use shell script templates with this standard header:

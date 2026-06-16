@@ -2,7 +2,7 @@
 name: imperva-cwaf-policy-management
 description: Manage Imperva Cloud WAF policies — WAF rules, ACL, Whitelist, and exceptions. Create, modify, apply, and remove policies across sites.
 category: imperva-cwaf
-version: 2.0.0
+version: 2.1.0
 ---
 
 # Imperva CWAF Policy Management
@@ -21,6 +21,7 @@ Manage security policies (WAF Rules, ACL, Whitelist, File Upload) including poli
 | `../references/skill-dev-standard.md` | Dev standard: template structure, credential rules, known API behaviors, pitfalls |
 | `../references/credential-and-identifier-policy.md` | Credential/identifier sourcing rules (Bitwarden bws run) |
 | `../references/shell-template-pattern.md` | Shell template patterns (GET→modify→PUT, form-encoded POST, header format) |
+| `references/policy-types.md` | Policy types, settings actions, URL patterns, and exception types |
 
 ## Credential & Identifier Policy (MANDATORY)
 
@@ -33,6 +34,13 @@ Manage security policies (WAF Rules, ACL, Whitelist, File Upload) including poli
 | `POLICY_ID` | From list/get/create response | Pass as env var |
 
 **NEVER hardcode credentials or identifiers.**
+
+## Setup
+
+```bash
+# Scripts need execute permission (one-time)
+chmod +x ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/*.sh
+```
 
 ## ⚡ MANDATORY: Use the Scripts
 
@@ -72,6 +80,32 @@ CAID=<caid> POLICY_ID=<id> COUNTRIES='["RU","CN"]' ACTION=BLOCK \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/add-geo-setting.sh
 ```
 
+### Add IP Setting to a Policy
+
+```bash
+CAID=<caid> POLICY_ID=<id> IPS='["198.51.100.0/24","10.0.0.1"]' ACTION=BLOCK \
+  bws run --project-id <bw_id> -- bash \
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/add-ip-setting.sh
+```
+
+### Add URL Setting to a Policy
+
+```bash
+CAID=<caid> POLICY_ID=<id> URLS='[{"pattern":"PREFIX","url":"/admin/"}]' ACTION=BLOCK \
+  bws run --project-id <bw_id> -- bash \
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/add-url-setting.sh
+```
+
+### Add Exception to a Policy Setting
+
+```bash
+# First GET the policy to find the setting ID, then:
+CAID=<caid> POLICY_ID=<id> SETTING_ID=<sid> \
+  EXCEPTIONS='[{"exceptionType":"IP","values":["10.0.0.0/8"]}]' \
+  bws run --project-id <bw_id> -- bash \
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/add-exception.sh
+```
+
 ### Apply Policy to a Site
 
 ```bash
@@ -98,6 +132,17 @@ CAID=<caid> POLICY_ID=<id> bws run --project-id <bw_id> -- bash \
 ```bash
 SITE_ID=<id> bws run --project-id <bw_id> -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/list-site-policies.sh
+```
+
+### Update a Policy
+
+```bash
+# Update name and/or description and/or enabled status
+CAID=<caid> POLICY_ID=<id> POLICY_NAME="New Name" bws run --project-id <bw_id> -- bash \
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/update-policy.sh
+
+CAID=<caid> POLICY_ID=<id> ENABLED=false bws run --project-id <bw_id> -- bash \
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/update-policy.sh
 ```
 
 ---
@@ -177,30 +222,7 @@ When `isError` is `true`, `value` contains an error message string.
 
 ## Settings Reference
 
-### Settings Actions
-
-| Action | Description |
-|--------|-------------|
-| BLOCK | Block the request |
-| ALLOW | Allow the request (skip checks) |
-| ALERT | Log but don't block |
-| BLOCK_USER | Block the user session |
-| BLOCK_IP | Block the IP address |
-| IGNORE | Skip this policy rule entirely |
-| HIDDEN_ALERT | Log internally without alerting |
-| MASK | Mask sensitive data |
-
-### Exception Types
-
-| Type | Values Format | Example |
-|------|---------------|---------|
-| GEO | Country/continent codes | TH, US, APAC |
-| IP | IP addresses/CIDRs | 192.168.1.0/24 |
-| URL | URL strings | /admin/login |
-| URL_PREFIX | URL prefix string | /api/ |
-| URL_SUFFIX | URL suffix string | .php |
-| URL_CONTAINS | URL substring | login |
-| USER_AGENT | User agent strings | GoogleBot |
+See `references/policy-types.md` for policy types, settings actions, URL pattern types, and exception types.
 
 ---
 
@@ -212,6 +234,13 @@ When `isError` is `true`, `value` contains an error message string.
 - **Response `isError` is a boolean field**, not an HTTP status code. Check `isError` in the JSON body.
 - **POST appends, PUT replaces.** Use POST to add settings, PUT to fully reconstruct.
 - **WAF_RULES policies cannot be disabled once created.**
+- **Test lifecycle for new/modified scripts:** Create a test policy → verify with GET → delete. Never test write operations on production policies. Always clean up test artifacts.
+- **Review-before-edit:** Before improving a skill, always read all current files first to check if changes were already applied. Another agent or session may have made the same edits — avoid redundant or conflicting work.
+
+## Changelog
+
+- **2.1.0** (2026-06-16): Added add-ip-setting.sh, add-url-setting.sh, add-exception.sh, update-policy.sh. Fixed policy-examples.md (removed erroneous `data` wrapper from all curl bodies). Removed duplicated tables (policy-types.md is now the single source for settings/actions/exceptions). Added Setup section for execute permissions. Merged exception-types.md into policy-types.md. Added review-before-edit pitfall and test lifecycle pitfall.
+- **2.0.0**: Initial version with scripts/ migration from templates/.
 
 ## Related Skills
 

@@ -86,11 +86,13 @@ curl -s -X PUT "https://my.imperva.com/api/prov/v2/sites/${SITE_ID}/settings/...
 ```
 imperva-cwaf-<feature>/
 ├── SKILL.md                    # Main documentation
-└── templates/
+└── scripts/                    ← All executable scripts (GET, PUT, POST, DELETE)
     ├── get-<feature>.sh        # GET operation
     ├── update-<feature>.sh     # PUT operation (GET->modify->PUT pattern)
-    └── set-<subfeature>.sh     # Specialized operations
+    └── <action>-<subfeature>.sh # Other operations (create, delete, purge, etc.)
 ```
+
+**Important:** Use `scripts/` not `templates/` as the script directory. The `templates/` naming convention caused confusion (mixed bash + Python, stale copies). All Imperva CWAF skills now use `scripts/` exclusively for executable scripts. SKILL.md references should point to `scripts/` only.
 
 ## SKILL.md Standard Sections
 

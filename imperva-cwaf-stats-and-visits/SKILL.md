@@ -2,7 +2,7 @@
 name: imperva-cwaf-stats-and-visits
 description: Retrieve Imperva Cloud WAF site statistics and visit logs — threats, visits, bandwidth, caching, security rules, delivery rules, and session-level visit details with filtering, analysis report, and table/JSON output.
 category: imperva-cwaf
-version: 1.2.0
+version: 1.3.0
 ---
 
 # Imperva CWAF — Statistics & Visits
@@ -215,30 +215,56 @@ Raw API JSON response. Suitable for agent/programmatic consumption, piping to `j
 Analysis report for visits. Shows:
 - Filter conditions applied
 - Results summary (total fetched, matched, match rate, all-blocked status)
-- Each matched session with: ID, time, IP, country, client type/app, entry page, PoP, action count, first result, triggered rules, attack codes
-- Aggregate statistics: by country, client type, application, request result, security rules, attack codes, PoP, top paths
+- Each matched session with: ID, time, IP, country, client type/app, entry page, PoP, action count, first result, triggered rules (as human-readable attack types, NOT raw attack codes)
+- Aggregate statistics: by country, client type, application, request result, security rules (as attack types), PoP, top paths
 - Suggested actions based on patterns detected (scanner tools, .git probing, country concentration, etc.)
 - Pointer to `imperva-cwaf-policy-management` skill for whitelist/exception
+
+⚠️ **Display rule:** Always show human-readable attack type (e.g. "SQL Injection", "Illegal Resource Access", "Custom Rule") — NEVER show raw attack codes like `501589.0` in user-facing output. Use the "Known Attack Codes → Attack Type Mapping" table above to translate.
 
 Use this format when investigating "who got blocked and why" or "is this IP/rule causing false positives".
 
 ## Known Reference Data
 
-### Known Attack Codes
+### Known Attack Codes → Attack Type Mapping
 
-Attack codes are found in `actions[].threats[].attackCodes[]`. These identify the specific custom rule or security rule that triggered.
+⚠️ **User-facing output MUST show human-readable attack type, NOT raw attack codes.**
+Raw attack codes (e.g. `501589.0`) are meaningless to users. Always translate using the mapping below before displaying.
 
-| Attack Code | Seen In | Likely Rule |
-|-------------|---------|-------------|
-| `17296460.0` | Most blocked sessions | customRule (high-frequency) |
-| `17489321.0` | Most blocked sessions | customRule (high-frequency) |
-| `901608.0` | UK/US sessions | customRule |
-| `309140.0` | .git/config probes | illegal_resource_access |
-| `306024.0` | .git/config probes | illegal_resource_access |
-| `904780.0` | .git/config probes | illegal_resource_access |
-| `-72500534.2` | Bot POST sessions | customRule (negative code) |
-| `17579496.0` | Login page probes | customRule |
-| `903390.0` | Rare | customRule |
+**How to translate:** The `securityRule` field in each threat object determines the attack type. Use this table to convert it. When displaying in table/report output, show the "Attack Type" column, NOT the raw code.
+
+| securityRule (API value) | Display As | Category | Description |
+|---|---|---|---|
+| `api.threats.sql_injection` | SQL Injection | 🔴 รุนแรง | พยายาม inject SQL command |
+| `api.threats.cross_site_scripting` | Cross-Site Scripting (XSS) | 🔴 รุนแรง | พยายาม inject script |
+| `api.threats.illegal_resource_access` | Illegal Resource Access | 🟠 ปานกลาง | เข้าถึงไฟล์/path ที่ไม่อนุญาต (exe, git, config) |
+| `api.threats.bot_access_control` | Bot Access Control | 🟡 ต่ำ | Bot ที่ถูก deny/block |
+| `api.threats.customRule` | Custom Rule | 🟡 ต่ำ | ถูก custom rule ที่ user กำหนดเอง |
+| `api.threats.ddos` | DDoS | 🔴 รุนแรง | โจมตีขนาดใหญ่ |
+| `api.threats.remote_file_inclusion` | Remote File Inclusion | 🔴 รุนแรง | พยายาม include ไฟล์ภายนอก |
+| `api.threats.backdoor_protect` | Backdoor Protect | 🟠 ปานกลาง | ตรวจพบ backdoor/shell |
+| `api.threats.api_spec_violation` | API Spec Violation | 🟡 ต่ำ | ไม่ตาม API specification |
+
+**Known attack code → type mapping (for reference/debugging only):**
+
+| Attack Code | Attack Type | Seen In |
+|---|---|---|
+| `17296460.0` | Custom Rule | Most blocked sessions |
+| `17489321.0` | Custom Rule | Most blocked sessions |
+| `901608.0` | Custom Rule | UK/US sessions |
+| `501589.0` | Illegal Resource Access | /cmd.exe / path probes |
+| `900181.0` | Illegal Resource Access | /cmd.exe / path probes |
+| `309140.0` | Illegal Resource Access | .git/config probes |
+| `306024.0` | Illegal Resource Access | .git/config probes |
+| `904780.0` | Illegal Resource Access | .git/config probes |
+| `200.0` | Bot Access Control | Qualys scanner |
+| `-72500534.2` | Custom Rule | Bot POST sessions (negative code) |
+| `17579496.0` | Custom Rule | Login page probes |
+| `903390.0` | Custom Rule | Rare |
+| `17760056.0` | Custom Rule | Bot/Impersonator sessions (high-frequency) |
+| `501536.0` | SQL Injection | DVWA SQLi test |
+| `502375.0` | SQL Injection | DVWA SQLi test |
+| `904709.0` | Illegal Resource Access | DVWA probes |
 
 ### Known Request Results
 
@@ -288,6 +314,7 @@ Request results are found in `actions[].requestResult`.
 
 ## Pitfalls
 
+- **Use the skill, don't curl manually**: When working with Imperva CWAF, ALWAYS load the relevant skill first and use its provided scripts. Never hand-curl the API — you'll hit endpoints that don't exist, get HTML error pages, and waste time. The skill has the correct endpoints, auth patterns, and retry logic.
 - **WAF Error 15**: Imperva intermittently blocks cloud/AWS IPs. Script auto-retries with exponential backoff. Don't assume script is broken on first 15 error.
 - **Inline Python through bws run**: Complex Python must be in a script file, not inline `python3 -c "..."`. This skill uses a script file.
 - **SITE_ID required**: Both commands require SITE_ID. CAID is optional but recommended.

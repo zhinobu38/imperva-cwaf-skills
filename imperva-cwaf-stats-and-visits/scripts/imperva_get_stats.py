@@ -55,6 +55,37 @@ VALID_TIME_RANGES = [
     "month_to_date", "custom",
 ]
 
+# ── Attack Type Mapping ───────────────────────────────────────────────────────
+# User-facing output MUST show human-readable attack types, NOT raw attack codes.
+# The securityRule field from the API is the authoritative source for attack type.
+
+ATTACK_TYPE_MAP = {
+    "api.threats.sql_injection": ("SQL Injection", "รุนแรง"),
+    "api.threats.cross_site_scripting": ("Cross-Site Scripting (XSS)", "รุนแรง"),
+    "api.threats.illegal_resource_access": ("Illegal Resource Access", "ปานกลาง"),
+    "api.threats.bot_access_control": ("Bot Access Control", "ต่ำ"),
+    "api.threats.customRule": ("Custom Rule", "ต่ำ"),
+    "api.threats.ddos": ("DDoS", "รุนแรง"),
+    "api.threats.remote_file_inclusion": ("Remote File Inclusion", "รุนแรง"),
+    "api.threats.backdoor_protect": ("Backdoor Protect", "ปานกลาง"),
+    "api.threats.api_spec_violation": ("API Spec Violation", "ต่ำ"),
+    "api.threats.cookie_poisoning": ("Cookie Poisoning", "ปานกลาง"),
+    "api.threats.data_leakage": ("Data Leakage", "ปานกลาง"),
+}
+
+SEVERITY_EMOJI = {"รุนแรง": "🔴", "ปานกลาง": "🟠", "ต่ำ": "🟡"}
+
+
+def get_attack_type(security_rule):
+    """Convert API securityRule value to (display_name, severity) tuple."""
+    if not security_rule:
+        return ("Unknown", "ต่ำ")
+    if security_rule in ATTACK_TYPE_MAP:
+        return ATTACK_TYPE_MAP[security_rule]
+    # Fallback: extract last segment of dotted path
+    short = security_rule.split(".")[-1] if "." in security_rule else security_rule
+    return (short, "ต่ำ")
+
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -368,17 +399,16 @@ def generate_analysis_report(visits, filtered, args):
         action_count = len(actions)
         first_result = actions[0].get("requestResult", "").split(".")[-1] if actions else "N/A"
 
-        threat_rules = []
-        attack_codes = []
+        threat_types = []  # (display_name, severity) tuples
+        attack_type_counter_local = Counter()
         for a in actions:
             for t in a.get("threats", []):
-                rule = t.get("securityRule", "").split(".")[-1]
-                if rule not in threat_rules:
-                    threat_rules.append(rule)
-                for code in t.get("attackCodes", []):
-                    sc = str(code)
-                    if sc not in attack_codes:
-                        attack_codes.append(sc)
+                rule = t.get("securityRule", "")
+                display, severity = get_attack_type(rule)
+                type_entry = (display, severity)
+                if type_entry not in threat_types:
+                    threat_types.append(type_entry)
+                attack_type_counter_local[display] += 1
 
         print("│" + f" [{i:02d}] {start}  ({dur})".ljust(W) + "│")
         print("│" + f"      ID: {vid}".ljust(W) + "│")
@@ -389,10 +419,12 @@ def generate_analysis_report(visits, filtered, args):
         if sec_str:
             print("│" + f"      Security: {sec_str}"[:W].ljust(W) + "│")
         print("│" + f"      Actions: {action_count} requests  |  First result: {first_result}"[:W].ljust(W) + "│")
-        if threat_rules:
-            print("│" + f"      Rules: {', '.join(threat_rules)}"[:W].ljust(W) + "│")
-        if attack_codes:
-            print("│" + f"      Attack Codes: {', '.join(attack_codes)}"[:W].ljust(W) + "│")
+        if threat_types:
+            type_strs = []
+            for display, severity in threat_types:
+                emoji = SEVERITY_EMOJI.get(severity, "🟡")
+                type_strs.append(f"{emoji} {display}")
+            print("│" + f"      Attack Types: {', '.join(type_strs)}"[:W].ljust(W) + "│")
         if i < len(filtered):
             print("│" + "   " + "·" * (W-6) + "  │")
 
@@ -418,15 +450,23 @@ def generate_analysis_report(visits, filtered, args):
             print("│" + f"      {short:<30} {fmt_number(cnt):>6}"[:W].ljust(W) + "│")
 
     if rule_counter:
-        print("│" + "   Security Rules Triggered:".ljust(W) + "│")
-        for r, cnt in rule_counter.most_common():
-            short = r.split(".")[-1] if "." in r else r
-            print("│" + f"      {short:<30} {fmt_number(cnt):>6}"[:W].ljust(W) + "│")
+        print("│" + "   Attack Types Triggered:".ljust(W) + "│")
+        # Map raw security rule names to human-readable attack types with severity
+        attack_type_agg = Counter()
+        for raw_rule, cnt in rule_counter.items():
+            display, severity = get_attack_type(raw_rule)
+            attack_type_agg[display] += cnt
+        for display, cnt in attack_type_agg.most_common():
+            sev = None
+            for s in ATTACK_TYPE_MAP.values():
+                if s[0] == display:
+                    sev = s[1]
+                    break
+            emoji = SEVERITY_EMOJI.get(sev if sev else "ต่ำ", "🟡")
+            print("│" + f"      {emoji} {display:<30} {fmt_number(cnt):>6}"[:W].ljust(W) + "│")
 
-    if attack_code_counter:
-        print("│" + "   Attack Codes:".ljust(W) + "│")
-        for code, cnt in attack_code_counter.most_common():
-            print("│" + f"      {code:<20} {fmt_number(cnt):>6}"[:W].ljust(W) + "│")
+    # Remove raw attack codes section — user-facing output must not show raw codes
+    # (Raw codes are still available via --format json for debugging)
 
     if path_counter:
         print("│" + "   Top Paths:".ljust(W) + "│")
@@ -453,9 +493,14 @@ def generate_analysis_report(visits, filtered, args):
         git_paths = [p for p in path_counter if ".git" in p.lower()]
         if git_paths:
             suggestions.append(f".git scanning detected ({len(git_paths)} unique paths) — ensure no repo exposure")
-        if attack_code_counter:
-            codes = list(attack_code_counter.keys())[:5]
-            suggestions.append(f"Attack codes triggered: {', '.join(codes)}")
+        if rule_counter:
+            # Show top attack types instead of raw codes
+            attack_type_suggest = Counter()
+            for raw_rule, cnt in rule_counter.items():
+                display, _ = get_attack_type(raw_rule)
+                attack_type_suggest[display] += cnt
+            top_types = [t for t, _ in attack_type_suggest.most_common(5)]
+            suggestions.append(f"Attack types triggered: {', '.join(top_types)}")
             suggestions.append("Review custom rules if these are false positives")
 
     if not suggestions:

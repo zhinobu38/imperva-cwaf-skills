@@ -79,13 +79,13 @@ when an API spec is updated.
   - `imperva-cwaf-ssl-management/scripts/get-ssl-status.sh`
 
 ### website-management-api.yaml
-- **Skills:** `imperva-cwaf-ssl-management`, `imperva-cwaf-basic-security`
+- **Skills:** `imperva-cwaf-ssl-management`
 - **Scripts:**
   - `imperva-cwaf-ssl-management/scripts/get-tls-config.sh`
   - `imperva-cwaf-ssl-management/scripts/update-tls-config.sh`
 
 ### delivery-api.yaml
-- **Skills:** `imperva-cwaf-basic-security`
+- **Skills:** `imperva-cwaf-basic-security`, `imperva-cwaf-lb-delivery`
 - **Scripts:**
   - `imperva-cwaf-basic-security/scripts/get-security.sh`
   - `imperva-cwaf-basic-security/scripts/set-backdoor.sh`
@@ -93,10 +93,20 @@ when an API spec is updated.
   - `imperva-cwaf-basic-security/scripts/set-ddos.sh`
   - `imperva-cwaf-basic-security/scripts/get-bot-config.sh`
   - `imperva-cwaf-basic-security/scripts/update-bot-config.sh`
+  - `imperva-cwaf-lb-delivery/templates/get-delivery.sh`
+  - `imperva-cwaf-lb-delivery/templates/get-load-balancing.sh`
+  - `imperva-cwaf-lb-delivery/templates/restore-defaults.sh`
+  - `imperva-cwaf-lb-delivery/templates/resume-dc.sh`
+  - `imperva-cwaf-lb-delivery/templates/set-error-page.sh`
+  - `imperva-cwaf-lb-delivery/templates/update-delivery-mode.sh`
+  - `imperva-cwaf-lb-delivery/templates/update-image-compression.sh`
+  - `imperva-cwaf-lb-delivery/templates/update-load-balancing.sh`
+  - `imperva-cwaf-lb-delivery/templates/update-network.sh`
+  - `imperva-cwaf-lb-delivery/templates/update-redirection.sh`
 
 ### load-balancing-api.yaml
-- **Skills:** `imperva-cwaf-lb-delivery`
-- **Scripts:** (none currently)
+- **Skills:** (none currently — lb-delivery uses delivery-api.yaml instead)
+- **Scripts:** (none)
 
 ### performance-statistics-api.json
 - **Skills:** `imperva-cwaf-troubleshoot`

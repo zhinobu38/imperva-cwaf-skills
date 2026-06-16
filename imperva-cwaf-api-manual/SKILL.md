@@ -146,6 +146,83 @@ Based on real usage in this session, here's how to use the API specs to make act
      -H "x-API-Key: $IMPERVA_API_KEY" | jq .
    ```
 
+## api-spec → Skill Mapping
+
+See `references/api-spec-skill-mapping.md` for a complete table mapping each api-spec file to the skill(s) that use it, including API base paths. This is used by the release notes monitor to identify affected skills when API changes are detected.
+
+## How to Download Updated API Specs from Thales Docs
+
+The Thales documentation portal (`docs-cybersec.thalesgroup.com`) is a JS SPA. Browser snapshots return empty content. Use the backend API directly:
+
+### Step 1: Find API Reference Links in Release Notes
+
+```bash
+# Fetch release notes content via backend API
+curl -s "https://docs-cybersec-be.thalesgroup.com/api/bundle/cloud-application-security/page/release-notes/YYYY-MM-DD.htm" | python3 -c "
+import json, re, sys
+data = json.load(sys.stdin)
+html = data.get('topic_html', '')
+links = re.findall(r'href=\"([^\"]+)\"', html)
+for l in links:
+    if 'api-docs' in l.lower() or 'api' in l.lower():
+        print(l)
+"
+```
+
+### Step 2: Download API Spec from API Reference Page
+
+Navigate to the API reference page and find the download button:
+
+```bash
+# Fetch the API reference page
+curl -s "https://docs-cybersec-be.thalesgroup.com/api/bundle/api-docs/page/{api-page}.htm" | python3 -c "
+import json, re, sys
+data = json.load(sys.stdin)
+html = data.get('topic_html', '')
+# Find download links for spec files
+links = re.findall(r'href=\"([^\"]+)\"', html)
+for l in links:
+    if l.endswith('.yaml') or l.endswith('.json') or 'download' in l.lower():
+        print(l)
+"
+```
+
+Then download the spec file directly:
+```bash
+curl -s "https://docs-cybersec.thalesgroup.com/path/to/spec.yaml" -o ~/.hermes/skills/imperva-cwaf/imperva-cwaf-api-manual/api-spec/{filename}.yaml
+```
+
+### Step 3: Archive Old Spec and Update
+
+```bash
+# Create archive directory
+mkdir -p ~/.hermes/skills/imperva-cwaf/imperva-cwaf-api-manual/api-spec/archive
+
+# Archive old spec with timestamp
+mv ~/.hermes/skills/imperva-cwaf/imperva-cwaf-api-manual/api-spec/{filename}.yaml \
+   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-api-manual/api-spec/archive/{filename}-$(date +%Y%m%d).yaml
+
+# New spec is already in place from Step 2
+```
+
+### RSS Feed for Release Notes
+
+```bash
+# Get latest release notes list
+curl -s -L "https://docs-cybersec.thalesgroup.com/bundle/cloud-application-security/page/release-notes.rss"
+```
+
+The RSS feed contains `<item>` elements with `<link>` pointing to individual release note pages. Compare the latest `<link>` against your last-known release URL to detect new releases.
+
+### Key URLs
+
+| Purpose | URL |
+|---------|-----|
+| Release notes index | `https://docs-cybersec.thalesgroup.com/bundle/cloud-application-security/page/release-notes/release-notes.htm` |
+| Individual release | `https://docs-cybersec-be.thalesgroup.com/api/bundle/cloud-application-security/page/release-notes/YYYY-MM-DD.htm` |
+| RSS feed | `https://docs-cybersec.thalesgroup.com/bundle/cloud-application-security/page/release-notes.rss` |
+| API reference pages | `https://docs-cybersec-be.thalesgroup.com/api/bundle/api-docs/page/{api-name}.htm` |
+
 ## Shared References
 
 These files are maintained at the `imperva-cwaf/` skill group level and are the
@@ -168,7 +245,19 @@ All examples in this skill reference `$IMPERVA_API_ID` and `$IMPERVA_API_KEY` �
 - The specs may be updated periodically. Ensure you are referencing the latest version by checking the file modification times or checking for updates in the skill directory.
 - This skill does not make any external network requests; it only reads local files.
 
-## Related Skills
+## API Update Monitoring
+
+Automated API change detection is handled by `imperva_api_update_monitor.sh` in `../imperva-cwaf-api-manual/scripts/`.
+See `references/api-spec-to-skill-mapping.md` for the complete spec-to-skill mapping.
+
+When a release note indicates an API change:
+1. Run the monitor script: `bash scripts/imperva_api_update_monitor.sh`
+2. Review the HIGH/MEDIUM/LOW impact report
+3. If API reference links are found, follow the download/update workflow in watcher skill's "Imperva CWAF API Update Monitor" section
+
+## Support Files
+
+- `references/api-spec-to-skill-mapping.md` — complete mapping of spec files → skills & scripts (many-to-many)
 
 - `imperva-cwaf-policy-management`: For managing WAF rules, ACL, Whitelist policies and exceptions (create, modify, apply, remove).
 - `imperva-cwaf-custom-rule`: For managing site-level custom rules (redirect, block, rewrite, etc.) via the Rules API.

@@ -1,8 +1,8 @@
 ---
 name: imperva-cwaf-stats-and-visits
-description: Retrieve Imperva Cloud WAF site statistics and visit logs — threats, visits, bandwidth, caching, security rules, delivery rules, session-level visit details with filtering, analysis report, table/JSON output, and release blocked sessions.
+description: Retrieve Imperva Cloud WAF site statistics and visit logs — threats, visits, bandwidth, caching, security rules, delivery rules, session-level visit details with filtering, analysis report, table/JSON output, and release blocked sessions. Also includes IP Reputation Intelligence lookup for analyzing attacker IPs.
 category: imperva-cwaf
-version: 1.4.0
+version: 1.5.0
 ---
 
 # Imperva CWAF — Statistics & Visits
@@ -25,10 +25,12 @@ Retrieve site-level statistics and visit session logs from Imperva Cloud WAF. Su
 | `stats` | `/api/stats/v1` | POST |
 | `visits` | `/api/visits/v1` | POST |
 | `release` | `/v3/sites/{siteId}/sessions/{sessionId}/release` | POST |
+| `reputation` | `/ip-reputation/v1/reputation` | GET |
 
 **Base URLs:**
 - `stats`, `visits` → `https://my.imperva.com`
 - `release` → `https://api.imperva.com/waf-settings-v2`
+- `reputation` → `https://api.imperva.com`
 
 ## Operations
 
@@ -171,6 +173,63 @@ SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
   bash scripts/imperva_release_session.sh \
     --session-id "526000340320036642"
 ```
+
+### reputation — IP Reputation Intelligence
+
+```
+bws run --project-id <bw_id> -- \
+  bash scripts/imperva_ip_reputation.sh <ip> [--format table|json]
+```
+
+**Endpoint:** `GET https://api.imperva.com/ip-reputation/v1/reputation?ip=<IP>`
+
+Retrieves reputation data for a single IPv4 address from across the Imperva customer base (2-week window). No `SITE_ID` or `CAID` needed — queries are global.
+
+**Parameters:**
+
+| Parameter | Required | Default | Description |
+|-----------|----------|---------|-------------|
+| `IP` (positional) | Yes | — | IPv4 address to look up |
+| `--format` | No | `table` | `table` (rich visual) or `json` (raw) |
+
+**Response fields:**
+
+| Field | Description |
+|-------|-------------|
+| `ip` | Queried IP address |
+| `origin.country` / `origin.city` | Geographic origin |
+| `ASN.organization_name` / `ASN.organization_number` | ASN details |
+| `known_to_use` | Attack tools used: `tor`, `automated browser`, `anonymous proxy` |
+| `known_for` | Attack types: `ddos`, `sqli`, etc. |
+| `risk_score.risk_score` | Risk level: `CRITICAL` (≥75), `HIGH` (50-74), `MEDIUM` (25-49), `LOW` (<25) |
+| `risk_score.risk_score_number` | Numeric score 0-100 |
+| `risk_score.risk_description` | Additional risk context |
+| `requests` | Total requests from this IP across Imperva customers (2 weeks) |
+| `violations` | Attack type distribution (%) |
+| `violations_over_time` | Hits per attack type per timestamp |
+| `client_application` | Client app distribution: `Suspicious`, `Malicious` |
+| `client_application_details` | Detailed client app breakdown |
+| `attacks_by_industries` | Industries targeted by this IP |
+
+**Typical use — analyze attacker IP from visit logs:**
+
+```bash
+# Step 1: Find blocked IPs from visit logs
+SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+  python3 scripts/imperva_get_stats.py visits \
+    --filter-result "req_blocked_security" \
+    --page-size 20 --format table
+
+# Step 2: Look up reputation for a specific attacker IP
+bws run --project-id <id> -- \
+  bash scripts/imperva_ip_reputation.sh 85.11.167.19
+
+# Step 3: Get raw JSON for scripting
+bws run --project-id <id> -- \
+  bash scripts/imperva_ip_reputation.sh 85.11.167.19 --format json | jq '.risk_score'
+```
+
+**Rate limit:** 10 requests per minute. Script reads credentials from `IMPERVA_API_ID` and `IMPERVA_API_KEY` env vars (injected by `bws run`).
 
 ## Response Structure
 
@@ -370,6 +429,8 @@ Request results are found in `actions[].requestResult`.
 - **Rich output required**: User expects visually formatted output with box-drawing, emoji, and bar charts. Never output plain text tables or raw data without formatting when in table mode.
 - **bws run quoting**: When passing arguments with spaces (e.g. `--filter-type "Hacking Tool"`) through `bws run`, the outer shell may split them. Use the wrapper script (`scripts/imperva-visits.sh`) or write args to a temp file. Single-word values (e.g. `HackingTool`) work without quoting.
 - **Release ≠ Exception**: `release` command ปล่อย blocked session ที่ถูก block อยู่แล้ว (user request) เท่านั้น — ไม่ได้สร้าง exception/whitelist ใน security policy ถ้าต้องการให้ traffic ไม่ถูก block ในอนาคต ให้ใช้ `imperva-cwaf-policy-management` แทน อย่าสับสัน!
+- **Reputation API field names differ from YAML spec**: The `reputation-intelligence-api.yaml` spec uses `ASN`, `risk_score`, `attacks_by_industries` — but the **actual API response** uses `asn`, `risk`, `attacks_by_industry` (lowercase, singular). Always code against the real response, not the spec. Script `imperva_ip_reputation.sh` already handles this.
+- **Reputation API base URL**: Uses `https://api.imperva.com/ip-reputation` — NOT `https://my.imperva.com`. No SITE_ID or CAID needed; queries are global across the Imperva customer base.
 
 ## Examples
 

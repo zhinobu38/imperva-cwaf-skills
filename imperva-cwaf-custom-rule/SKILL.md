@@ -26,6 +26,27 @@ Create, update, delete, and manage custom rules in Imperva Cloud WAF via the API
 
 **NEVER hardcode credentials or identifiers.**
 
+## ⚡ Best Practice Configuration Reference
+
+> ก่อนสร้าง custom rule ใดๆ ให้อ่าน best practice ก่อน:
+> - Quick ref: `../../references/best-practice-config.md`
+> - Full detail: `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
+
+### Required Custom Rules (from best practice)
+
+ทุกครั้งที่ onboard site ใหม่ ควรสร้าง rules เหล่านี้ (ถ้า applicable):
+
+| Priority | Rule Name | Filter | Action |
+|----------|-----------|--------|--------|
+| 1 | `Malicious IP Block` | `MaliciousIPList == TorIPs;AnonymousProxyIPs` | Block |
+| 2 | `High Risk IP Block` | `IPReputationRiskLevel == High` | Block |
+| 3 | `Client Type Restriction` (web) | `ClientType != Browser;FeedFetcher;SearchBot;SiteHelper` | JS Challenge |
+| 3a | `Client Type Restriction` (API) | `ClientType != Unknown;HackingTool;FeedFetcher;Browser;SiteHelper & User-Agent not-contains "<prefix>"` | JS Challenge |
+| 4 | `Form/Login Client Restriction` | `ClientType != Browser & URL contains "<path>"` | Block/JS Challenge |
+| 5 | `Form/Login Rate Limit` | `CustomRate` (count rule) | Block |
+
+> ⚠️ สอบถาม user ก่อนสร้าง rules 3-5 เสมอ (app type, login path, user-agent prefix)
+
 ## ⚡ MANDATORY: Use the Scripts
 
 **ALWAYS use the provided scripts. Do NOT write inline curl or Python.**

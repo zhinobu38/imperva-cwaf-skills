@@ -148,7 +148,7 @@ Based on real usage in this session, here's how to use the API specs to make act
 
 ## api-spec → Skill Mapping
 
-See `references/api-spec-skill-mapping.md` for a complete table mapping each api-spec file to the skill(s) that use it, including API base paths. This is used by the release notes monitor to identify affected skills when API changes are detected.
+See `references/api-spec-skill-mapping.md` for a complete table mapping each api-spec file to the skill(s) that use it, including API base paths. This is used by the release notes monitor to identify affected skills when API changes are detected. When maintaining this mapping, ensure script paths reference the `scripts/` directory within each skill (not `templates/`).
 
 ## How to Download Updated API Specs from Thales Docs
 

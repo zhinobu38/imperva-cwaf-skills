@@ -43,6 +43,21 @@ Manage basic security settings (backdoor, DDoS, bot control) for a site via the 
 - v1 requires `site_id` and `caid` as form params
 - v3 requires only `SITE_ID` in path; CAID not needed
 
+## ⚡ Best Practice Configuration Reference
+
+> ก่อนตั้งค่า security ใดๆ ให้อ่าน best practice ก่อน:
+> - Quick ref: `../../references/best-practice-config.md`
+> - Full detail: `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
+
+### DDoS Best Practice (from config)
+- **Mode = Automatic** เสมอ
+- **Web app**: action = `Javascript Challenge` → ถาม user เรื่อง bot/API client exception
+- **API app**: action = `No Challenge` → ถาม API client detail → ทำ exception + rate limit
+- **Threshold**: ใช้ peak legitimate traffic จาก 30 วันย้อนหลัง หรือ user-provided benchmark
+
+### Security Log Best Practice (from config)
+- ถ้ามี SIEM → enable security log เสมอ
+
 ## Operations
 
 ### Get Current Security Status

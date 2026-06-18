@@ -28,6 +28,28 @@ Manage all cache-related settings for Imperva Cloud WAF sites via the Cache API 
 
 **NEVER hardcode credentials or identifiers.**
 
+## ⚡ Best Practice Configuration Reference
+
+> ก่อนตั้งค่า cache ใดๆ ให้อ่าน best practice ก่อน:
+> - Quick ref: `../../references/best-practice-config.md`
+> - Full detail: `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
+
+### Cache Mode Best Practice (from config)
+- **Static/brochure site** → `Smart Mode` (default)
+- **CMS / user transactions** → `Standard Mode`
+- ⚠️ ห้ามใช้ Smart Mode กับ user-specific content
+
+### Cache Response Headers Best Practice (from config)
+เพิ่ม security headers ที่ origin server มีให้ cache ด้วย:
+- `X-Frame-Options`
+- `Content-Disposition`
+- `Content-Security-Policy`
+- `CORS headers`
+
+### Data Leakage Prevention (from config)
+- ตรวจสอบ response headers ของ origin server
+- ถ้ามี `Server`, `X-Powered-By`, `X-AspNet-version` → สร้าง rule remove ออก
+
 ## ⚡ MANDATORY: Use the Scripts
 
 **ALWAYS use the provided scripts. Do NOT write inline curl or Python.**

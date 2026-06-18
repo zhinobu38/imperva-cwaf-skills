@@ -30,11 +30,11 @@ when an API spec is updated.
 ## Spec File → Skills & Scripts
 
 ### site_management.yaml
-- **Skills:** `imperva-cwaf-get-site-detail`, `imperva-cwaf-site-onboard`
+ - **Skills:** `imperva-cwaf-get-site-detail`, `imperva-cwaf-site-onboard`, `imperva-cwaf-basic-security`
 - **Scripts:**
-  - `imperva-cwaf-get-site-detail/scripts/list-sites.sh`
-  - `imperva-cwaf-site-onboard/scripts/get-site-cname.sh`
-  - `imperva-cwaf-site-onboard/scripts/onboard.sh`
+   - `imperva-cwaf-get-site-detail/scripts/list-sites.sh`
+   - `imperva-cwaf-site-onboard/scripts/get-site-cname.sh`
+   - `imperva-cwaf-site-onboard/scripts/onboard.sh`
 
 ### policies-api.yaml
 - **Skills:** `imperva-cwaf-policy-management`
@@ -85,24 +85,18 @@ when an API spec is updated.
   - `imperva-cwaf-ssl-management/scripts/update-tls-config.sh`
 
 ### delivery-api.yaml
-- **Skills:** `imperva-cwaf-basic-security`, `imperva-cwaf-lb-delivery`
+- **Skills:** `imperva-cwaf-lb-delivery`
 - **Scripts:**
-  - `imperva-cwaf-basic-security/scripts/get-security.sh`
-  - `imperva-cwaf-basic-security/scripts/set-backdoor.sh`
-  - `imperva-cwaf-basic-security/scripts/set-bot-control.sh`
-  - `imperva-cwaf-basic-security/scripts/set-ddos.sh`
-  - `imperva-cwaf-basic-security/scripts/get-bot-config.sh`
-  - `imperva-cwaf-basic-security/scripts/update-bot-config.sh`
-  - `imperva-cwaf-lb-delivery/templates/get-delivery.sh`
-  - `imperva-cwaf-lb-delivery/templates/get-load-balancing.sh`
-  - `imperva-cwaf-lb-delivery/templates/restore-defaults.sh`
-  - `imperva-cwaf-lb-delivery/templates/resume-dc.sh`
-  - `imperva-cwaf-lb-delivery/templates/set-error-page.sh`
-  - `imperva-cwaf-lb-delivery/templates/update-delivery-mode.sh`
-  - `imperva-cwaf-lb-delivery/templates/update-image-compression.sh`
-  - `imperva-cwaf-lb-delivery/templates/update-load-balancing.sh`
-  - `imperva-cwaf-lb-delivery/templates/update-network.sh`
-  - `imperva-cwaf-lb-delivery/templates/update-redirection.sh`
+  - `imperva-cwaf-lb-delivery/scripts/get-delivery.sh`
+  - `imperva-cwaf-lb-delivery/scripts/get-load-balancing.sh`
+  - `imperva-cwaf-lb-delivery/scripts/restore-defaults.sh`
+  - `imperva-cwaf-lb-delivery/scripts/resume-dc.sh`
+  - `imperva-cwaf-lb-delivery/scripts/set-error-page.sh`
+  - `imperva-cwaf-lb-delivery/scripts/update-delivery-mode.sh`
+  - `imperva-cwaf-lb-delivery/scripts/update-image-compression.sh`
+  - `imperva-cwaf-lb-delivery/scripts/update-load-balancing.sh`
+  - `imperva-cwaf-lb-delivery/scripts/update-network.sh`
+  - `imperva-cwaf-lb-delivery/scripts/update-redirection.sh`
 
 ### load-balancing-api.yaml
 - **Skills:** (none currently — lb-delivery uses delivery-api.yaml instead)

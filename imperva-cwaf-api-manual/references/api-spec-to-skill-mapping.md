@@ -26,6 +26,7 @@ when an API spec is updated.
 | `api.imperva.com/api/prov/v1` (monitoring) | `website-monitoring-api.yaml` |
 | `api.imperva.com/api/prov/v1` (attack analytics) | `attack-analytics-api.yaml` |
 | `api.imperva.com/basic-api-security` | `basic-api-security-swagger.yaml` |
+| `api.imperva.com/siem-config-service/v3` | `siem-log-api.yaml` |
 
 ## Spec File → Skills & Scripts
 
@@ -142,6 +143,12 @@ when an API spec is updated.
 - **Skills:** `imperva-cwaf-basic-security` (future use — new spec from June 7, 2026 release)
 - **Scripts:** (none currently)
 
+### siem-log-api.yaml
+- **Skills:** `imperva-cwaf-siem-integration`
+- **Scripts:**
+  - `imperva-cwaf-siem-integration/scripts/get-connections.sh`
+  - `imperva-cwaf-siem-integration/scripts/get-log-configurations.sh`
+
 ### custom_certificate.yaml
 - **Skills:** `imperva-cwaf-ssl-management` (reference only)
 - **Scripts:** (none)
@@ -155,3 +162,4 @@ when an API spec is updated.
 | Date | Spec Updated | Skills Affected | Notes |
 |---|---|---|---|
 | 2026-06-17 | Initial mapping created | — | Baseline mapping |
+| 2026-06-18 | `siem-log-api.yaml` added | `imperva-cwaf-siem-integration` | New SIEM integration skill (read-only) |

@@ -1,0 +1,1674 @@
+openapi: 3.0.0
+info:
+  description: |-
+    Set up and manage the Imperva SIEM log integration.
+
+    - Create, view, and edit connections to your log storage repository.
+
+    - Configure which logs you want to receive from Imperva, and where to receive them.
+
+    For full feature documentation, see  [Near Real-Time SIEM Log Integration](https://docs.imperva.com/bundle/cloud-application-security/page/siem-log-configuration.htm).
+  license:
+    name: The terms in the absence of an applicable signed agreement between you and Imperva
+    url: https://www.imperva.com/legal/license-agreement/
+  title: Imperva SIEM Configurations API 3.0
+  version: 1.0.0
+servers:
+  - url: https://api.imperva.com/siem-config-service
+    description: Imperva API server
+security:
+  - api_id: []
+    api_key: []
+tags:
+  - description: The details of your log storage repository, including path and access credentials.
+    name: Connections
+  - description: Which logs you receive from Imperva and where you receive them.
+    name: Log Configurations
+paths:
+  /v3/connections/:
+    get:
+      description: Retrieves details of all connections in the account.
+      operationId: getAll_1
+      parameters:
+        - description: The Imperva Account ID. By default, the API operates on account (A) associated with the API credentials used for authentication. To operate on a different account (an account under the account (A)), specify the account ID
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                S3 ARN Response:
+                  description: S3 ARN Response
+                  value:
+                    data:
+                      - id: 6350f6f8be2e2a10af1d9de9
+                        connectionName: S3 ARN Connection
+                        assetId: '12345678'
+                        storageType: CUSTOMER_S3_ARN
+                        connectionInfo:
+                          path: yourBucket/logs
+                S3 Basic Auth Response:
+                  description: S3 Basic Auth Response
+                  value:
+                    data:
+                      - id: 6350f6f8be2e2a10af1d9de9
+                        connectionName: S3 Connection
+                        assetId: '12345678'
+                        storageType: CUSTOMER_S3
+                        connectionInfo:
+                          accessKey: AKIAIOSFODNN7EXAMPLE
+                          secretKey: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+                          path: /mybucket/logs
+                SFTP Response:
+                  description: SFTP Response
+                  value:
+                    data:
+                      - id: 6350f6f8be2e2a10af1d9de9
+                        connectionName: SFTP Connection
+                        assetId: '123456712138'
+                        storageType: CUSTOMER_SFTP
+                        connectionInfo:
+                          host: sftp.example.com
+                          username: user123
+                          password: password123
+                          path: /logs
+                Splunk Response:
+                  description: Splunk Response
+                  value:
+                    data:
+                      - id: 6350f6f8be2e2a10af1d9de9
+                        connectionName: Splunk Connection
+                        assetId: '12345678'
+                        storageType: CUSTOMER_SPLUNK
+                        connectionInfo:
+                          host: splunk.example.com
+                          port: 8088
+                          token: 12345678-1234-1234-1234-1234567890ab
+              schema:
+                $ref: '#/components/schemas/ConnectionResponseWrapper'
+          description: OK
+        '400':
+          content:
+            application/json:
+              examples:
+                Bad Request:
+                  description: Bad Request
+                  value:
+                    errors:
+                      - status: 400
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1037'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Bad Request
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Bad Request - Invalid request body or parameters
+        '401':
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  description: Unauthorized
+                  value:
+                    errors:
+                      - status: 401
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1031'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Unauthorized
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Unauthorized - Invalid or missing API credentials
+        '404':
+          content:
+            application/json:
+              examples:
+                Not Found:
+                  description: Not Found
+                  value:
+                    errors:
+                      - status: 404
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1005'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Not Found
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Not Found - Resource does not exist
+        '500':
+          content:
+            application/json:
+              examples:
+                Server Error:
+                  description: Server Error
+                  value:
+                    errors:
+                      - status: 500
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1002'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Internal Server Error
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Internal Server Error
+      summary: Retrieve all connections
+      tags:
+        - Connections
+    post:
+      description: Define the details of your log storage repository including the path to the repository and the access credentials Imperva needs to push the logs.
+      operationId: create_1
+      parameters:
+        - description: The Imperva Account ID. By default, the API operates on account (A) associated with the API credentials used for authentication. To operate on a different account (an account under the account (A)), specify the account ID
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectionRequestWrapper'
+        description: 'JSON body containing connection information. Specify the relevant storage type schema according to the connection type. **Possible storage types are: “CUSTOMER_S3”/ ”CUSTOMER_S3_ARN”/ “CUSTOMER_SFTP”/ “CUSTOMER_SPLUNK**'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              examples:
+                S3 ARN Response:
+                  description: S3 ARN Response
+                  value:
+                    data:
+                      - id: 6350f6f8be2e2a10af1d9de9
+                        connectionName: S3 ARN Connection
+                        assetId: '12345678'
+                        storageType: CUSTOMER_S3_ARN
+                        connectionInfo:
+                          path: yourBucket/logs
+                S3 Basic Auth Response:
+                  description: S3 Basic Auth Response
+                  value:
+                    data:
+                      - id: 6350f6f8be2e2a10af1d9de9
+                        connectionName: S3 Connection
+                        assetId: '12345678'
+                        storageType: CUSTOMER_S3
+                        connectionInfo:
+                          accessKey: AKIAIOSFODNN7EXAMPLE
+                          secretKey: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+                          path: /mybucket/logs
+                SFTP Response:
+                  description: SFTP Response
+                  value:
+                    data:
+                      - id: 6350f6f8be2e2a10af1d9de9
+                        connectionName: SFTP Connection
+                        assetId: '123456712138'
+                        storageType: CUSTOMER_SFTP
+                        connectionInfo:
+                          host: sftp.example.com
+                          username: user123
+                          password: password123
+                          path: /logs
+                Splunk Response:
+                  description: Splunk Response
+                  value:
+                    data:
+                      - id: 6350f6f8be2e2a10af1d9de9
+                        connectionName: Splunk Connection
+                        assetId: '12345678'
+                        storageType: CUSTOMER_SPLUNK
+                        connectionInfo:
+                          host: splunk.example.com
+                          port: 8088
+                          token: 12345678-1234-1234-1234-1234567890ab
+              schema:
+                $ref: '#/components/schemas/ConnectionResponseWrapper'
+          description: Created
+        '400':
+          content:
+            application/json:
+              examples:
+                Bad Request:
+                  description: Bad Request
+                  value:
+                    errors:
+                      - status: 400
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1037'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Bad Request
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Bad Request - Invalid request body or parameters
+        '401':
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  description: Unauthorized
+                  value:
+                    errors:
+                      - status: 401
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1031'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Unauthorized
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Unauthorized - Invalid or missing API credentials
+        '404':
+          content:
+            application/json:
+              examples:
+                Not Found:
+                  description: Not Found
+                  value:
+                    errors:
+                      - status: 404
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1005'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Not Found
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Not Found - Resource does not exist
+        '500':
+          content:
+            application/json:
+              examples:
+                Server Error:
+                  description: Server Error
+                  value:
+                    errors:
+                      - status: 500
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1002'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Internal Server Error
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Internal Server Error
+      summary: Create connection
+      tags:
+        - Connections
+  /v3/connections/test-connection:
+    post:
+      description: Test connection to destination storage.
+      operationId: testConnection
+      parameters:
+        - description: The Imperva Account ID. By default, the API operates on account (A) associated with the API credentials used for authentication. To operate on a different account (an account under the account (A)), specify the account ID
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectionRequestWrapper'
+        description: JSON body containing connection information for testing.
+        required: true
+      responses:
+        '200':
+          description: OK
+        '400':
+          content:
+            application/json:
+              examples:
+                Bad Request:
+                  description: Bad Request
+                  value:
+                    errors:
+                      - status: 400
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1037'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Bad Request
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Bad Request - Invalid request body or parameters
+        '401':
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  description: Unauthorized
+                  value:
+                    errors:
+                      - status: 401
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1031'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Unauthorized
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Unauthorized - Invalid or missing API credentials
+        '404':
+          content:
+            application/json:
+              examples:
+                Not Found:
+                  description: Not Found
+                  value:
+                    errors:
+                      - status: 404
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1005'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Not Found
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Not Found - Resource does not exist
+        '500':
+          content:
+            application/json:
+              examples:
+                Server Error:
+                  description: Server Error
+                  value:
+                    errors:
+                      - status: 500
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1002'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Internal Server Error
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Internal Server Error
+      summary: Test connection
+      tags:
+        - Connections
+  /v3/connections/{connectionId}:
+    delete:
+      description: Deletes a connection according to the connection ID.
+      operationId: delete_1
+      parameters:
+        - description: The unique ID for the connection, assigned by Imperva. To find the connection ID, run GET /v3/connections
+          in: path
+          name: connectionId
+          required: true
+          schema:
+            type: string
+            maxLength: 24
+            minLength: 24
+        - description: The Imperva Account ID. By default, the API operates on account (A) associated with the API credentials used for authentication. To operate on a different account (an account under the account (A)), specify the account ID
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        '400':
+          content:
+            application/json:
+              examples:
+                Bad Request:
+                  description: Bad Request
+                  value:
+                    errors:
+                      - status: 400
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1037'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Bad Request
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Bad Request - Invalid request body or parameters
+        '401':
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  description: Unauthorized
+                  value:
+                    errors:
+                      - status: 401
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1031'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Unauthorized
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Unauthorized - Invalid or missing API credentials
+        '404':
+          content:
+            application/json:
+              examples:
+                Not Found:
+                  description: Not Found
+                  value:
+                    errors:
+                      - status: 404
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1005'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Not Found
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Not Found - Resource does not exist
+        '500':
+          content:
+            application/json:
+              examples:
+                Server Error:
+                  description: Server Error
+                  value:
+                    errors:
+                      - status: 500
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1002'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Internal Server Error
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Internal Server Error
+      summary: Delete connection
+      tags:
+        - Connections
+    get:
+      description: Retrieves details of a specific connection according to the connection ID.
+      operationId: get_1
+      parameters:
+        - description: The unique ID for the connection, assigned by Imperva. To find the connection ID, run GET /v3/connections
+          in: path
+          name: connectionId
+          required: true
+          schema:
+            type: string
+            maxLength: 24
+            minLength: 24
+        - description: The Imperva Account ID. By default, the API operates on account (A) associated with the API credentials used for authentication. To operate on a different account (an account under the account (A)), specify the account ID
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                S3 ARN Response:
+                  description: S3 ARN Response
+                  value:
+                    data:
+                      - id: 6350f6f8be2e2a10af1d9de9
+                        connectionName: S3 ARN Connection
+                        assetId: '12345678'
+                        storageType: CUSTOMER_S3_ARN
+                        connectionInfo:
+                          path: yourBucket/logs
+                S3 Basic Auth Response:
+                  description: S3 Basic Auth Response
+                  value:
+                    data:
+                      - id: 6350f6f8be2e2a10af1d9de9
+                        connectionName: S3 Connection
+                        assetId: '12345678'
+                        storageType: CUSTOMER_S3
+                        connectionInfo:
+                          accessKey: AKIAIOSFODNN7EXAMPLE
+                          secretKey: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+                          path: /mybucket/logs
+                SFTP Response:
+                  description: SFTP Response
+                  value:
+                    data:
+                      - id: 6350f6f8be2e2a10af1d9de9
+                        connectionName: SFTP Connection
+                        assetId: '123456712138'
+                        storageType: CUSTOMER_SFTP
+                        connectionInfo:
+                          host: sftp.example.com
+                          username: user123
+                          password: password123
+                          path: /logs
+                Splunk Response:
+                  description: Splunk Response
+                  value:
+                    data:
+                      - id: 6350f6f8be2e2a10af1d9de9
+                        connectionName: Splunk Connection
+                        assetId: '12345678'
+                        storageType: CUSTOMER_SPLUNK
+                        connectionInfo:
+                          host: splunk.example.com
+                          port: 8088
+                          token: 12345678-1234-1234-1234-1234567890ab
+              schema:
+                $ref: '#/components/schemas/ConnectionResponseWrapper'
+          description: OK
+        '400':
+          content:
+            application/json:
+              examples:
+                Bad Request:
+                  description: Bad Request
+                  value:
+                    errors:
+                      - status: 400
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1037'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Bad Request
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Bad Request - Invalid request body or parameters
+        '401':
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  description: Unauthorized
+                  value:
+                    errors:
+                      - status: 401
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1031'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Unauthorized
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Unauthorized - Invalid or missing API credentials
+        '404':
+          content:
+            application/json:
+              examples:
+                Not Found:
+                  description: Not Found
+                  value:
+                    errors:
+                      - status: 404
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1005'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Not Found
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Not Found - Resource does not exist
+        '500':
+          content:
+            application/json:
+              examples:
+                Server Error:
+                  description: Server Error
+                  value:
+                    errors:
+                      - status: 500
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1002'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Internal Server Error
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Internal Server Error
+      summary: Retrieve connection
+      tags:
+        - Connections
+    put:
+      description: Updates a connection according to the connection ID. Overwrites the connection's previous values.
+      operationId: update_1
+      parameters:
+        - description: The unique ID for the connection, assigned by Imperva. To find the connection ID, run GET /v3/connections
+          in: path
+          name: connectionId
+          required: true
+          schema:
+            type: string
+            maxLength: 24
+            minLength: 24
+        - description: The Imperva Account ID. By default, the API operates on account (A) associated with the API credentials used for authentication. To operate on a different account (an account under the account (A)), specify the account ID
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectionRequestWrapper'
+        description: 'JSON body containing connection information. Specify the relevant storage type schema according to the connection type. **Possible storage types are: “CUSTOMER_S3”/ ”CUSTOMER_S3_ARN”/ “CUSTOMER_SFTP”/ “CUSTOMER_SPLUNK**'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                S3 ARN Response:
+                  description: S3 ARN Response
+                  value:
+                    data:
+                      - id: 6350f6f8be2e2a10af1d9de9
+                        connectionName: S3 ARN Connection
+                        assetId: '12345678'
+                        storageType: CUSTOMER_S3_ARN
+                        connectionInfo:
+                          path: yourBucket/logs
+                S3 Basic Auth Response:
+                  description: S3 Basic Auth Response
+                  value:
+                    data:
+                      - id: 6350f6f8be2e2a10af1d9de9
+                        connectionName: S3 Connection
+                        assetId: '12345678'
+                        storageType: CUSTOMER_S3
+                        connectionInfo:
+                          accessKey: AKIAIOSFODNN7EXAMPLE
+                          secretKey: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+                          path: /mybucket/logs
+                SFTP Response:
+                  description: SFTP Response
+                  value:
+                    data:
+                      - id: 6350f6f8be2e2a10af1d9de9
+                        connectionName: SFTP Connection
+                        assetId: '123456712138'
+                        storageType: CUSTOMER_SFTP
+                        connectionInfo:
+                          host: sftp.example.com
+                          username: user123
+                          password: password123
+                          path: /logs
+                Splunk Response:
+                  description: Splunk Response
+                  value:
+                    data:
+                      - id: 6350f6f8be2e2a10af1d9de9
+                        connectionName: Splunk Connection
+                        assetId: '12345678'
+                        storageType: CUSTOMER_SPLUNK
+                        connectionInfo:
+                          host: splunk.example.com
+                          port: 8088
+                          token: 12345678-1234-1234-1234-1234567890ab
+              schema:
+                $ref: '#/components/schemas/ConnectionResponseWrapper'
+          description: OK
+        '400':
+          content:
+            application/json:
+              examples:
+                Bad Request:
+                  description: Bad Request
+                  value:
+                    errors:
+                      - status: 400
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1037'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Bad Request
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Bad Request - Invalid request body or parameters
+        '401':
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  description: Unauthorized
+                  value:
+                    errors:
+                      - status: 401
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1031'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Unauthorized
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Unauthorized - Invalid or missing API credentials
+        '404':
+          content:
+            application/json:
+              examples:
+                Not Found:
+                  description: Not Found
+                  value:
+                    errors:
+                      - status: 404
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1005'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Not Found
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Not Found - Resource does not exist
+        '500':
+          content:
+            application/json:
+              examples:
+                Server Error:
+                  description: Server Error
+                  value:
+                    errors:
+                      - status: 500
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1002'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Internal Server Error
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Internal Server Error
+      summary: Overwrite connection
+      tags:
+        - Connections
+  /v3/log-configurations/:
+    get:
+      description: Retrieves details of all configurations in the account.
+      operationId: getAll
+      parameters:
+        - description: The Imperva Account ID. By default, the API operates on account (A) associated with the API credentials used for authentication. To operate on a different account (an account under the account (A)), specify the account ID
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogConfigurationDtoResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              examples:
+                Bad Request:
+                  description: Bad Request
+                  value:
+                    errors:
+                      - status: 400
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1037'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Bad Request
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Bad Request - Invalid request body or parameters
+        '401':
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  description: Unauthorized
+                  value:
+                    errors:
+                      - status: 401
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1031'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Unauthorized
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Unauthorized - Invalid or missing API credentials
+        '404':
+          content:
+            application/json:
+              examples:
+                Not Found:
+                  description: Not Found
+                  value:
+                    errors:
+                      - status: 404
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1005'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Not Found
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Not Found - Resource does not exist
+        '500':
+          content:
+            application/json:
+              examples:
+                Server Error:
+                  description: Server Error
+                  value:
+                    errors:
+                      - status: 500
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1002'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Internal Server Error
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Internal Server Error
+      summary: Retrieve all log configurations
+      tags:
+        - Log Configurations
+    post:
+      description: Define the logs that you want to receive from Imperva, and the connection to use to receive them.
+      operationId: create
+      parameters:
+        - description: The Imperva Account ID. By default, the API operates on account (A) associated with the API credentials used for authentication. To operate on a different account (an account under the account (A)), specify the account ID
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogConfigurationDtoResponse'
+        description: JSON body. Schema is identical to the response.
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogConfigurationDtoResponse'
+          description: Created
+        '400':
+          content:
+            application/json:
+              examples:
+                Bad Request:
+                  description: Bad Request
+                  value:
+                    errors:
+                      - status: 400
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1037'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Bad Request
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Bad Request - Invalid request body or parameters
+        '401':
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  description: Unauthorized
+                  value:
+                    errors:
+                      - status: 401
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1031'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Unauthorized
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Unauthorized - Invalid or missing API credentials
+        '404':
+          content:
+            application/json:
+              examples:
+                Not Found:
+                  description: Not Found
+                  value:
+                    errors:
+                      - status: 404
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1005'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Not Found
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Not Found - Resource does not exist
+        '500':
+          content:
+            application/json:
+              examples:
+                Server Error:
+                  description: Server Error
+                  value:
+                    errors:
+                      - status: 500
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1002'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Internal Server Error
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Internal Server Error
+      summary: Create log configuration
+      tags:
+        - Log Configurations
+  /v3/log-configurations/{configurationId}:
+    delete:
+      description: Deletes a log configuration according to the configuration ID.
+      operationId: delete
+      parameters:
+        - description: The unique ID for the log configuration, assigned by Imperva. To find the configuration ID, run GET /v3/log-configurations
+          in: path
+          name: configurationId
+          required: true
+          schema:
+            type: string
+            maxLength: 24
+            minLength: 24
+        - description: The Imperva Account ID. By default, the API operates on account (A) associated with the API credentials used for authentication. To operate on a different account (an account under the account (A)), specify the account ID
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        '400':
+          content:
+            application/json:
+              examples:
+                Bad Request:
+                  description: Bad Request
+                  value:
+                    errors:
+                      - status: 400
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1037'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Bad Request
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Bad Request - Invalid request body or parameters
+        '401':
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  description: Unauthorized
+                  value:
+                    errors:
+                      - status: 401
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1031'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Unauthorized
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Unauthorized - Invalid or missing API credentials
+        '404':
+          content:
+            application/json:
+              examples:
+                Not Found:
+                  description: Not Found
+                  value:
+                    errors:
+                      - status: 404
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1005'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Not Found
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Not Found - Resource does not exist
+        '500':
+          content:
+            application/json:
+              examples:
+                Server Error:
+                  description: Server Error
+                  value:
+                    errors:
+                      - status: 500
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1002'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Internal Server Error
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Internal Server Error
+      summary: Delete log configuration
+      tags:
+        - Log Configurations
+    get:
+      description: Retrieves details of a specific log configuration according to the configuration ID.
+      operationId: get
+      parameters:
+        - description: The unique ID for the log configuration, assigned by Imperva. To find the configuration ID, run GET /v3/log-configurations
+          in: path
+          name: configurationId
+          required: true
+          schema:
+            type: string
+            maxLength: 24
+            minLength: 24
+        - description: The Imperva Account ID. By default, the API operates on account (A) associated with the API credentials used for authentication. To operate on a different account (an account under the account (A)), specify the account ID
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogConfigurationDtoResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              examples:
+                Bad Request:
+                  description: Bad Request
+                  value:
+                    errors:
+                      - status: 400
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1037'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Bad Request
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Bad Request - Invalid request body or parameters
+        '401':
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  description: Unauthorized
+                  value:
+                    errors:
+                      - status: 401
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1031'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Unauthorized
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Unauthorized - Invalid or missing API credentials
+        '404':
+          content:
+            application/json:
+              examples:
+                Not Found:
+                  description: Not Found
+                  value:
+                    errors:
+                      - status: 404
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1005'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Not Found
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Not Found - Resource does not exist
+        '500':
+          content:
+            application/json:
+              examples:
+                Server Error:
+                  description: Server Error
+                  value:
+                    errors:
+                      - status: 500
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1002'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Internal Server Error
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Internal Server Error
+      summary: Retrieve log configuration
+      tags:
+        - Log Configurations
+    put:
+      description: Updates a log configuration according to the configuration ID. Overwrites the configuration's previous values.
+      operationId: update
+      parameters:
+        - description: The unique ID for the log configuration, assigned by Imperva. To find the configuration ID, run GET /v3/log-configurations
+          in: path
+          name: configurationId
+          required: true
+          schema:
+            type: string
+            maxLength: 24
+            minLength: 24
+        - description: The Imperva Account ID. By default, the API operates on account (A) associated with the API credentials used for authentication. To operate on a different account (an account under the account (A)), specify the account ID
+          in: query
+          name: caid
+          required: false
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogConfigurationDtoResponse'
+        description: JSON body. Schema is identical to the response.
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogConfigurationDtoResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              examples:
+                Bad Request:
+                  description: Bad Request
+                  value:
+                    errors:
+                      - status: 400
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1037'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Bad Request
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Bad Request - Invalid request body or parameters
+        '401':
+          content:
+            application/json:
+              examples:
+                Unauthorized:
+                  description: Unauthorized
+                  value:
+                    errors:
+                      - status: 401
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1031'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Unauthorized
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Unauthorized - Invalid or missing API credentials
+        '404':
+          content:
+            application/json:
+              examples:
+                Not Found:
+                  description: Not Found
+                  value:
+                    errors:
+                      - status: 404
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1005'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Not Found
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Not Found - Resource does not exist
+        '500':
+          content:
+            application/json:
+              examples:
+                Server Error:
+                  description: Server Error
+                  value:
+                    errors:
+                      - status: 500
+                        id: 2da889aa00000000dea6da80b802440c
+                        code: '1002'
+                        source:
+                          pointer: /siem-config-service/v3/
+                        title: Internal Server Error
+              schema:
+                $ref: '#/components/schemas/APIError'
+          description: Internal Server Error
+      summary: Overwrite log configuration
+      tags:
+        - Log Configurations
+components:
+  schemas:
+    APIError:
+      type: object
+      properties:
+        code:
+          type: string
+        detail:
+          type: string
+        id:
+          type: string
+        source:
+          type: object
+          additionalProperties: {}
+        status:
+          type: integer
+          format: int32
+        title:
+          type: string
+    ArnConnectionInfo:
+      type: object
+      description: ARN connection information
+      properties:
+        path:
+          type: string
+          description: The ARN path for S3.
+          example: yourBucket/SIEM
+    ConnectionDto:
+      type: object
+      discriminator:
+        mapping:
+          CUSTOMER_S3: '#/components/schemas/CustomerS3BasicAuthDto'
+          CUSTOMER_S3_ARN: '#/components/schemas/CustomerS3ArnConnectionDto'
+          CUSTOMER_SFTP: '#/components/schemas/SftpConnectionDto'
+          CUSTOMER_SPLUNK: '#/components/schemas/SplunkConnectionDto'
+        propertyName: storageType
+      properties:
+        assetId:
+          type: string
+          description: The Imperva ID for the account.
+          example: 52546656
+          pattern: ([A-Za-z0-9-]{0,128})
+        connectionName:
+          type: string
+          description: Connection name. NOT required for /test-connection API
+          example: Your Connection Name
+          pattern: ([A-Za-z0-9/+.\s-]{3,128})
+        id:
+          type: string
+          description: Unique connection id.
+          example: 6350f6f8be2e2a10af1d9de9
+          maxLength: 24
+          minLength: 24
+          readOnly: true
+        storageType:
+          type: string
+      required:
+        - connectionName
+        - storageType
+    ConnectionRequest:
+      discriminator:
+        propertyName: storageType
+      oneOf:
+        - $ref: '#/components/schemas/CustomerS3BasicAuthDto'
+        - $ref: '#/components/schemas/CustomerS3ArnConnectionDto'
+        - $ref: '#/components/schemas/SftpConnectionDto'
+        - $ref: '#/components/schemas/SplunkConnectionDto'
+    ConnectionRequestWrapper:
+      type: object
+      properties:
+        data:
+          type: array
+          description: Array containing a single connection object
+          items:
+            $ref: '#/components/schemas/ConnectionRequest'
+    ConnectionResponse:
+      discriminator:
+        propertyName: storageType
+      oneOf:
+        - $ref: '#/components/schemas/CustomerS3BasicAuthDto'
+        - $ref: '#/components/schemas/CustomerS3ArnConnectionDto'
+        - $ref: '#/components/schemas/SftpConnectionDto'
+        - $ref: '#/components/schemas/SplunkConnectionDto'
+    ConnectionResponseWrapper:
+      type: object
+      properties:
+        data:
+          type: array
+          description: Array containing connection objects
+          items:
+            $ref: '#/components/schemas/ConnectionResponse'
+    CustomerS3ArnConnectionDto:
+      allOf:
+        - $ref: '#/components/schemas/ConnectionDto'
+        - type: object
+          properties:
+            assetId:
+              type: string
+              description: The Imperva ID for the account.
+              example: 52546656
+            connectionInfo:
+              $ref: '#/components/schemas/ArnConnectionInfo'
+              description: The connection info for S3 ARN.
+            connectionName:
+              type: string
+              description: Connection name. NOT required for /test-connection API
+              example: Your Connection Name
+            id:
+              type: string
+              description: Unique connection id.
+              example: 6350f6f8be2e2a10af1d9de9
+              readOnly: true
+      description: Customer S3 Arn Connection details
+      required:
+        - connectionInfo
+        - connectionName
+    CustomerS3BasicAuthDto:
+      allOf:
+        - $ref: '#/components/schemas/ConnectionDto'
+        - type: object
+          properties:
+            assetId:
+              type: string
+              description: The Imperva ID for the account.
+              example: 52546656
+            connectionInfo:
+              $ref: '#/components/schemas/S3ConnectionInfo'
+              description: The connection info for S3. (There is also ARN connection with only path)
+            connectionName:
+              type: string
+              description: Connection name. NOT required for /test-connection API
+              example: Your Connection Name
+            id:
+              type: string
+              description: Unique connection id.
+              example: 6350f6f8be2e2a10af1d9de9
+              readOnly: true
+      description: Customer S3 Connection details
+      required:
+        - connectionName
+    LogConfigurationDto:
+      type: object
+      properties:
+        assetId:
+          type: string
+          description: The Imperva ID for the account.
+          example: 52546656
+          pattern: ^[\p{L}\p{N}.-]{0,50}$
+        compressLogs:
+          type: boolean
+          description: Logs compression. **Available only for Cloud WAF and Attack Analytics services**
+        configurationName:
+          type: string
+          description: Log configuration name.
+          example: ABP configuration
+          pattern: ^[\p{L}\p{N}\s.-]{0,100}$
+        datasets:
+          type: array
+          items:
+            type: string
+            description: |2-
+               Available datasets grouped by provider: 
+
+                       
+               • **CLOUD_WAF**: WAF_RAW_LOGS, CLOUD_WAF_ACCESS 
+
+               • **ATTACK_ANALYTICS**: WAF_ANALYTICS_LOGS 
+
+               • **ABP**: ABP 
+
+               • **NETSEC**: NETFLOW, IP, ATTACK, CONNECTION, NOTIFICATIONS 
+                               
+               • **AUDIT**: AUDIT_TRAIL 
+
+               • **ATO**: ATO 
+
+               • **CSP**: SIGNIFICANT_DOMAIN_DISCOVERY, GOOGLE_ANALYTICS_IDS, SIGNIFICANT_SCRIPT_DISCOVERY, SIGNIFICANT_DATA_TRANSFER_DISCOVERY, DOMAIN_DISCOVERY_ENFORCE_MODE, CSP_HEADER_HEALTH, SIGNIFICANT_SCRIPT_NEW_HASH_DISCOVERY, SIGNIFICANT_SUSPICIOUS_DOMAIN_INSTANT_BLOCK 
+
+               • **DNSMS**: DNSMS_SECURITY_LOGS 
+
+               • **DNS**: DNS_Protection_Events, DNS_Security_Logs, DNS_Traffic_Logs 
+
+               • **API_Security**: BOLA 
+               
+            enum:
+              - WAF_RAW_LOGS
+              - CLOUD_WAF_ACCESS
+              - ABP
+              - ABP_ACCESS
+              - CONNECTION
+              - NETFLOW
+              - IP
+              - ATTACK
+              - NOTIFICATIONS
+              - AUDIT_TRAIL
+              - ATO
+              - GOOGLE_ANALYTICS_IDS
+              - SIGNIFICANT_DOMAIN_DISCOVERY
+              - WAF_ANALYTICS_LOGS
+              - SIGNIFICANT_SCRIPT_DISCOVERY
+              - SIGNIFICANT_DATA_TRANSFER_DISCOVERY
+              - DOMAIN_DISCOVERY_ENFORCE_MODE
+              - CSP_HEADER_HEALTH
+              - SIGNIFICANT_SCRIPT_NEW_HASH_DISCOVERY
+              - DNS_Protection_Events
+              - DNS_Security_Logs
+              - DNS_Traffic_Logs
+              - DNSMS_SECURITY_LOGS
+              - BOLA
+              - SIGNIFICANT_SUSPICIOUS_DOMAIN_INSTANT_BLOCK
+        defaultSiteLogsLevel:
+          type: string
+          default: NONE
+          description: Logs level for default site. **Available only for Cloud WAF services**
+          enum:
+            - NONE
+            - FULL
+            - SECURITY
+        enabled:
+          type: boolean
+          description: Enable / disable the log configuration
+        format:
+          type: string
+          default: CEF
+          description: Optional, allowed only for CLOUD_WAF service
+          enum:
+            - W3C
+            - CEF
+            - LEEF
+        id:
+          type: string
+          description: Unique log-configuration id.
+          example: 6350f6f8be2e2a10af1d9de9
+          maxLength: 24
+          minLength: 24
+          readOnly: true
+        provider:
+          type: string
+          description: Provider of the log configuration
+          enum:
+            - CLOUD_WAF
+            - ATTACK_ANALYTICS
+            - ABP
+            - NETSEC
+            - AUDIT
+            - ATO
+            - CSP
+            - DNS
+            - DNSMS
+            - API_Security
+        publicKey:
+          type: string
+          description: Public key in case of logs encryption. **Available only for Cloud WAF and Attack Analytics services**
+          maxLength: 5000
+          minLength: 1
+        publicKeyFileName:
+          type: string
+          description: Public key file name in case of adding a public key. **Available only for Cloud WAF and Attack Analytics services**
+          example: my_public_key.pem
+          maxLength: 255
+          minLength: 1
+          pattern: '[a-zA-Z0-9._-]+\.pem$'
+        publicKeyId:
+          type: integer
+          format: int64
+          readOnly: true
+      required:
+        - configurationName
+        - datasets
+        - enabled
+        - provider
+    LogConfigurationDtoResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          description: Response data items
+          items:
+            $ref: '#/components/schemas/LogConfigurationDto'
+    S3ConnectionInfo:
+      type: object
+      description: S3 connection information
+      properties:
+        accessKey:
+          type: string
+          description: The access key for S3.
+          example: <YOUR_ACCESS_KEY>
+        path:
+          type: string
+          description: The secret key for S3.
+          example: yourBucket/SIEM
+        secretKey:
+          type: string
+          description: The secret key for S3.
+          example: <YOUR_SECRET_KEY>
+    SftpConnectionDto:
+      allOf:
+        - $ref: '#/components/schemas/ConnectionDto'
+        - type: object
+          properties:
+            assetId:
+              type: string
+              description: The Imperva ID for the account.
+              example: 52546656
+            connectionInfo:
+              $ref: '#/components/schemas/SftpConnectionInfo'
+              description: The connection info for SFTP.
+            connectionName:
+              type: string
+              description: Connection name. NOT required for /test-connection API
+              example: Your Connection Name
+            id:
+              type: string
+              description: Unique connection id.
+              example: 6350f6f8be2e2a10af1d9de9
+              readOnly: true
+      description: Customer SFTP Connection details
+      required:
+        - connectionInfo
+        - connectionName
+    SftpConnectionInfo:
+      type: object
+      description: The connection info for SFTP.
+      properties:
+        host:
+          type: string
+          description: The sftp host
+          example: sftp.my-company.com
+        password:
+          type: string
+          description: The sftp password
+          example: myPassword123!
+        path:
+          type: string
+          description: The sftp path
+          example: yourFolder/SIEM
+          pattern: ([A-Za-z0-9._/-]{1,255})
+        username:
+          type: string
+          description: The sftp username
+          example: myUser
+      required:
+        - path
+    SplunkConnectionDto:
+      allOf:
+        - $ref: '#/components/schemas/ConnectionDto'
+        - type: object
+          properties:
+            assetId:
+              type: string
+              description: The Imperva ID for the account.
+              example: 52546656
+            connectionInfo:
+              $ref: '#/components/schemas/SplunkConnectionInfo'
+              description: The connection info for Splunk.
+            connectionName:
+              type: string
+              description: Connection name. NOT required for /test-connection API
+              example: Your Connection Name
+            id:
+              type: string
+              description: Unique connection id.
+              example: 6350f6f8be2e2a10af1d9de9
+              readOnly: true
+      description: Customer Splunk Connection details
+      required:
+        - connectionInfo
+        - connectionName
+    SplunkConnectionInfo:
+      type: object
+      description: Splunk HEC connection information
+      properties:
+        host:
+          type: string
+          description: Host name or IP address of your Splunk HEC endpoint.
+          example: splunk.my-company.com
+        port:
+          type: integer
+          format: int32
+          description: The port number of the Splunk host. Valid values are in the range of 1-65535.
+          example: 8088
+        token:
+          type: string
+          description: The Splunk HEC token in UUID version 4 format.
+          example: 550e8400-e29b-41d4-a716-446655440000
+      required:
+        - host
+        - port
+        - token
+  securitySchemes:
+    api_id:
+      description: An API ID created and managed in the Imperva Cloud Security Console and used for authentication
+      in: header
+      name: x-API-Id
+      type: apiKey
+    api_key:
+      description: An API key created and managed in the Imperva Cloud Security Console and used for authentication
+      in: header
+      name: x-API-Key
+      type: apiKey

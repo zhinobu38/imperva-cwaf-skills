@@ -151,3 +151,5 @@ Same structure — filters to: `siteId`, `name`, `cname`, `siteStatus`, `active`
 
 > หลังจาก onboard site สำเร็จ ให้ apply best practice configuration เสมอ
 > ดูข้อมูลเต็ม: `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
+
+**หมายเหตุ:** Best practice content เก็บใน second-brain เท่านั้น — อย่า duplicate ลงใน skill โดยตรง ให้ reference ไปที่ second-brain เสมอ

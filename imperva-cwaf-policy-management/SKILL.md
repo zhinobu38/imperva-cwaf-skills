@@ -35,15 +35,11 @@ Manage security policies (WAF Rules, ACL, Whitelist, File Upload) including poli
 
 **NEVER hardcode credentials or identifiers.**
 
-## ⚡ Best Practice Configuration Reference
+## Best Practice
 
-> ก่อนจัดการ policies ใดๆ ให้อ่าน best practice ก่อน:
-> - Quick ref: `../../references/best-practice-config.md`
-> - Full detail: `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
-
-### WAF Policy Best Practice (from config)
-- **ทุก signature category** → action = **Block Request**
-- False-positive concern → ปรังเป็น **Alert** → monitor 1-2 สัปดาห์ → เปลี่ยนกลับเป็น Block
+> ก่อนจัดการ policies ใดๆ ให้ดู best practice ก่อน:
+> `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
+> สิ่งสำคัญ: WAF signature categories → Block all, Alert for FP concern → monitor 1-2 weeks → Block
 
 ## Setup
 

@@ -20,6 +20,12 @@ Manage origin servers, load balancing, compression, redirection, and error pages
 
 **NEVER hardcode credentials or identifiers.**
 
+## Best Practice
+
+> ก่อนตั้งค่า delivery ใดๆ ให้ดู best practice ก่อน:
+> `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
+> สิ่งสำคัญ: custom error pages (Block & Captcha, Connection Error), source restriction ที่ origin firewall
+
 ## ⚡ MANDATORY: Use the Scripts
 
 **ALWAYS use the provided scripts. Do NOT write inline curl or Python.**

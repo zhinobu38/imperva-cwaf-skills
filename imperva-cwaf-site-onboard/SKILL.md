@@ -137,31 +137,6 @@ Same structure — filters to: `siteId`, `name`, `cname`, `siteStatus`, `active`
 - **bws run quoting**: Test scripts through `bws run` for real — special characters get mangled through extra shell layers
 - **`.data[0]` response format**: v3 onboard API returns array in `.data[]`. Script extracts first element. If API changes to single object, update jq filter.
 
-## ⚡ MANDATORY: Apply Best Practice Configuration
-
-> หลังจาก onboard site สำเร็จ ต้อง apply best practice configuration เสมอ
-
-1. **อ่าน** `../../references/best-practice-config.md` สำหรับ quick reference
-2. **ดู** `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md` สำหรับรายละเอียดเต็ม
-3. **ถาม user** ตาม "Questions to Ask User" ใน best practice doc
-4. **Apply configuration** ตามลำดับ: Baseline → Security
-5. **สร้าง custom rules** ที่เกี่ยวข้อง (reputation, bot management, DDoS exception, form/login protection)
-
-### Key Practices at a Glance
-
-| Area | Best Practice | Skill to Use |
-|------|--------------|-------------|
-| TLS | Enable + Enhanced Security cipher | `imperva-cwaf-ssl-management` |
-| Cache Mode | Smart (static) / Standard (CMS+transactions) | `imperva-cwaf-cache` |
-| DDoS | Automatic + threshold + JS challenge (web) / No challenge (API) | `imperva-cwaf-basic-security` |
-| Reputation | Malicious IP Block + High Risk IP Block | `imperva-cwaf-custom-rule` |
-| Bot Mgmt | Client Type Restriction custom rule | `imperva-cwaf-custom-rule` |
-| WAF Policies | Block all signature categories | `imperva-cwaf-policy-management` |
-| Form/Login | Client restriction + rate limit | `imperva-cwaf-custom-rule` |
-| Data Leakage | Remove Server/X-Powered-By headers | `imperva-cwaf-cache` |
-| Security Log | Enable if SIEM exists | `imperva-cwaf-basic-security` |
-| Source Restriction | Block non-Imperva IPs at origin firewall | Inform user |
-
 ## Related Skills
 
 - `imperva-cwaf-get-site-detail`: Check if site exists / get site ID / get CNAME
@@ -171,3 +146,8 @@ Same structure — filters to: `siteId`, `name`, `cname`, `siteStatus`, `active`
 - `imperva-cwaf-custom-rule`: Reputation, bot management, form/login rules
 - `imperva-cwaf-cache`: Cache mode, response headers
 - `imperva-cwaf-status-check`: Check service status first
+
+## Best Practice
+
+> หลังจาก onboard site สำเร็จ ให้ apply best practice configuration เสมอ
+> ดูข้อมูลเต็ม: `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`

@@ -20,9 +20,9 @@ curl -s -G "https://api.imperva.com/sites-mgmt/v3/sites/${SITE_ID}?caid=${CAID}"
   -H "Accept: application/json" \
   -H "x-API-Id: ${IMPERVA_API_ID}" \
   -H "x-API-Key: ${IMPERVA_API_KEY}" | jq '{
-    siteId: .data[0].id,
-    name: .data[0].name,
-    cname: .data[0].cname,
-    siteStatus: .data[0].siteStatus,
-    active: .data[0].active
+    siteId: .data[0].site.id,
+    name: .data[0].site.name,
+    cname: .data[0].site.cname,
+    siteStatus: .data[0].domains[0].protectionStatus,
+    active: .data[0].site.active
   }'

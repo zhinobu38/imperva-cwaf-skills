@@ -2,7 +2,7 @@
 name: imperva-cwaf-site-onboard
 description: Onboard a new website to Imperva Cloud WAF using the API
 category: imperva-cwaf
-version: 2.2.0
+version: 2.4.0
 ---
 
 # Imperva CWAF Site Onboarding
@@ -57,6 +57,26 @@ CAID=<caid> DOMAIN=<domain> ORIGIN_IP=<ip> \
 
 Optional env vars: `SITE_NAME` (default: same as DOMAIN), `GENERATE_CERT` (default: true).
 
+### Step 2.5: Identify Application Type
+
+**🔴 MANDATORY — Never skip this step. Never assume.**
+
+Ask the user: **"What type of application is this site?"**
+
+| Type | Description |
+|------|-------------|
+| **Web app / Browser-based** | Standard website with HTML pages, forms, user login |
+| **API app** | REST/GraphQL API, consumed by mobile apps or SPAs |
+| **Static site** | Brochure site, no user-specific content |
+| **E-commerce** | Online store with transactions, user accounts |
+
+**Why this matters:**
+- **Client Type Restriction** rule differs: web app allows `Browser;FeedFetcher;SearchBot;SiteHelper`, API app needs `User-Agent` filter
+- **DDoS challenge**: web app = `javascript`, API app = `none` (with rate limit rule)
+- **Cache mode**: static site = `Smart`, web app/API = `Standard`
+
+> ⚠️ **If the user says "both" or "web + API"** — create separate rule sets for different URL patterns (e.g., `/api/*` vs `/*`).
+
 ### Step 3: WAF Policy Decision
 
 **🔴 MANDATORY — Never skip this step.**
@@ -76,7 +96,45 @@ Ask the user: **"Do you want to use an existing WAF Policy or create a new one f
 
 > 📝 Full best practice: `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
 
-### Step 4: Get CNAME for DNS configuration
+### Step 4: Apply Security Configuration
+
+**🔴 MANDATORY — Configure based on application type from Step 2.5.**
+
+Use `imperva-cwaf-basic-security` skill for DDoS + bot control, and `imperva-cwaf-custom-rule` skill for reputation + bot rules.
+
+**4a. Reputation Rules (all app types):**
+- `Malicious IP Block`: `MaliciousIPList == TorIPs;AnonymousProxyIPs` → Block
+- `High Risk IP Block`: `IPReputationRiskLevel == High` → Block
+
+**4b. Bot Management — depends on application type:**
+
+| App Type | Rule Name | Filter | Action |
+|----------|-----------|--------|--------|
+| **Web app** | Client Type Restriction | `ClientType != Browser;FeedFetcher;SearchBot;SiteHelper` | JS Challenge |
+| **API app** | Client Type Restriction | `ClientType != Unknown;HackingTool;FeedFetcher;Browser;SiteHelper & User-Agent not-contains "<UA prefix>"` | JS Challenge |
+
+> ⚠️ **API app**: MUST ask the user for the API client's User-Agent prefix to whitelist.
+
+**4c. DDoS Protection — depends on application type:**
+
+| App Type | Activation Mode | Threshold | Challenge |
+|----------|----------------|-----------|-----------|
+| **Web app** | `auto` | 1000 (default) | `javascript` |
+| **API app** | `auto` | 1000 (default) | `none` |
+| **Static site** | `auto` | 1000 (default) | `javascript` |
+
+> ⚠️ **API app with DDoS = none**: Also create a rate limit custom rule to protect against API abuse.
+
+**4d. Form/Login Protection (if applicable):**
+- Only if the user confirmed login/form pages exist
+- Ask for the login/form URL path
+- Create client restriction + rate limit rules
+
+**4e. Data Leakage Prevention:**
+- Check origin response headers for `Server`, `X-Powered-By`, etc.
+- Create remove response header rules if needed
+
+### Step 5: Get CNAME for DNS configuration
 
 ```bash
 SITE_ID=<id> CAID=<caid> \
@@ -86,11 +144,11 @@ SITE_ID=<id> CAID=<caid> \
 
 Or use `imperva-cwaf-get-site-detail` skill which returns the same info.
 
-### Step 5: Update DNS at your provider
+### Step 6: Update DNS at your provider
 
-Create CNAME record: `<domain> CNAME <cname from step 4>`
+Create CNAME record: `<domain> CNAME <cname from step 5>`
 
-### Step 6: Verify
+### Step 7: Verify
 
 ```bash
 dig CNAME <domain> +short
@@ -110,26 +168,67 @@ Site status will be `NOT_CONFIGURED` until DNS propagates.
 | `generateCertificate` | boolean | ✅ | Auto-generate SSL cert |
 | `type` | string | ✅ | `CLOUD_WAF` |
 
-### Onboard Response (from real API)
+### Onboard Response — Success (from real API)
+
+> ⚠️ **IMPORTANT**: Response uses nested `site` and `domains` objects — NOT flat fields.
 
 ```json
 {
   "data": [
     {
-      "id": 123456789,
-      "name": "example.com",
-      "domain": "example.com",
-      "cname": "xyz123.ksf.ms",
-      "siteStatus": "NOT_CONFIGURED",
-      "active": true,
-      "type": "CLOUD_WAF",
-      "creationTime": "2026-06-17T12:00:00Z"
+      "site": {
+        "id": 923531599,
+        "name": "example.com",
+        "type": "CLOUD_WAF",
+        "active": true,
+        "accountId": 2429928,
+        "creationTime": 1781846565797,
+        "cname": "bqotmm7.ng.impervadns.net"
+      },
+      "domains": [
+        {
+          "id": 342322972,
+          "name": "example.com",
+          "protectionStatus": "BYPASSED"
+        }
+      ],
+      "servers": {
+        "ips": ["119.110.254.25"]
+      },
+      "certificateSettings": {
+        "validationMethod": "CNAME"
+      }
     }
   ]
 }
 ```
 
-Output fields: `siteId`, `name`, `domain`, `cname`, `siteStatus`, `active`
+**jq paths for success parsing:**
+| Output field | jq path |
+|-------------|---------|
+| siteId | `.data[0].site.id` |
+| name | `.data[0].site.name` |
+| domain | `.data[0].domains[0].name` |
+| cname | `.data[0].site.cname` |
+| siteStatus | `.data[0].domains[0].protectionStatus` |
+| active | `.data[0].site.active` |
+
+### Onboard Response — Error Formats
+
+**Format 1: Array errors (most common)**
+```json
+{"errors":[{"status":400,"id":"...","title":"BAD_REQUEST","detail":"Name already exists for account","field":"name"}]}
+```
+
+**Format 2: Object error**
+```json
+{"error":{"status":400,"id":"...","title":"BAD_REQUEST","detail":"Name already exists for account","field":"name"}}
+```
+
+**Format 3: WAF block (errorCode 15)**
+```json
+{"errorCode":"15","description":"This request was blocked by our security service","clientIp":"54.169.152.203","incidentId":"...","hostName":"api.imperva.com"}
+```
 
 ### Get CNAME Response
 
@@ -152,9 +251,11 @@ Same structure — filters to: `siteId`, `name`, `cname`, `siteStatus`, `active`
 - **Site already exists**: If you get `400 "Name already exists for account"`, the site is already onboarded — just retrieve its CNAME via `imperva-cwaf-get-site-detail`
 - **DNS propagation delay**: Site shows `NOT_CONFIGURED` until DNS propagates (minutes to hours)
 - **Origin IP**: Get current A record via `dig A <domain> +short` before onboarding
+- **Script response parsing** — The `onboard.sh` script handles 4 response formats: success (`.data`), array errors (`.errors`), object errors (`.error`), and WAF block (`.errorCode`). If you get null fields, the response format may not match any of these — check raw curl output.
 - **WAF block (errorCode 15)**: Imperva WAF may intermittently block API requests from cloud/AWS IPs. This is NOT auth failure. Retry with exponential backoff (5s, 15s, 30s, 60s).
 - **bws run quoting**: Test scripts through `bws run` for real — special characters get mangled through extra shell layers
-- **`.data[0]` response format**: v3 onboard API returns array in `.data[]`. Script extracts first element. If API changes to single object, update jq filter.
+- **Response format is nested**: Success response uses `.data[0].site.id` / `.data[0].site.cname` / `.data[0].domains[0].name` — NOT flat `.data[0].id`. The `site` object contains id/name/cname/active, while `domains[0]` contains the domain name and protectionStatus.
+- **Error format variants**: API errors come in two formats — `{"errors":[...]}` (array) and `{"error":{...}}` (object). WAF blocks use `{"errorCode":"15",...}` (neither errors nor error field).
 
 ## Related Skills
 

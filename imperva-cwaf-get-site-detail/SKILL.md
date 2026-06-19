@@ -91,6 +91,16 @@ SEARCH=train OUTPUT_FORMAT=json CAID=<caid> bws run --uuids-as-keynames --projec
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/list-sites.sh
 ```
 
+### Get Single Site Detail (by Site ID)
+
+```bash
+# Get site detail — returns siteId, name, domain, cname, siteStatus, active
+CAID=<caid> SITE_ID=<site_id> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/get-site-detail.sh
+```
+
+Use this to check if a site already exists (before onboarding) or to get the CNAME after onboarding.
+
 ---
 
 ## Response Format

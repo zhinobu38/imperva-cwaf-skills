@@ -2,7 +2,7 @@
 name: imperva-cwaf-custom-rule
 description: Create, manage, update, and delete Imperva Cloud WAF custom rules via the API.
 category: imperva-cwaf
-version: 2.2.0
+version: 2.3.0
 ---
 
 # Imperva CWAF Custom Rule
@@ -181,6 +181,7 @@ Step 5: **Report results** — show ✅ deleted and ❌ failed (with reason).
 - **Multi-value matching** uses semicolons: `ClientType != Browser;SearchBot;SiteHelper`
 - **Inline Python fails** in `bws run` — always write script file first
 - **Edit requires CAID** — even though the PUT endpoint doesn't use CAID in the path, it's needed for the initial GET in edit-rule.sh
+- **Response filter may differ from request filter** — The API may return a different internal representation of the filter in the create response (e.g., `MaliciousIPList == TorIPs;AnonymousProxyIPs` may appear as `IPList == 1;3;14;16`). This is normal — the filter you send is what gets applied. Always verify rules via `list-rules.sh` to confirm the correct filter is stored, as `list-rules` returns the canonical filter string.
 - **⚠️ ALWAYS confirm before deleting rules.** List the matched rules, show count, and get explicit user approval before executing ANY delete. Never batch-delete without confirmation.
 - **⚠️ Name pattern matching — respect position, case insensitive.** "Starts with X" means the name begins with X at position 0, case insensitive. `Block RU` ✅ `block-api` ✅ match "starts with block". `my-block` ❌ `reblock` ❌ `test Block rule` ❌ do not match — "block" is not at position 0. `FILTER_NAME` does a contains match, so you must manually verify position after listing.
 

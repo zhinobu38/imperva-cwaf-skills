@@ -76,6 +76,18 @@ SITE_ID=<id> CAID=<caid> TLS_PROFILE=DEFAULT HSTS_ENABLED=false \
 
 ---
 
+## API Endpoints & Base URLs
+
+Different endpoint groups use different base URLs — mixing them causes persistent WAF blocks:
+
+| Endpoint Group | Base URL | Example |
+|----------------|----------|---------|
+| **Certificate management** (`/certificates/managed`, `/certificates`) | `https://api.imperva.com/certificates-ui/v3/` | Enable SSL, get cert details |
+| **TLS/HSTS settings** (`/settings/TLSConfiguration`) | `https://api.imperva.com/sites-mgmt/v3/` | Update TLS profile, HSTS |
+| **SSL status** (v1 `/sites/status`) | `https://my.imperva.com/api/prov/v1/` | Get security config |
+
+> ⚠️ Using `sites-mgmt/v3` for certificate endpoints (or vice versa) causes persistent WAF blocks (errorCode 15) that don't resolve with retry.
+
 ## TLS Configuration Profiles
 
 | Profile | Description |

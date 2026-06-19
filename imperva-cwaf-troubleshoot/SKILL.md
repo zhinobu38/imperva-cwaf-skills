@@ -235,6 +235,6 @@ SITE_ID=852056322 CAID=2429928 POP=at bws run --project-id <bw_id> -- bash \
 - `imperva-cwaf-get-site-detail`: List and search sites
 - `imperva-cwaf-stats-and-visits`: Get site statistics and visit logs
 - `imperva-cwaf-status-check`: Check Imperva service status
-- `imperva-cwaf-load-balancing`: Check origin server and load balancing config
+- `imperva-cwaf-lb-delivery`: Check origin server, load balancing, and delivery config
 - `imperva-cwaf-cache`: Check cache configuration and performance
 - `imperva-cwaf-ssl-management`: Check SSL/TLS configuration

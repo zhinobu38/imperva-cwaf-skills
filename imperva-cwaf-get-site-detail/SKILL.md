@@ -46,6 +46,21 @@ OUTPUT_FORMAT=json CAID=<caid> bws run --project-id <bw_id> -- bash \
 Optional env vars: `CAID`, `SIZE=100`, `PAGE=0` (SIZE must be one of: 10, 25, 50, 100), `OUTPUT_FORMAT=json|table` (default: table), `SEARCH=<keyword>` (case-insensitive filter on site name/domain).
 Positional args also accepted as fallback: `bws run ... -- bash script.sh <caid> <size> <page>`.
 
+### Delete a Site
+
+```bash
+# Delete a site by ID
+CAID=<caid> SITE_ID=<site_id> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/delete-site.sh <site_id>
+
+# Dry run (preview without deleting)
+DRY_RUN=true CAID=<caid> SITE_ID=<site_id> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/delete-site.sh <site_id>
+```
+
+**⚠️ Deletion is irreversible.** Always confirm with the user before deleting.
+Recommended: run with `DRY_RUN=true` first, then confirm.
+
 ### Search Sites by Keyword
 
 ```bash

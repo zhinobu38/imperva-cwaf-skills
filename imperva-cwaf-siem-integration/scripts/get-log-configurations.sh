@@ -35,16 +35,12 @@ else
   URL="${BASE_URL}/"
 fi
 
-# Build curl command
-CURL_CMD="curl -s -G \"${URL}\""
-if [[ -n "$CAID" ]]; then
-  CURL_CMD+=" --data-urlencode \"caid=${CAID}\""
-fi
-CURL_CMD+=" -H \"Accept: application/json\""
-CURL_CMD+=" -H \"x-API-Id: ${IMPERVA_API_ID}\""
-CURL_CMD+=" -H \"x-API-Key: ${IMPERVA_API_KEY}\""
-
-RESPONSE=$(eval "$CURL_CMD")
+# Fetch data
+RESPONSE=$(curl -s --get "$URL" \
+  --data-urlencode "caid=${CAID}" \
+  -H "Accept: application/json" \
+  -H "x-API-Id: ${IMPERVA_API_ID}" \
+  -H "x-API-Key: ${IMPERVA_API_KEY}")
 
 # Check for errors
 if echo "$RESPONSE" | jq -e '.errors' > /dev/null 2>&1; then
@@ -67,22 +63,24 @@ else
       "Format:           \(.format // "N/A")",
       "Compress Logs:    \(.compressLogs // "N/A")",
       "Default Level:    \(.defaultSiteLogsLevel // "N/A")",
+      "Connection ID:    \(.connectionId // "N/A")",
       "Public Key:       \(if .publicKey then "Yes (" + (.publicKeyFileName // "embedded") + ")" else "No" end)",
       "Datasets:",
       (.datasets | if length > 0 then map("  - " .) | join("\n") else "  (none)")
     '
   else
     # List — show table
-    echo "$RESPONSE" | jq -r '
-      ["Config ID", "Name", "Provider", "Enabled", "Datasets"],
-      (.data[] | [
-        .id,
-        .configurationName,
-        .provider,
-        (.enabled | if . then "Yes" else "No" end),
-        (.datasets | join(", "))
-      ])
-      | @tsv
-    ' | awk -F'\t' 'BEGIN {OFS="\t"} {print}' | column -t
+    COUNT=$(echo "$RESPONSE" | jq '.data | length')
+    if [[ "$COUNT" -eq 0 ]]; then
+      echo "No log configurations found."
+    else
+      printf "%-24s %-35s %-18s %-8s\n" "Config ID" "Name" "Provider" "Enabled"
+      printf "%-24s %-35s %-18s %-8s\n" "─" "─" "─" "─" | tr ' ' '─'
+      echo "$RESPONSE" | jq -r '
+        .data[] | [.id, .configurationName, .provider, (.enabled | if . then "Yes" else "No" end)] | @tsv
+      ' | while IFS=$'\t' read -r id name provider enabled; do
+        printf "%-24s %-35s %-18s %-8s\n" "$id" "$name" "$provider" "$enabled"
+      done
+    fi
   fi
 fi

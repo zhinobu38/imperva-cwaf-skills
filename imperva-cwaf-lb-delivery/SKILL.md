@@ -170,6 +170,79 @@ SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
 
 ---
 
+## §3: Monitoring & Notifications
+
+Manage origin server health monitoring, failure detection, and failover notification settings.
+
+Base URL: `https://api.imperva.com/appdlv-site-settings/v2/site/{siteId}/monitoring`
+
+### Get Monitoring Settings
+
+```bash
+SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/get-monitoring.sh
+```
+
+### Update Monitoring Settings
+
+```bash
+# Step 1: GET current settings
+# Step 2: Modify JSON
+# Step 3: Pipe modified JSON into update script
+SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/update-monitoring.sh < modified.json
+```
+
+API supports both PUT (full update) and POST (partial update). The update script uses PUT for full replacement.
+
+### Monitoring Settings Reference
+
+#### FailedRequestCriteria — เงื่อนไขที่ถือว่า request fail
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `httpRequestTimeout` | int | 35 | Timeout รอ HTTP response (1-200s / 1-3m) |
+| `httpRequestTimeoutUnits` | string | SECONDS | SECONDS หรือ MINUTES |
+| `httpResponseError` | string | 501-599 | HTTP error code ที่ถือว่า fail (เช่น "501-510,530") |
+
+#### MonitoringParameters — เกณฑ์ถือว่า origin server "down"
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `failedRequestsPercentage` | int | 40 | % ของ failed requests ก่อนถือว่า down (0-100) |
+| `failedRequestsMinNumber` | int | 3 | จำนวน failed requests ขั้นต่ำ (1-500) |
+| `failedRequestsDuration` | int | 40 | ระยะเวลา failed เกิน threshold (20-180s / 1-2m) |
+| `failedRequestsDurationUnits` | string | SECONDS | SECONDS หรือ MINUTES |
+
+#### UpDownVerification — การยืนยันสถานะ server
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `useVerificationForDown` | bool | true | ส่ง request ยืนยันเพิ่มเมื่อ detect down |
+| `monitoringUrl` | string | "/" | URL สำหรับ health check |
+| `expectedReceivedString` | string | (empty) | ข้อความที่ต้องเจอใน response (ว่าง = เจออะไรก็ success) |
+| `upChecksInterval` | int | 20 | ความถี่ตรวจสอบเมื่อ server กลับมา up (10-120s / 1-2m) |
+| `upChecksIntervalUnits` | string | SECONDS | SECONDS หรือ MINUTES |
+| `upCheckRetries` | int | 3 | จำนวน retry ต่อครั้งตอนตรวจ up (1-50) |
+
+#### Notifications — การแจ้งเตือน
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `alarmOnStandsByFailover` | bool | true | แจ้งเตือนเมื่อ standby DC รับแทน (multi-DC only) |
+| `alarmOnDcFailover` | bool | true | แจ้งเตือนเมื่อ DC failover (multi-DC only) |
+| `alarmOnServerFailover` | bool | false | แจ้งเตือนเมื่อ server failover |
+| `requiredMonitors` | string | MOST | จำนวน monitors ที่ต้องยืนยันว่า down: ONE, MANY, MOST, ALL |
+
+### Monitoring Pitfalls
+- **PUT is full replacement** — always GET first, modify, then PUT
+- **POST for partial update** — use POST if you only want to change specific fields
+- **alarmOnStandsByFailover / alarmOnDcFailover** — only relevant for multi-DC configurations
+- **requiredMonitors** — determines how many monitors must agree before marking server as down; stricter = fewer false positives but slower detection
+- **expectedReceivedString** — if empty, any non-error response counts as success; if set, the string must appear in the response body
+
+---
+
 ## Related Skills
 
 - `imperva-cwaf-ssl-management`: SSL/TLS settings

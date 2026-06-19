@@ -1,6 +1,6 @@
 ---
 name: imperva-cwaf-siem-integration
-description: Retrieve Imperva Cloud WAF SIEM log integration configuration — connections and log configurations (read-only)
+description: Manage Imperva Cloud WAF SIEM log integration — connections, log configurations, and per-site log levels
 category: imperva-cwaf
 version: 1.0.0
 ---
@@ -29,6 +29,12 @@ Read-only retrieval of SIEM log integration configuration — connections and lo
 | `CAID` | User / memory | Pass as env var |
 
 **NEVER hardcode credentials or identifiers.**
+
+## Best Practice
+
+> ก่อนตั้งค่า SIEM/log integration ใดๆ ให้ดู best practice ก่อน:
+> `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
+> สิ่งสำคัญ: Enable log level ตามที่ user confirm (full / security / none / default)
 
 ## ⚡ MANDATORY: Use the Scripts
 
@@ -152,6 +158,85 @@ OUTPUT_FORMAT=json CAID=<caid> bws run --project-id <bw_id> -- bash \
 | `DNSMS` | `DNSMS_SECURITY_LOGS` |
 | `DNS` | `DNS_Protection_Events`, `DNS_Security_Logs`, `DNS_Traffic_Logs` |
 | `API_Security` | `BOLA` |
+
+---
+
+## 3. Site Log Level
+
+Get or update the log reporting level for a specific site.
+
+**API:** Imperva Sites Management API v1
+**Base URL:** `https://my.imperva.com`
+
+### Get Current Site Log Level
+
+```bash
+SITE_ID=<site_id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-siem-integration/scripts/get-site-log-level.sh
+```
+
+### JSON Output
+
+```bash
+SITE_ID=<site_id> OUTPUT_FORMAT=json CAID=<caid> bws run --project-id <bw_id> -- bash \
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-siem-integration/scripts/get-site-log-level.sh
+```
+
+### Parameters
+
+| Env Var | Required | Description |
+|---------|----------|-------------|
+| `SITE_ID` | Yes | Numeric site ID |
+| `CAID` | No | Imperva Account ID. Defaults to API credential's account |
+| `OUTPUT_FORMAT` | No | `table` (default) or `json` |
+
+### Update Site Log Level
+
+```bash
+SITE_ID=<site_id> LOG_LEVEL=<level> CAID=<caid> bws run --project-id <bw_id> -- bash \
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-siem-integration/scripts/update-site-log-level.sh
+```
+
+### JSON Output
+
+```bash
+SITE_ID=<site_id> LOG_LEVEL=<level> OUTPUT_FORMAT=json CAID=<caid> bws run --project-id <bw_id> -- bash \
+  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-siem-integration/scripts/update-site-log-level.sh
+```
+
+### Parameters
+
+| Env Var | Required | Description |
+|---------|----------|-------------|
+| `SITE_ID` | Yes | Numeric site ID |
+| `LOG_LEVEL` | Yes | `full`, `security`, `none`, or `default` |
+| `CAID` | No | Imperva Account ID. Defaults to API credential's account |
+| `OUTPUT_FORMAT` | No | `table` (default) or `json` |
+
+### Log Level Values
+
+| Value | Description |
+|-------|-------------|
+| `full` | All logs (WAF raw logs + access logs) |
+| `security` | Security events only |
+| `none` | No logs sent to SIEM |
+| `default` | Account default setting |
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `res` | 0 = success |
+| `debug_info.log_level` | Current log level after operation |
+
+### Error Codes
+
+| Code | Meaning |
+|------|---------|
+| 2 | Invalid input (bad site_id or log_level) |
+| 6001 | Invalid configuration parameter name |
+| 6002 | Invalid configuration parameter value |
+| 9415 | Operation not allowed (Logs Integration SKU not purchased) |
 
 ---
 

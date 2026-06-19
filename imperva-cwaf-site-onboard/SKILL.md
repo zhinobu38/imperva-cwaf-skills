@@ -2,7 +2,7 @@
 name: imperva-cwaf-site-onboard
 description: Onboard a new website to Imperva Cloud WAF using the API
 category: imperva-cwaf
-version: 2.1.0
+version: 2.2.0
 ---
 
 # Imperva CWAF Site Onboarding
@@ -57,7 +57,26 @@ CAID=<caid> DOMAIN=<domain> ORIGIN_IP=<ip> \
 
 Optional env vars: `SITE_NAME` (default: same as DOMAIN), `GENERATE_CERT` (default: true).
 
-### Step 3: Get CNAME for DNS configuration
+### Step 3: WAF Policy Decision
+
+**🔴 MANDATORY — Never skip this step.**
+
+Ask the user: **"Do you want to use an existing WAF Policy or create a new one for this site?"**
+
+**Option A — Use existing policy:**
+1. List policy name + ID for the user to choose (use `imperva-cwaf-policy-management` skill)
+2. If the existing policy is already in **Alert (monitoring)** mode → use it as-is
+3. If the existing policy is in **Block** mode but the user has false-positive concerns → recommend creating a new policy instead (Option B)
+
+**Option B — Create new policy (recommended in these cases):**
+- User has false-positive concerns
+- User wants monitoring mode first (Alert for 1-2 weeks → review → switch to Block)
+- Existing policy does not match the application type
+- Create per best practice: signature categories = **Block** (or **Alert** if false-positive concern)
+
+> 📝 Full best practice: `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
+
+### Step 4: Get CNAME for DNS configuration
 
 ```bash
 SITE_ID=<id> CAID=<caid> \
@@ -67,11 +86,11 @@ SITE_ID=<id> CAID=<caid> \
 
 Or use `imperva-cwaf-get-site-detail` skill which returns the same info.
 
-### Step 4: Update DNS at your provider
+### Step 5: Update DNS at your provider
 
-Create CNAME record: `<domain> CNAME <cname from step 3>`
+Create CNAME record: `<domain> CNAME <cname from step 4>`
 
-### Step 5: Verify
+### Step 6: Verify
 
 ```bash
 dig CNAME <domain> +short
@@ -149,7 +168,7 @@ Same structure — filters to: `siteId`, `name`, `cname`, `siteStatus`, `active`
 
 ## Best Practice
 
-> หลังจาก onboard site สำเร็จ ให้ apply best practice configuration เสมอ
-> ดูข้อมูลเต็ม: `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
+> After onboarding, always apply best practice configuration.
+> Full details: `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
 
-**หมายเหตุ:** Best practice content เก็บใน second-brain เท่านั้น — อย่า duplicate ลงใน skill โดยตรง ให้ reference ไปที่ second-brain เสมอ
+**Note:** Best practice content lives in the second-brain only — never duplicate into skill files. Always reference the second-brain.

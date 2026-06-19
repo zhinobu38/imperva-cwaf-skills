@@ -11,7 +11,7 @@
 SITE_ID="${1:?Usage: $0 <site_id>}"
 CAID="${CAID:?Set CAID}"
 API_ID="${IMPERVA_API_ID:?Set IMPERVA_API_ID}"
-API_KEY="${IMPERVA_API_KEY:?Set IMPERVA_API_KEY}"
+API_KEY="${IM...?Set IMPERVA_API_KEY}"
 
 if [[ "$DRY_RUN" == "true" ]]; then
   echo "[DRY RUN] Would delete site $SITE_ID (CAID: $CAID)"

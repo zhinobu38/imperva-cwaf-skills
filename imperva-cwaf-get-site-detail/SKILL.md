@@ -1,8 +1,8 @@
 ---
 name: imperva-cwaf-get-site-detail
-description: List and search Imperva Cloud WAF sites using the Sites Management API
+description: List, search, and delete Imperva Cloud WAF sites using the Sites Management API
 category: imperva-cwaf
-version: 3.2.0
+version: 3.3.0
 ---
 
 # Imperva CWAF Get Site Detail
@@ -35,41 +35,59 @@ List all sites or search by keyword from Imperva Cloud WAF.
 
 ```bash
 # Table output (default — human readable)
-CAID=<caid> bws run --project-id <bw_id> -- bash \
+CAID=<caid> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/list-sites.sh
 
 # JSON output (for scripting / jq / grep)
-OUTPUT_FORMAT=json CAID=<caid> bws run --project-id <bw_id> -- bash \
+OUTPUT_FORMAT=json CAID=<caid> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/list-sites.sh
 ```
 
 Optional env vars: `CAID`, `SIZE=100`, `PAGE=0` (SIZE must be one of: 10, 25, 50, 100), `OUTPUT_FORMAT=json|table` (default: table), `SEARCH=<keyword>` (case-insensitive filter on site name/domain).
 Positional args also accepted as fallback: `bws run ... -- bash script.sh <caid> <size> <page>`.
 
-### Delete a Site
+### Delete Sites (Single or Batch)
+
+**🔴 2-Step Confirmation is MANDATORY before deleting any site. Never skip this.**
+
+**Step 1 — Show & Confirm the target sites:**
+List the sites that match the deletion criteria. Display them in a table.
+Ask the user to confirm: "คุณต้องการลบเว็บไซต์เหล่านี้ทั้งหมดใช่ไหม?" (yes/no)
+
+**Step 2 — Final confirmation:**
+If Step 1 is confirmed, ask again: "แน่ใจไหม? การลบไม่สามารถย้อนกลับได้ (yes/no)"
+Only proceed to delete if the user confirms **both** steps.
+
+If the user says no at any step, abort immediately.
 
 ```bash
-# Delete a site by ID
-CAID=<caid> SITE_ID=<site_id> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
+# Delete a site by ID (after 2-step confirmation)
+CAID=<caid> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/delete-site.sh <site_id>
 
-# Dry run (preview without deleting)
-DRY_RUN=true CAID=<caid> SITE_ID=<site_id> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
-  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/delete-site.sh <site_id>
+# Delete multiple sites (loop, after 2-step confirmation)
+for id in <id1> <id2> <id3>; do
+  CAID=<caid> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
+    ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/delete-site.sh $id
+done
 ```
 
-**⚠️ Deletion is irreversible.** Always confirm with the user before deleting.
-Recommended: run with `DRY_RUN=true` first, then confirm.
+**Guidelines:**
+- Always list the sites first and show them to the user
+- MUST complete both confirmation steps before running any delete command
+- NEVER delete based on keyword/search alone without explicit per-site confirmation
+- When deleting by keyword (e.g. "train*"), list ALL matching sites and confirm the full list first
+- Single site deletion also requires 2-step confirmation
 
 ### Search Sites by Keyword
 
 ```bash
 # Find sites matching "train" (case-insensitive)
-SEARCH=train CAID=<caid> bws run --project-id <bw_id> -- bash \
+SEARCH=train CAID=<caid> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/list-sites.sh
 
 # Combine with JSON output for scripting
-SEARCH=train OUTPUT_FORMAT=json CAID=<caid> bws run --project-id <bw_id> -- bash \
+SEARCH=train OUTPUT_FORMAT=json CAID=<caid> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/list-sites.sh
 ```
 
@@ -99,8 +117,11 @@ Each site object contains:
 | 15 (HTTP 403) | WAF intermittent block — IP-based, NOT auth failure. Retry with exponential backoff. |
 
 ## Pitfalls
-- **SEARCH filter is client-side**: The `SEARCH` env var filters results after the API returns them. For accounts with many sites, this may miss matches on unlisted pages. Use `SIZE=100` and paginate if needed.
+- **Dev Standard — No raw credentials anywhere**: NEVER write inline curl with hardcoded API IDs/keys. NEVER put credentials in script files, terminal commands, or environment variable exports typed directly into the chat. ALWAYS use `bws run --uuids-as-keynames --project-id <id> -- bash script.sh` so credentials are injected at runtime from Bitwarden. Scripts MUST read `IMPERVA_API_ID` and `IMPERVA_API_KEY` from environment variables only.
 - **WAF intermittent block (errorCode 15, HTTP 403)**: Imperva's WAF may intermittently block API requests from certain IPs (especially cloud/AWS IPs). Response: `{"errorCode":"15","description":"This request was blocked by our security service"}`. This is NOT a rate limit (rate limit returns HTTP 429) and NOT an auth failure (auth failure returns HTTP 401). It is an IP-based WAF block that typically resolves within seconds to minutes. **Retry with exponential backoff** (5s, 15s, 30s, 60s) until the request succeeds. Do NOT assume credentials are wrong when seeing errorCode 15.
+- **Delete is irreversible**: `DELETE /sites-mgmt/v3/sites/{id}` permanently removes the site. Always run `DRY_RUN=true` first, show the user what will be deleted, and get explicit confirmation before executing the real delete. The delete API returns HTTP 200 on success (not 204).
+- **Duplicate secret names in Bitwarden**: If `bws run` fails with "Multiple secrets with name: 'IMPERVA_API_ID'", use `--uuids-as-keynames` flag to disambiguate.
+- **SEARCH filter is client-side**: The `SEARCH` env var filters results after the API returns them. For accounts with many sites, this may miss matches on unlisted pages. Use `SIZE=100` and paginate if needed.
 - **`bws run` quoting and jq @tsv**: When `bws run -- bash script.sh` is used, the command string is passed through an extra shell layer. This can break:
   - `$'\t'` ANSI-C quoting in `column -t -s $'\t'` — use `column -t -s "\t"` instead
   - Complex jq expressions with nested quotes — keep jq filter in single quotes, pipe to `column` outside

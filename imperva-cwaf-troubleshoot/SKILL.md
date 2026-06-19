@@ -21,12 +21,12 @@ Diagnose website performance and availability issues through Imperva Cloud WAF. 
 
 ## Credential & Identifier Policy (MANDATORY)
 
-| Value | Source | ห้าม |
-|-------|--------|------|
-| `IMPERVA_API_ID` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | hardcode ใน script/template/SKILL.md |
-| `IMPERVA_API_KEY` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | print ใน log หรือ raw request output |
-| `SITE_ID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode ใน template |
-| `CAID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode ใน template |
+| Value | Source | Forbidden |
+|-------|--------|-----------|
+| `IMPERVA_API_ID` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | hardcode in script/template/SKILL.md |
+| `IMPERVA_API_KEY` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | print in log or raw request output |
+| `SITE_ID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode in template |
+| `CAID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode in template |
 
 ## API Endpoints
 

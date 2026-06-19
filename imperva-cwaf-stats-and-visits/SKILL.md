@@ -11,12 +11,12 @@ Retrieve site-level statistics and visit session logs from Imperva Cloud WAF. Su
 
 ## Credential & Identifier Policy
 
-| Value | Source | ห้าม |
-|-------|--------|------|
-| `IMPERVA_API_ID` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | hardcode ใน script/template/SKILL.md |
-| `IMPERVA_API_KEY` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | print ใน log หรือ raw request output |
-| `SITE_ID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode ใน template |
-| `CAID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode ใน template |
+| Value | Source | Forbidden |
+|-------|--------|-----------|
+| `IMPERVA_API_ID` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | hardcode in script/template/SKILL.md |
+| `IMPERVA_API_KEY` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | print in log or raw request output |
+| `SITE_ID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode in template |
+| `CAID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode in template |
 
 ## API Endpoints
 
@@ -34,11 +34,11 @@ Retrieve site-level statistics and visit session logs from Imperva Cloud WAF. Su
 
 ## Operations
 
-> ⚠️ **Session Release vs Exception — คนละอย่างกัน**
-> - **Session Release** (`release`) — ปล่อย blocked session ที่ถูก WAF block อยู่แล้ว (user request) เป็นการ action ราย session ไม่ได้เปลี่ยน policy
-> - **Exception / Whitelist** — สร้างกฎยกเว้นใน security policy เพื่อไม่ block traffic ในอนาคต ใช้ `imperva-cwaf-policy-management` แทน
+> ⚠️ **Session Release vs Exception — different things**
+> - **Session Release** (`release`) — release a blocked session that was already blocked by WAF (user request). This is a per-session action and does NOT change the policy.
+> - **Exception / Whitelist** — create an exception rule in the security policy to prevent blocking in the future. Use `imperva-cwaf-policy-management` instead.
 >
-> อย่าสับสัน! Release session ไม่ได้สร้าง exception และ exception ไม่ได้ release session ที่ block อยู่แล้ว
+> Don't confuse them! Releasing a session does NOT create an exception, and an exception does NOT release already-blocked sessions.
 
 ### stats — Get Site Statistics
 
@@ -145,30 +145,30 @@ SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- \
   bash scripts/imperva_release_session.sh --session-id <session_id>
 ```
 
-**⚠️ ย้ำ: สำหรับ user request release blocked session เท่านั้น ไม่เกี่ยวกับ exception/whitelist**
+**⚠️ Reminder: only for user-requested release of blocked sessions — not related to exception/whitelist**
 
 **Parameters:**
 
 | Parameter | Required | Default | Description |
 |-----------|----------|---------|-------------|
 | `--site-id` | Yes* | `SITE_ID` env | Site ID |
-| `--session-id` | Yes | — | Session ID to release (ได้จาก visits: `actions[].incidentId` หรือจาก `fields.id` ของ visit) |
+| `--session-id` | Yes | — | Session ID to release (obtained from visits: `actions[].incidentId` or from `fields.id` of visit) |
 | `--caid` | No | `CAID` env | Account CAID |
-| `--format` | No | `table` | `table` (human-readable) หรือ `json` (raw) |
+| `--format` | No | `table` | `table` (human-readable) or `json` (raw) |
 
-**Session ID ได้จากไหน:**
-- จาก `visits` output → แต่ละ visit มี `fields.id` หรือ `actions[].incidentId`
-- จาก incident ID format: `<visit_id>-<number>` → ใช้ visit_id ส่วนแรกเป็น session_id
+**Where to get Session ID:**
+- From `visits` output → each visit has `fields.id` or `actions[].incidentId`
+- From incident ID format: `<visit_id>-<number>` → use the first part (visit_id) as session_id
 
-**ตัวอย่าง flow จริง:**
+**Real-world flow example:**
 ```
-# 1. ค้นหา blocked session ก่อน
+# 1. Find blocked sessions first
 SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
   python3 scripts/imperva_get_stats.py visits \
     --filter-result "req_blocked_security" \
     --page-size 20 --format table
 
-# 2. เอา session/visit ID จากผลลัพธ์ → release
+# 2. Take session/visit ID from results → release
 SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
   bash scripts/imperva_release_session.sh \
     --session-id "526000340320036642"
@@ -340,15 +340,15 @@ Raw attack codes (e.g. `501589.0`) are meaningless to users. Always translate us
 
 | securityRule (API value) | Display As | Category | Description |
 |---|---|---|---|
-| `api.threats.sql_injection` | SQL Injection | 🔴 รุนแรง | พยายาม inject SQL command |
-| `api.threats.cross_site_scripting` | Cross-Site Scripting (XSS) | 🔴 รุนแรง | พยายาม inject script |
-| `api.threats.illegal_resource_access` | Illegal Resource Access | 🟠 ปานกลาง | เข้าถึงไฟล์/path ที่ไม่อนุญาต (exe, git, config) |
-| `api.threats.bot_access_control` | Bot Access Control | 🟡 ต่ำ | Bot ที่ถูก deny/block |
-| `api.threats.customRule` | Custom Rule | 🟡 ต่ำ | ถูก custom rule ที่ user กำหนดเอง |
-| `api.threats.ddos` | DDoS | 🔴 รุนแรง | โจมตีขนาดใหญ่ |
-| `api.threats.remote_file_inclusion` | Remote File Inclusion | 🔴 รุนแรง | พยายาม include ไฟล์ภายนอก |
-| `api.threats.backdoor_protect` | Backdoor Protect | 🟠 ปานกลาง | ตรวจพบ backdoor/shell |
-| `api.threats.api_spec_violation` | API Spec Violation | 🟡 ต่ำ | ไม่ตาม API specification |
+|| `api.threats.sql_injection` | SQL Injection | 🔴 High | Attempting to inject SQL command |
+|| `api.threats.cross_site_scripting` | Cross-Site Scripting (XSS) | 🔴 High | Attempting to inject script |
+|| `api.threats.illegal_resource_access` | Illegal Resource Access | 🟠 Medium | Accessing disallowed files/paths (exe, git, config) |
+|| `api.threats.bot_access_control` | Bot Access Control | 🟡 Low | Bot that was denied/blocked |
+|| `api.threats.customRule` | Custom Rule | 🟡 Low | Matched a user-defined custom rule |
+|| `api.threats.ddos` | DDoS | 🔴 High | Large-scale attack |
+|| `api.threats.remote_file_inclusion` | Remote File Inclusion | 🔴 High | Attempting to include external file |
+|| `api.threats.backdoor_protect` | Backdoor Protect | 🟠 Medium | Detected backdoor/shell |
+|| `api.threats.api_spec_violation` | API Spec Violation | 🟡 Low | Does not follow API specification |
 
 **Known attack code → type mapping (for reference/debugging only):**
 
@@ -430,7 +430,7 @@ Request results are found in `actions[].requestResult`.
 - **Client-side filters**: When using `--filter-path`, `--filter-result`, `--filter-ua`, etc., increase `--page-size` to 100 to fetch enough data for post-filtering. Filters are applied per-visit: a visit matches if ANY of its actions match the filter criteria.
 - **Rich output required**: User expects visually formatted output with box-drawing, emoji, and bar charts. Never output plain text tables or raw data without formatting when in table mode.
 - **bws run quoting**: When passing arguments with spaces (e.g. `--filter-type "Hacking Tool"`) through `bws run`, the outer shell may split them. Use the wrapper script (`scripts/imperva-visits.sh`) or write args to a temp file. Single-word values (e.g. `HackingTool`) work without quoting.
-- **Release ≠ Exception**: `release` command ปล่อย blocked session ที่ถูก block อยู่แล้ว (user request) เท่านั้น — ไม่ได้สร้าง exception/whitelist ใน security policy ถ้าต้องการให้ traffic ไม่ถูก block ในอนาคต ให้ใช้ `imperva-cwaf-policy-management` แทน อย่าสับสัน!
+- **Release ≠ Exception**: The `release` command only releases sessions that are already blocked (per user request) — it does NOT create an exception/whitelist in the security policy. If you want traffic to not be blocked in the future, use `imperva-cwaf-policy-management` instead. Don't confuse them!
 - **Reputation API field names differ from YAML spec**: The `reputation-intelligence-api.yaml` spec uses `ASN`, `risk_score`, `attacks_by_industries` — but the **actual API response** uses `asn`, `risk`, `attacks_by_industry` (lowercase, singular). Always code against the real response, not the spec. Script `imperva_ip_reputation.sh` already handles this.
 - **Reputation API base URL**: Uses `https://api.imperva.com/ip-reputation` — NOT `https://my.imperva.com`. No SITE_ID or CAID needed; queries are global across the Imperva customer base.
 

@@ -32,9 +32,9 @@ Read-only retrieval of SIEM log integration configuration — connections and lo
 
 ## Best Practice
 
-> ก่อนตั้งค่า SIEM/log integration ใดๆ ให้ดู best practice ก่อน:
+> Before configuring any SIEM/log integration, review the best practice:
 > `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
-> สิ่งสำคัญ: Enable log level ตามที่ user confirm (full / security / none / default)
+> Key points: Enable log level as confirmed by user (full / security / none / default)
 
 ## ⚡ MANDATORY: Use the Scripts
 

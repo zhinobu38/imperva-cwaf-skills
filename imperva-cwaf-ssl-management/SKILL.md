@@ -23,9 +23,9 @@ Manage SSL certificates and TLS/HSTS settings for Imperva Cloud WAF sites.
 
 ## Best Practice
 
-> ก่อนตั้งค่า TLS/SSL ใดๆ ให้ดู best practice ก่อน:
+> Before configuring any TLS/SSL settings, review the best practice:
 > `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
-> สิ่งสำคัญ: Enable TLS + Enhanced Security cipher, เตือน mixed content, HSTS หลัง TLS เสร็จ
+> Key points: Enable TLS + Enhanced Security cipher, warn about mixed content, HSTS after TLS is done
 
 ## ⚡ MANDATORY: Use the Scripts
 

@@ -37,9 +37,9 @@ Manage security policies (WAF Rules, ACL, Whitelist, File Upload) including poli
 
 ## Best Practice
 
-> ก่อนจัดการ policies ใดๆ ให้ดู best practice ก่อน:
+> Before managing any policies, review the best practice:
 > `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
-> สิ่งสำคัญ: WAF signature categories → Block all, Alert for FP concern → monitor 1-2 weeks → Block
+> Key points: WAF signature categories → Block all, Alert for FP concern → monitor 1-2 weeks → Block
 
 ## Setup
 
@@ -200,6 +200,54 @@ SITE_ID=<id> POLICY_ID=<id> \
 4. `add-geo-setting.sh` (or other settings) to replicate
 5. `apply-policy.sh` on target site
 
+### Delete Policies by Name Pattern (⚠️ DESTRUCTIVE — Always Confirm First)
+
+**MANDATORY workflow — never skip the confirmation step.**
+
+```bash
+# Step 1: List all policies
+CAID=<caid> bws run --project-id <bw_id> -- bash scripts/list-policies.sh
+```
+
+Step 2: **Filter by name pattern with correct position matching (case insensitive).** All matching is case insensitive — `train` matches `train`, `Train`, `TRAIN`, `Training`, etc. Use exact position logic:
+
+| User says | Match condition | Example match | Example NOT match |
+|-----------|----------------|---------------|-------------------|
+| "ชื่อขึ้นต้นด้วย X" / "starts with X" | `name.toLowerCase().startsWith("x")` | `train4`, `Train3 ACL`, `Training16` | `my-train`, `retrain`, `WAF RULE Train 3` |
+| "ชื่อลงท้ายด้วย X" / "ends with X" | `name.toLowerCase().endsWith("x")` | `policy-acl`, `test-ACL` | `acl-test`, `myacl2` |
+| "ชื่อมี X" / "contains X" | `name.toLowerCase().contains("x")` | `my-train-policy`, `retrain`, `WAF RULE Train 3` | — |
+
+> ⚠️ **CRITICAL**: "ขึ้นต้นด้วย train" means `name.toLowerCase().startsWith("train")` ONLY.
+> `train4` ✅ `Train3` ✅ `Training16` ✅ — all match (case insensitive, position 0).
+> `my-train` ❌ `retrain` ❌ `WAF RULE Train 3` ❌ — "train" is not at position 0.
+> When in doubt, show the filtered list and ask the user to verify before proceeding.
+
+Step 3: **Present the filtered list to the user for explicit approval BEFORE deleting.**
+
+Format:
+```
+The following N policies match the criteria "starts with 'train'":
+
+  ID        Name                     Type
+  ────────  ───────────────────────  ──────────
+  2104459   train14.thtechs.com rule  WAF_RULES
+  2104462   train15 WAF Policy        WAF_RULES
+  ...
+
+⚠️ This will DELETE N policies. This action cannot be undone.
+Proceed? (yes/no)
+```
+
+Step 4: **Only after user confirms "yes", execute deletions one by one:**
+
+```bash
+CAID=<caid> POLICY_ID=<id> bws run --project-id <bw_id> -- bash scripts/delete-policy.sh
+```
+
+Step 5: **Report results** — show ✅ deleted and ❌ failed (with reason).
+
+> **Note**: Some policies cannot be deleted (e.g., default mandatory policies). If deletion fails, report the error and continue with the remaining policies.
+
 ---
 
 ## Response Format
@@ -242,9 +290,12 @@ See `references/policy-types.md` for policy types, settings actions, URL pattern
 - **WAF_RULES policies cannot be disabled once created.**
 - **Test lifecycle for new/modified scripts:** Create a test policy → verify with GET → delete. Never test write operations on production policies. Always clean up test artifacts.
 - **Review-before-edit:** Before improving a skill, always read all current files first to check if changes were already applied. Another agent or session may have made the same edits — avoid redundant or conflicting work.
+- **⚠️ ALWAYS confirm before deleting policies.** List the matched policies, show count, and get explicit user approval before executing ANY delete. Never batch-delete without confirmation.
+- **⚠️ Name pattern matching — respect position, case insensitive.** "Starts with X" means the name begins with X at position 0, case insensitive. `train`, `Train`, `TRAIN`, `Training` all match "starts with train". But `my-train`, `retrain`, `WAF RULE Train 3` do NOT match — "train" is not at position 0. "Contains X" matches X anywhere in the name. When the user's intent is ambiguous, show the filtered list and ask before proceeding.
 
 ## Changelog
 
+- **2.2.0** (2026-06-19): Added "Delete Policies by Name Pattern" workflow with mandatory confirmation step. Added pitfalls for delete confirmation and name pattern position matching (starts with vs contains).
 - **2.1.0** (2026-06-16): Added add-ip-setting.sh, add-url-setting.sh, add-exception.sh, update-policy.sh. Fixed policy-examples.md (removed erroneous `data` wrapper from all curl bodies). Removed duplicated tables (policy-types.md is now the single source for settings/actions/exceptions). Added Setup section for execute permissions. Merged exception-types.md into policy-types.md. Added review-before-edit pitfall and test lifecycle pitfall.
 - **2.0.0**: Initial version with scripts/ migration from templates/.
 

@@ -22,9 +22,9 @@ Manage origin servers, load balancing, compression, redirection, and error pages
 
 ## Best Practice
 
-> ก่อนตั้งค่า delivery ใดๆ ให้ดู best practice ก่อน:
+> Before configuring any delivery settings, review the best practice:
 > `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
-> สิ่งสำคัญ: custom error pages (Block & Captcha, Connection Error), source restriction ที่ origin firewall
+> Key points: custom error pages (Block & Captcha, Connection Error), source restriction at origin firewall
 
 ## ⚡ MANDATORY: Use the Scripts
 
@@ -197,42 +197,42 @@ API supports both PUT (full update) and POST (partial update). The update script
 
 ### Monitoring Settings Reference
 
-#### FailedRequestCriteria — เงื่อนไขที่ถือว่า request fail
+#### FailedRequestCriteria — conditions that count as a failed request
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `httpRequestTimeout` | int | 35 | Timeout รอ HTTP response (1-200s / 1-3m) |
-| `httpRequestTimeoutUnits` | string | SECONDS | SECONDS หรือ MINUTES |
-| `httpResponseError` | string | 501-599 | HTTP error code ที่ถือว่า fail (เช่น "501-510,530") |
+| `httpRequestTimeout` | int | 35 | Timeout waiting for HTTP response (1-200s / 1-3m) |
+| `httpRequestTimeoutUnits` | string | SECONDS | SECONDS or MINUTES |
+| `httpResponseError` | string | 501-599 | HTTP error codes treated as failure (e.g. "501-510,530") |
 
-#### MonitoringParameters — เกณฑ์ถือว่า origin server "down"
-
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `failedRequestsPercentage` | int | 40 | % ของ failed requests ก่อนถือว่า down (0-100) |
-| `failedRequestsMinNumber` | int | 3 | จำนวน failed requests ขั้นต่ำ (1-500) |
-| `failedRequestsDuration` | int | 40 | ระยะเวลา failed เกิน threshold (20-180s / 1-2m) |
-| `failedRequestsDurationUnits` | string | SECONDS | SECONDS หรือ MINUTES |
-
-#### UpDownVerification — การยืนยันสถานะ server
+#### MonitoringParameters — criteria for marking origin server as "down"
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `useVerificationForDown` | bool | true | ส่ง request ยืนยันเพิ่มเมื่อ detect down |
-| `monitoringUrl` | string | "/" | URL สำหรับ health check |
-| `expectedReceivedString` | string | (empty) | ข้อความที่ต้องเจอใน response (ว่าง = เจออะไรก็ success) |
-| `upChecksInterval` | int | 20 | ความถี่ตรวจสอบเมื่อ server กลับมา up (10-120s / 1-2m) |
-| `upChecksIntervalUnits` | string | SECONDS | SECONDS หรือ MINUTES |
-| `upCheckRetries` | int | 3 | จำนวน retry ต่อครั้งตอนตรวจ up (1-50) |
+| `failedRequestsPercentage` | int | 40 | % of failed requests before marking as down (0-100) |
+| `failedRequestsMinNumber` | int | 3 | Minimum number of failed requests (1-500) |
+| `failedRequestsDuration` | int | 40 | Duration of failures exceeding threshold (20-180s / 1-2m) |
+| `failedRequestsDurationUnits` | string | SECONDS | SECONDS or MINUTES |
 
-#### Notifications — การแจ้งเตือน
+#### UpDownVerification — server status confirmation
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `alarmOnStandsByFailover` | bool | true | แจ้งเตือนเมื่อ standby DC รับแทน (multi-DC only) |
-| `alarmOnDcFailover` | bool | true | แจ้งเตือนเมื่อ DC failover (multi-DC only) |
-| `alarmOnServerFailover` | bool | false | แจ้งเตือนเมื่อ server failover |
-| `requiredMonitors` | string | MOST | จำนวน monitors ที่ต้องยืนยันว่า down: ONE, MANY, MOST, ALL |
+| `useVerificationForDown` | bool | true | Send additional verification request when down is detected |
+| `monitoringUrl` | string | "/" | URL for health check |
+| `expectedReceivedString` | string | (empty) | String that must appear in response (empty = any response is success) |
+| `upChecksInterval` | int | 20 | Check frequency when server comes back up (10-120s / 1-2m) |
+| `upChecksIntervalUnits` | string | SECONDS | SECONDS or MINUTES |
+| `upCheckRetries` | int | 3 | Number of retries per up check attempt (1-50) |
+
+#### Notifications — alert settings
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `alarmOnStandsByFailover` | bool | true | Alert when standby DC takes over (multi-DC only) |
+| `alarmOnDcFailover` | bool | true | Alert when DC failover occurs (multi-DC only) |
+| `alarmOnServerFailover` | bool | false | Alert when server failover occurs |
+| `requiredMonitors` | string | MOST | Number of monitors that must confirm down: ONE, MANY, MOST, ALL |
 
 ### Monitoring Pitfalls
 - **PUT is full replacement** — always GET first, modify, then PUT

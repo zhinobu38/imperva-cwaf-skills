@@ -23,18 +23,18 @@ All Imperva CWAF skills use shell script templates with this standard header:
 #   SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash template.sh
 ```
 
-## Credential Rules (เด็ดขาด)
+## Credential Rules (MANDATORY)
 
-| Value | Source | ห้าม |
-|-------|--------|------|
-| `IMPERVA_API_ID` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | hardcode ใน script/template/SKILL.md |
-| `IMPERVA_API_KEY` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | print ใน log หรือ raw request output |
-| `SITE_ID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode ใน template |
-| `CAID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode ใน template |
+| Value | Source | Forbidden |
+|-------|--------|-----------|
+| `IMPERVA_API_ID` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | hardcode in script/template/SKILL.md |
+| `IMPERVA_API_KEY` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | print in log or raw request output |
+| `SITE_ID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode in template |
+| `CAID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode in template |
 
 - bws project `hermes-aws` (ID: `61c6c700-2d78-4860-b79e-b46200e193e9`) — NOT `hermes`
-- bws inject เฉพาะ `IMPERVA_API_ID` + `IMPERVA_API_KEY` — ไม่มี SITE_ID/CAID
-- SITE_ID/CAID เป็น public identifier (ไม่ใช่ secret) แต่ต้องมาจาก user input เท่านั้น
+- bws injects only `IMPERVA_API_ID` + `IMPERVA_API_KEY` — SITE_ID/CAID are not included
+- SITE_ID/CAID are public identifiers (not secrets) but must come from user input only
 
 ## Template Pattern: GET → Modify → PUT
 
@@ -99,13 +99,29 @@ imperva-cwaf-<feature>/
     └── set-<subfeature>.sh     # Specialized operations
 ```
 
+## Language Policy (MANDATORY)
+
+- **All skill content MUST be written in English** — SKILL.md, comments, scripts, templates, and reference files.
+- Exceptions: only when the user explicitly specifies another language for a particular file.
+- This applies to ALL imperva-cwaf group skills.
+
+## Skill-to-Mapping Update Rule (MANDATORY)
+
+- **Every time** a new imperva-cwaf skill is created or an existing skill is modified,
+  the following files MUST be reviewed and updated to stay in sync:
+  1. `imperva-cwaf-api-manual/references/api-spec-to-skill-mapping.md` — update the **Spec File → Skills & Scripts** mapping for the affected skill, and add an entry in the **Update History** table (date, spec/skills affected, notes).
+  2. `imperva-cwaf/SKILL.md` (skill group index) — update the **Skill Map** table, **Quick Routing** table, and **Shared References** if new reference files are added.
+- This applies to ALL skills in the `imperva-cwaf` group (e.g., site-onboard, basic-security, custom-rule, cache, policy-management, ssl-management, lb-delivery, siem-integration, stats-and-visits, status-check, troubleshoot, etc.).
+- **Never skip this step.** An out-of-date mapping file or skill index defeats its purpose as an authoritative registry. Undocumented skills are invisible skills.
+
 ## SKILL.md Standard Sections
 
-1. Credential & Identifier Policy (MANDATORY) — table format with hardcode rules
-2. API Endpoint
-3. Operations (GET/PUT with param tables)
-4. Response Structure (JSON example from real API)
-5. Settings Reference (field tables per section)
-6. Error Handling (HTTP codes + 9415)
-7. Pitfalls (hardcode rules first, then API-specific)
-8. Related Skills
+1. Language Policy (MANDATORY) — English only unless explicitly specified
+2. Credential & Identifier Policy (MANDATORY) — table format with hardcode rules
+3. API Endpoint
+4. Operations (GET/PUT with param tables)
+5. Response Structure (JSON example from real API)
+6. Settings Reference (field tables per section)
+7. Error Handling (HTTP codes + 9415)
+8. Pitfalls (hardcode rules first, then API-specific)
+9. Related Skills

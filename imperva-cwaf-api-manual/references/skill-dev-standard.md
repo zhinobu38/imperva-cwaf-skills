@@ -21,18 +21,18 @@ All Imperva CWAF skills use shell script templates with this standard header:
 #   SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash template.sh
 ```
 
-## Credential Rules (เด็ดขาด)
+## Credential Rules (MANDATORY)
 
-| Value | Source | ห้าม |
-|-------|--------|------|
-| `IMPERVA_API_ID` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | hardcode ใน script/template/SKILL.md |
-| `IMPERVA_API_KEY` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | print ใน log หรือ raw request output |
-| `SITE_ID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode ใน template |
-| `CAID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode ใน template |
+| Value | Source | Forbidden |
+|-------|--------|-----------|
+| `IMPERVA_API_ID` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | hardcode in script/template/SKILL.md |
+| `IMPERVA_API_KEY` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | print in log or raw request output |
+| `SITE_ID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode in template |
+| `CAID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode in template |
 
 - bws project `hermes-aws` (ID: `61c6c700-2d78-4860-b79e-b46200e193e9`) — NOT `hermes`
-- bws inject เฉพาะ `IMPERVA_API_ID` + `IMPERVA_API_KEY` — ไม่มี SITE_ID/CAID
-- SITE_ID/CAID เป็น public identifier (ไม่ใช่ secret) แต่ต้องมาจาก user input เท่านั้น
+- bws injects only `IMPERVA_API_ID` + `IMPERVA_API_KEY` — SITE_ID/CAID are not included
+- SITE_ID/CAID are public identifiers (not secrets) but must come from user input only
 
 ## Template Pattern: GET → Modify → PUT
 

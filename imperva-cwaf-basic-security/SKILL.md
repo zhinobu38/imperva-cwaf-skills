@@ -30,9 +30,9 @@ Manage basic security settings (backdoor, DDoS, bot control) for a site via the 
 
 ## Best Practice
 
-> ก่อนตั้งค่า security ใดๆ ให้ดู best practice ก่อน:
+> Before configuring any security settings, review the best practice:
 > `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
-> สิ่งสำคัญ: DDoS Auto mode + threshold, security log ถ้ามี SIEM
+> Key points: DDoS Auto mode + threshold, security log if SIEM is available
 
 ## API Endpoints
 

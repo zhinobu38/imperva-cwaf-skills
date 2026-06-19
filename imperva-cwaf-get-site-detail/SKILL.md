@@ -52,10 +52,10 @@ Positional args also accepted as fallback: `bws run ... -- bash script.sh <caid>
 
 **Step 1 — Show & Confirm the target sites:**
 List the sites that match the deletion criteria. Display them in a table.
-Ask the user to confirm: "คุณต้องการลบเว็บไซต์เหล่านี้ทั้งหมดใช่ไหม?" (yes/no)
+Ask the user to confirm: "Do you want to delete all these sites? (yes/no)"
 
 **Step 2 — Final confirmation:**
-If Step 1 is confirmed, ask again: "แน่ใจไหม? การลบไม่สามารถย้อนกลับได้ (yes/no)"
+If Step 1 is confirmed, ask again: "Are you sure? This action cannot be undone. (yes/no)"
 Only proceed to delete if the user confirms **both** steps.
 
 If the user says no at any step, abort immediately.

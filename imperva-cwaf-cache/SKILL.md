@@ -30,9 +30,9 @@ Manage all cache-related settings for Imperva Cloud WAF sites via the Cache API 
 
 ## Best Practice
 
-> ก่อนตั้งค่า cache ใดๆ ให้ดู best practice ก่อน:
+> Before configuring any cache settings, review the best practice:
 > `~/myai/second-brain/20-Cybersecurity/Imperva-CWAF/Best-Practice-Configuration.md`
-> สิ่งสำคัญ: cache mode (Smart/Standard), cache response headers, data leakage prevention
+> Key points: cache mode (Smart/Standard), cache response headers, data leakage prevention
 
 ## ⚡ MANDATORY: Use the Scripts
 

@@ -9,7 +9,7 @@
 #   SITE_ID  — Site ID (from list-sites or onboard response)
 #
 # Usage:
-#   CAID=<caid> SITE_ID=<site_id> bws run --project-id <bw_id> -- bash get-site-detail.sh
+#   CAID=<caid> SITE_ID=<site_id> bws run -- bash get-site-detail.sh
 
 CAID="${CAID:?Set CAID}"
 SITE_ID="${SITE_ID:?Set SITE_ID}"

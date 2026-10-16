@@ -16,8 +16,8 @@
 #   OUTPUT_FORMAT — json (default) | table
 #
 # Usage:
-#   CAID=<caid> SITE_ID=<id> bws run --project-id <bw_id> -- bash list-rules.sh
-#   CAID=<caid> SITE_ID=<id> FILTER_ACTION=RULE_ACTION_BLOCK OUTPUT_FORMAT=table bws run --project-id <bw_id> -- bash list-rules.sh
+#   CAID=<caid> SITE_ID=<id> bws run -- bash list-rules.sh
+#   CAID=<caid> SITE_ID=<id> FILTER_ACTION=RULE_ACTION_BLOCK OUTPUT_FORMAT=table bws run -- bash list-rules.sh
 
 CAID="${CAID:?Set CAID}"
 SITE_ID="${SITE_ID:?Set SITE_ID}"

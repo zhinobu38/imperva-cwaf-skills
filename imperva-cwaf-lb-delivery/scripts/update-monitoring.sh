@@ -8,7 +8,7 @@
 #   SITE_ID, CAID must be set by user before calling
 #
 # Usage:
-#   SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash scripts/update-monitoring.sh < modified.json
+#   SITE_ID=<id> CAID=<caid> bws run -- bash scripts/update-monitoring.sh < modified.json
 #
 # Workflow:
 #   1. GET current settings via get-monitoring.sh

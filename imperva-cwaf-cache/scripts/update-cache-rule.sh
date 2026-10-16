@@ -16,7 +16,7 @@
 #
 # Usage:
 #   SITE_ID=<id> RULE_ID=<id> RULE_ENABLED=false \
-#     bws run --project-id <bw_id> -- bash update-cache-rule.sh
+#     bws run -- bash update-cache-rule.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID}"
 RULE_ID="${RULE_ID:?Set RULE_ID}"

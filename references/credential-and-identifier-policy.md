@@ -11,10 +11,9 @@
 
 | Value | Source | Method |
 |-------|--------|--------|
-| `IMPERVA_API_ID` | Bitwarden project `hermes-aws` (ID: `61c6c700-2d78-4860-b79e-b46200e193e9`) | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
-| `IMPERVA_API_KEY` | Bitwarden project `hermes-aws` (ID: `61c6c700-2d78-4860-b79e-b46200e193e9`) | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
+| `IMPERVA_API_ID` | Only via `bws run ` |
+| `IMPERVA_API_KEY` | Only via `bws run ` |
 
-- **Wrong project**: Using `hermes` project credentials authenticate (no 401) but cause 9415 "Operation not allowed" on write operations
 - **Scope**: bws run injects ONLY `IMPERVA_API_ID` and `IMPERVA_API_KEY`. It does NOT inject SITE_ID or CAID.
 
 ## Identifier Source
@@ -30,8 +29,8 @@
 
 ```bash
 # ✅ Shell script with curl — credentials from bws run, identifiers from env
-SITE_ID=852056322 CAID=2429928 \
-  bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9 \
+SITE_ID=xxxxxx CAID=xxxxxxx \
+  bws run  \
   -- bash /tmp/script.sh
 
 # ✅ Shell script template with jq — GET→modify→PUT pattern
@@ -48,14 +47,11 @@ api_key = os.environ["IMPERVA_API_KEY"]
 
 ```bash
 # ❌ Hardcoded credentials
-curl -H "x-API-Id: 214929" -H "x-API-key: da98b3 ..." ...
+curl -H "x-API-Id: xxxxx" -H "x-API-key: yyyyyy ..." ...
 
 # ❌ Hardcoded identifiers in template
-SITE_ID="852056322"  # inside a shared template file
+SITE_ID="xxxxxxxxx"  # inside a shared template file
 
 # ❌ Printing credentials
 echo "Using key: $IMPERVA_API_KEY"
-
-# ❌ Using wrong Bitwarden project
-bws run --project-id <hermes_project_id> -- ...
 ```

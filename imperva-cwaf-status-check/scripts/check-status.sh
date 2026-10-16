@@ -1,6 +1,6 @@
 #!/bin/bash
 # Imperva CWAF — Check Service Status
-# Usage: bws run --project-id <bw_id> -- bash check-status.sh
+# Usage: bws run -- bash check-status.sh
 # No credentials needed — public status API
 
 curl -s https://status.imperva.com/api/v2/summary.json | jq '{

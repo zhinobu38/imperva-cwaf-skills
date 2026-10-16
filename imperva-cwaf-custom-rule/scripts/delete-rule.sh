@@ -8,7 +8,7 @@
 #   SITE_ID, RULE_ID must be set by user before calling
 #
 # Usage:
-#   SITE_ID=<id> RULE_ID=<id> bws run --project-id <bw_id> -- bash delete-rule.sh
+#   SITE_ID=<id> RULE_ID=<id> bws run -- bash delete-rule.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID}"
 RULE_ID="${RULE_ID:?Set RULE_ID}"

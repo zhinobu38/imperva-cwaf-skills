@@ -14,9 +14,9 @@
 #   BLOCK_NON_ESSENTIAL_BOTS — true | false (default: false, do NOT change unless user asks)
 #
 # Usage:
-#   SITE_ID=<id> CAID=<caid> ACTIVATION_MODE=auto bws run --project-id <bw_id> -- bash set-ddos.sh
-#   SITE_ID=<id> CAID=<caid> ACTIVATION_MODE=adaptive TRAFFIC_THRESHOLD=1500 bws run ... -- bash set-ddos.sh
-#   SITE_ID=<id> CAID=<caid> ACTIVATION_MODE=off bws run ... -- bash set-ddos.sh
+#   SITE_ID=<id> CAID=<caid> ACTIVATION_MODE=auto bws run -- bash set-ddos.sh
+#   SITE_ID=<id> CAID=<caid> ACTIVATION_MODE=adaptive TRAFFIC_THRESHOLD=1500 bws run -- bash set-ddos.sh
+#   SITE_ID=<id> CAID=<caid> ACTIVATION_MODE=off bws run -- bash set-ddos.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID (from user input or imperva-cwaf-get-site-detail)}"
 CAID="${CAID:?Set CAID (from user input or imperva-cwaf-get-site-detail)}"

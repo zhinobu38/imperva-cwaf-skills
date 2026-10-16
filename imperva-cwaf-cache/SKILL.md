@@ -22,8 +22,8 @@ Manage all cache-related settings for Imperva Cloud WAF sites via the Cache API 
 
 | Value | Source | Method |
 |-------|--------|--------|
-| `IMPERVA_API_ID` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
-| `IMPERVA_API_KEY` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
+| `IMPERVA_API_ID` | Bitwarden | Only via `bws run` |
+| `IMPERVA_API_KEY` | Bitwarden | Only via `bws run` |
 | `SITE_ID` | User / memory / get-site-detail | Pass as env var |
 
 **NEVER hardcode credentials or identifiers.**
@@ -43,7 +43,7 @@ All scripts at: `~/.hermes/skills/imperva-cwaf/imperva-cwaf-cache/scripts/`
 ### Get Cache Settings
 
 ```bash
-SITE_ID=<id> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-cache/scripts/get-cache-settings.sh
 ```
 
@@ -52,21 +52,21 @@ Optional: `SECTIONS=mode,client_side` to filter sections.
 ### Update Cache Mode
 
 ```bash
-SITE_ID=<id> MODE_LEVEL=smart bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> MODE_LEVEL=smart bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-cache/scripts/update-cache-mode.sh
 ```
 
 ### List Cache Rules
 
 ```bash
-SITE_ID=<id> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-cache/scripts/get-cache-rules.sh
 ```
 
 ### Get Single Cache Rule
 
 ```bash
-SITE_ID=<id> RULE_ID=<id> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> RULE_ID=<id> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-cache/scripts/get-cache-rules.sh
 # Then filter by rule_id from the list
 ```
@@ -78,7 +78,7 @@ Note: GET single rule by ID may return 9411 (known API limitation). Use list + f
 ```bash
 SITE_ID=<id> RULE_NAME=CacheStatic RULE_ACTION=HTTP_CACHE_MAKE_STATIC \
   RULE_FILTER='URL contains ".css"' RULE_TTL=86400 \
-  bws run --project-id <bw_id> -- bash \
+  bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-cache/scripts/create-cache-rule.sh
 ```
 
@@ -87,7 +87,7 @@ SITE_ID=<id> RULE_NAME=CacheStatic RULE_ACTION=HTTP_CACHE_MAKE_STATIC \
 ```bash
 # Update any field — set only the fields you want to change
 SITE_ID=<id> RULE_ID=<id> RULE_ENABLED=false \
-  bws run --project-id <bw_id> -- bash \
+  bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-cache/scripts/update-cache-rule.sh
 ```
 
@@ -96,7 +96,7 @@ The script handles GET → modify → PUT automatically.
 ### Delete Cache Rule
 
 ```bash
-SITE_ID=<id> RULE_ID=<id> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> RULE_ID=<id> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-cache/scripts/delete-cache-rule.sh
 ```
 
@@ -104,11 +104,11 @@ SITE_ID=<id> RULE_ID=<id> bws run --project-id <bw_id> -- bash \
 
 ```bash
 # Purge specific URL pattern
-SITE_ID=<id> URL_PATTERN=style.css bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> URL_PATTERN=style.css bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-cache/scripts/purge-cache.sh
 
 # Purge all
-SITE_ID=<id> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-cache/scripts/purge-cache.sh
 ```
 

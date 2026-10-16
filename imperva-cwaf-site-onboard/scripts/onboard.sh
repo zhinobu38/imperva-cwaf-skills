@@ -15,8 +15,8 @@
 #   GENERATE_CERT  — true | false (default: true)
 #
 # Usage:
-#   CAID=<caid> DOMAIN=example.com ORIGIN_IP=203.0.113.50 \
-#     bws run --project-id <bw_id> -- bash onboard.sh
+#   CAID=<caid> DOMAIN=example.com ORIGIN_IP=1.2.3.4 \
+#     bws run -- bash onboard.sh
 
 CAID="${CAID:?Set CAID}"
 DOMAIN="${DOMAIN:?Set DOMAIN (FQDN to onboard)}"

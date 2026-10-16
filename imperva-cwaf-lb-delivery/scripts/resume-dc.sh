@@ -8,7 +8,7 @@
 #   SITE_ID, CAID must be set by user before calling
 #
 # Usage:
-#   SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash templates/resume-dc.sh
+#   SITE_ID=<id> CAID=<caid> bws run -- bash templates/resume-dc.sh
 
 set -euo pipefail
 

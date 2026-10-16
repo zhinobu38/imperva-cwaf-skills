@@ -14,8 +14,8 @@
 # Bot IDs reference: https://docs.imperva.com/bundle/cloud-application-security/page/settings/client-classification.htm
 #
 # Usage:
-#   SITE_ID=<id> MODE=blockbadbots BOT_IDS=6,12 bws run --project-id <bw_id> -- bash update-bot-config.sh
-#   SITE_ID=<id> MODE=cancelgoodbots BOT_IDS=3 bws run ... -- bash update-bot-config.sh
+#   SITE_ID=<id> MODE=blockbadbots BOT_IDS=6,12 bws run -- bash update-bot-config.sh
+#   SITE_ID=<id> MODE=cancelgoodbots BOT_IDS=3 bws run -- bash update-bot-config.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID (from user input or imperva-cwaf-get-site-detail)}"
 MODE="${MODE:?Set MODE (blockbadbots | cancelgoodbots)}"

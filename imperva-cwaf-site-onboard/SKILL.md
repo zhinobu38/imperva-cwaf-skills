@@ -22,8 +22,8 @@ Onboard a new website to Imperva Cloud WAF using the Sites Management API v3.
 
 | Value | Source | Method |
 |-------|--------|--------|
-| `IMPERVA_API_ID` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
-| `IMPERVA_API_KEY` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
+| `IMPERVA_API_ID` | Bitwarden | Only via `bws run` |
+| `IMPERVA_API_KEY` | Bitwarden | Only via `bws run` |
 | `CAID` | User / memory | Pass as env var |
 | `DOMAIN` | User input | Pass as env var |
 | `ORIGIN_IP` | User input | Pass as env var |
@@ -51,7 +51,7 @@ Use `imperva-cwaf-get-site-detail` skill first. If site exists, skip to Step 3.
 
 ```bash
 CAID=<caid> DOMAIN=<domain> ORIGIN_IP=<ip> \
-  bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9 \
+  bws run \
   -- bash ~/.hermes/skills/imperva-cwaf/imperva-cwaf-site-onboard/scripts/onboard.sh
 ```
 
@@ -138,7 +138,7 @@ Use `imperva-cwaf-basic-security` skill for DDoS + bot control, and `imperva-cwa
 
 ```bash
 SITE_ID=<id> CAID=<caid> \
-  bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9 \
+  bws run \
   -- bash ~/.hermes/skills/imperva-cwaf/imperva-cwaf-site-onboard/scripts/get-site-cname.sh
 ```
 
@@ -177,13 +177,13 @@ Site status will be `NOT_CONFIGURED` until DNS propagates.
   "data": [
     {
       "site": {
-        "id": 923531599,
+        "id": xxxxxxx,
         "name": "example.com",
         "type": "CLOUD_WAF",
         "active": true,
-        "accountId": 2429928,
+        "accountId": xxxxxx,
         "creationTime": 1781846565797,
-        "cname": "bqotmm7.ng.impervadns.net"
+        "cname": "xxxxxx.ng.impervadns.net"
       },
       "domains": [
         {
@@ -193,7 +193,7 @@ Site status will be `NOT_CONFIGURED` until DNS propagates.
         }
       ],
       "servers": {
-        "ips": ["119.110.254.25"]
+        "ips": ["1.2.3.4"]
       },
       "certificateSettings": {
         "validationMethod": "CNAME"

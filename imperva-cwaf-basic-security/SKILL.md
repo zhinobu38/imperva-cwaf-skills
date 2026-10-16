@@ -21,8 +21,8 @@ Manage basic security settings (backdoor, DDoS, bot control) for a site via the 
 
 | Value | Source | Method |
 |-------|--------|--------|
-| `IMPERVA_API_ID` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
-| `IMPERVA_API_KEY` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
+| `IMPERVA_API_ID` | Bitwarden | Only via `bws run` |
+| `IMPERVA_API_KEY` | Bitwarden | Only via `bws run` |
 | `SITE_ID` | User / memory / get-site-detail | Pass as env var |
 | `CAID` | User / memory / get-site-detail | Pass as env var |
 
@@ -54,7 +54,7 @@ Manage basic security settings (backdoor, DDoS, bot control) for a site via the 
 ### Get Current Security Status
 
 ```bash
-SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-basic-security/scripts/get-security.sh
 ```
 
@@ -63,19 +63,19 @@ SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
 ```bash
 # Enable quarantine
 SITE_ID=<id> CAID=<caid> ACTION=api.threats.action.quarantine_url \
-  bws run --project-id <bw_id> -- bash scripts/set-backdoor.sh
+  bws run -- bash scripts/set-backdoor.sh
 
 # Alert only
 SITE_ID=<id> CAID=<caid> ACTION=api.threats.action.alert \
-  bws run --project-id <bw_id> -- bash scripts/set-backdoor.sh
+  bws run -- bash scripts/set-backdoor.sh
 
 # Disable
 SITE_ID=<id> CAID=<caid> ACTION=api.threats.action.disabled \
-  bws run --project-id <bw_id> -- bash scripts/set-backdoor.sh
+  bws run -- bash scripts/set-backdoor.sh
 
 # Remove URL from quarantine
 SITE_ID=<id> CAID=<caid> ACTION=api.threats.action.quarantine_url QUARANTINE_URL=/bad.php \
-  bws run --project-id <bw_id> -- bash scripts/set-backdoor.sh
+  bws run -- bash scripts/set-backdoor.sh
 ```
 
 ### DDoS Protection
@@ -83,37 +83,37 @@ SITE_ID=<id> CAID=<caid> ACTION=api.threats.action.quarantine_url QUARANTINE_URL
 ```bash
 # Auto mode (default)
 SITE_ID=<id> CAID=<caid> ACTIVATION_MODE=auto \
-  bws run --project-id <bw_id> -- bash scripts/set-ddos.sh
+  bws run -- bash scripts/set-ddos.sh
 
 # Auto with custom threshold and challenge action
 SITE_ID=<id> CAID=<caid> ACTIVATION_MODE=auto TRAFFIC_THRESHOLD=100 UNKNOWN_CLIENTS_CHALLENGE=javascript \
-  bws run --project-id <bw_id> -- bash scripts/set-ddos.sh
+  bws run -- bash scripts/set-ddos.sh
 
 # Adaptive with custom threshold
 SITE_ID=<id> CAID=<caid> ACTIVATION_MODE=adaptive TRAFFIC_THRESHOLD=1500 \
-  bws run --project-id <bw_id> -- bash scripts/set-ddos.sh
+  bws run -- bash scripts/set-ddos.sh
 
 # Disable
 SITE_ID=<id> CAID=<caid> ACTIVATION_MODE=off \
-  bws run --project-id <bw_id> -- bash scripts/set-ddos.sh
+  bws run -- bash scripts/set-ddos.sh
 ```
 
 ### Bot Access Control (v1 — simple toggle)
 
 ```bash
 SITE_ID=<id> CAID=<caid> BLOCK_BAD_BOTS=true CHALLENGE_SUSPECTED_BOTS=true \
-  bws run --project-id <bw_id> -- bash scripts/set-bot-control.sh
+  bws run -- bash scripts/set-bot-control.sh
 ```
 
 ### Bot Configuration (v3 — managed lists)
 
 ```bash
 # Get current bot config
-SITE_ID=<id> bws run --project-id <bw_id> -- bash scripts/get-bot-config.sh
+SITE_ID=<id> bws run -- bash scripts/get-bot-config.sh
 
 # Update bot lists
 SITE_ID=<id> MODE=blockbadbots BOT_IDS=6,12,45 \
-  bws run --project-id <bw_id> -- bash scripts/update-bot-config.sh
+  bws run -- bash scripts/update-bot-config.sh
 ```
 
 ## Response Structure
@@ -122,9 +122,9 @@ SITE_ID=<id> MODE=blockbadbots BOT_IDS=6,12,45 \
 
 ```json
 {
-  "site_id": 852056322,
-  "domain": "testagent.thtechs.com",
-  "account_id": 2429928,
+  "site_id": xxxxxx,
+  "domain": "testagent.xxx.com",
+  "account_id": xxxxxx,
   "security": {
     "waf": {
       "rules": [

@@ -9,13 +9,13 @@
 #
 # Usage:
 #   List all connections:
-#     CAID=<caid> bws run --project-id <bw_id> -- bash get-connections.sh
+#     CAID=<caid> bws run -- bash get-connections.sh
 #
 #   Get single connection:
-#     CAID=<caid> CONNECTION_ID=<id> bws run --project-id <bw_id> -- bash get-connections.sh
+#     CAID=<caid> CONNECTION_ID=<id> bws run -- bash get-connections.sh
 #
 #   JSON output:
-#     OUTPUT_FORMAT=json CAID=<caid> bws run --project-id <bw_id> -- bash get-connections.sh
+#     OUTPUT_FORMAT=json CAID=<caid> bws run -- bash get-connections.sh
 
 CAID="${CAID:-}"
 CONNECTION_ID="${CONNECTION_ID:-}"

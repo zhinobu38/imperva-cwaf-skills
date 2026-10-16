@@ -13,8 +13,8 @@
 #   ENABLED      — true | false
 #
 # Usage:
-#   CAID=<caid> POLICY_ID=<id> POLICY_NAME="New Name" bws run --project-id <bw_id> -- bash update-policy.sh
-#   CAID=<caid> POLICY_ID=<id> ENABLED=false bws run --project-id <bw_id> -- bash update-policy.sh
+#   CAID=<caid> POLICY_ID=<id> POLICY_NAME="New Name" bws run -- bash update-policy.sh
+#   CAID=<caid> POLICY_ID=<id> ENABLED=false bws run -- bash update-policy.sh
 
 CAID="${CAID:?Set CAID}"
 POLICY_ID="${POLICY_ID:?Set POLICY_ID}"

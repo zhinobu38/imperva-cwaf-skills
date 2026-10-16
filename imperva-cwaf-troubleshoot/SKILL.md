@@ -23,8 +23,8 @@ Diagnose website performance and availability issues through Imperva Cloud WAF. 
 
 | Value | Source | Forbidden |
 |-------|--------|-----------|
-| `IMPERVA_API_ID` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | hardcode in script/template/SKILL.md |
-| `IMPERVA_API_KEY` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | print in log or raw request output |
+| `IMPERVA_API_ID` | `bws run` | hardcode in script/template/SKILL.md |
+| `IMPERVA_API_KEY` | `bws run` | print in log or raw request output |
 | `SITE_ID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode in template |
 | `CAID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode in template |
 
@@ -46,19 +46,19 @@ Retrieves application performance statistics for the last reliable minute (the m
 
 ```bash
 # All metrics for all sites in account
-CAID=<caid> bws run --project-id <bw_id> -- bash \
+CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-troubleshoot/scripts/get-performance-stats.sh
 
 # Specific site, all metrics
-SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-troubleshoot/scripts/get-performance-stats.sh
 
 # Specific site, specific metrics
-SITE_ID=<id> CAID=<caid> METRICS=popLatency,errorResponseTypes bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> CAID=<caid> METRICS=popLatency,errorResponseTypes bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-troubleshoot/scripts/get-performance-stats.sh
 
 # JSON output (for scripting / jq)
-SITE_ID=<id> CAID=<caid> OUTPUT_FORMAT=json bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> CAID=<caid> OUTPUT_FORMAT=json bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-troubleshoot/scripts/get-performance-stats.sh
 ```
 
@@ -173,7 +173,7 @@ Raw API JSON response. Suitable for scripting, piping to `jq`, or further proces
 
 ```bash
 # Quick overview — all sites, all metrics
-CAID=2429928 bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9 -- bash \
+CAID=xxxxxxx bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-troubleshoot/scripts/get-performance-stats.sh
 ```
 
@@ -181,7 +181,7 @@ CAID=2429928 bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9 -- bash \
 
 ```bash
 # Focus on a specific site with high latency
-SITE_ID=852056322 CAID=2429928 bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9 -- bash \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-troubleshoot/scripts/get-performance-stats.sh
 ```
 
@@ -189,7 +189,7 @@ SITE_ID=852056322 CAID=2429928 bws run --project-id 61c6c700-2d78-4860-b79e-b462
 
 ```bash
 # Only latency and errors (skip origin response time)
-SITE_ID=852056322 CAID=2429928 METRICS=popLatency,errorResponseTypes bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9 -- bash \
+SITE_ID=xxxxxxx CAID=xxxxxx METRICS=popLatency,errorResponseTypes bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-troubleshoot/scripts/get-performance-stats.sh
 ```
 
@@ -197,7 +197,7 @@ SITE_ID=852056322 CAID=2429928 METRICS=popLatency,errorResponseTypes bws run --p
 
 ```bash
 # Get only error response types
-SITE_ID=852056322 CAID=2429928 METRICS=errorResponseTypes bws run --project-id <bw_id> -- bash \
+SITE_ID=xxxxxxxx CAID=xxxxxx METRICS=errorResponseTypes bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-troubleshoot/scripts/get-performance-stats.sh
 ```
 
@@ -205,15 +205,15 @@ SITE_ID=852056322 CAID=2429928 METRICS=errorResponseTypes bws run --project-id <
 
 ```bash
 # Show only stats for a specific PoP (e.g., "atl" in Atlanta)
-SITE_ID=852056322 CAID=2429928 POP=atl bws run --project-id <bw_id> -- bash \
+SITE_ID=xxxxxxx CAID=xxxxxx POP=atl bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-troubleshoot/scripts/get-performance-stats.sh
 
 # Combine POP filter with specific metrics
-SITE_ID=852056322 CAID=2429928 POP=atl METRICS=popLatency bws run --project-id <bw_id> -- bash \
+SITE_ID=xxxxxxx CAID=xxxxxx POP=atl METRICS=popLatency bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-troubleshoot/scripts/get-performance-stats.sh
 
 # Partial match works (case-insensitive)
-SITE_ID=852056322 CAID=2429928 POP=at bws run --project-id <bw_id> -- bash \
+SITE_ID=xxxxxxx CAID=xxxxxx POP=at bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-troubleshoot/scripts/get-performance-stats.sh
 ```
 

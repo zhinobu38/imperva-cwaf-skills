@@ -20,19 +20,18 @@ All Imperva CWAF skills use shell script templates with this standard header:
 #   SITE_ID, CAID must be set by user before calling
 #
 # Usage:
-#   SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash template.sh
+#   SITE_ID=<id> CAID=<caid> bws run -- bash template.sh
 ```
 
 ## Credential Rules (MANDATORY)
 
 | Value | Source | Forbidden |
 |-------|--------|-----------|
-| `IMPERVA_API_ID` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | hardcode in script/template/SKILL.md |
-| `IMPERVA_API_KEY` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | print in log or raw request output |
+| `IMPERVA_API_ID` | `bws run ` | hardcode in script/template/SKILL.md |
+| `IMPERVA_API_KEY` | `bws run ` | print in log or raw request output |
 | `SITE_ID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode in template |
 | `CAID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode in template |
 
-- bws project `hermes-aws` (ID: `61c6c700-2d78-4860-b79e-b46200e193e9`) — NOT `hermes`
 - bws injects only `IMPERVA_API_ID` + `IMPERVA_API_KEY` — SITE_ID/CAID are not included
 - SITE_ID/CAID are public identifiers (not secrets) but must come from user input only
 

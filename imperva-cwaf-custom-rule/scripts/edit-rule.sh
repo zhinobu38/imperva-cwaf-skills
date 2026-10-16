@@ -14,7 +14,7 @@
 #   RULE_ENABLED — true | false (optional)
 #
 # Usage:
-#   SITE_ID=<id> RULE_ID=<id> RULE_FILTER='CountryCode != CN;RU' bws run --project-id <bw_id> -- bash edit-rule.sh
+#   SITE_ID=<id> RULE_ID=<id> RULE_FILTER='CountryCode != CN;RU' bws run -- bash edit-rule.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID}"
 RULE_ID="${RULE_ID:?Set RULE_ID}"

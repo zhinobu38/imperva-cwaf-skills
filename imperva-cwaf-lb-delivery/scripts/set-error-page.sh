@@ -8,8 +8,8 @@
 #   SITE_ID, CAID must be set by user before calling
 #
 # Usage:
-#   SITE_ID=<id> CAID=<caid> ERROR_TYPE=access_denied ERROR_HTML='<html>...' bws run --project-id <id> -- bash set-error-page.sh
-#   SITE_ID=<id> CAID=<caid> ERROR_TYPE=access_denied ERROR_HTML='' bws run --project-id <id> -- bash set-error-page.sh
+#   SITE_ID=<id> CAID=<caid> ERROR_TYPE=access_denied ERROR_HTML='<html>...' bws run -- bash set-error-page.sh
+#   SITE_ID=<id> CAID=<caid> ERROR_TYPE=access_denied ERROR_HTML='' bws run -- bash set-error-page.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID (from user input or imperva-cwaf-get-site-detail)}"
 CAID="${CAID:?Set CAID (from user input or imperva-cwaf-get-site-detail)}"

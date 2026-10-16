@@ -17,7 +17,7 @@
 # Usage:
 #   CAID=<caid> POLICY_ID=<id> SETTING_ID=<sid> \
 #     EXCEPTIONS='[{"exceptionType":"IP","values":["10.0.0.0/8"]}]' \
-#     bws run --project-id <bw_id> -- bash add-exception.sh
+#     bws run -- bash add-exception.sh
 
 CAID="${CAID:?Set CAID}"
 POLICY_ID="${POLICY_ID:?Set POLICY_ID}"

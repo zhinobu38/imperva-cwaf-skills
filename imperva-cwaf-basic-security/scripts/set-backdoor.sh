@@ -12,10 +12,10 @@
 #   QUARANTINE_URL — (optional) URL to remove from quarantine
 #
 # Usage:
-#   SITE_ID=<id> CAID=<caid> ACTION=api.threats.action.quarantine_url bws run --project-id <bw_id> -- bash set-backdoor.sh
-#   SITE_ID=<id> CAID=<caid> ACTION=api.threats.action.alert bws run ... -- bash set-backdoor.sh
-#   SITE_ID=<id> CAID=<caid> ACTION=api.threats.action.disabled bws run ... -- bash set-backdoor.sh
-#   SITE_ID=<id> CAID=<caid> ACTION=api.threats.action.quarantine_url QUARANTINE_URL=/path/to/backdoor.php bws run ... -- bash set-backdoor.sh
+#   SITE_ID=<id> CAID=<caid> ACTION=api.threats.action.quarantine_url bws run -- bash set-backdoor.sh
+#   SITE_ID=<id> CAID=<caid> ACTION=api.threats.action.alert bws run -- bash set-backdoor.sh
+#   SITE_ID=<id> CAID=<caid> ACTION=api.threats.action.disabled bws run -- bash set-backdoor.sh
+#   SITE_ID=<id> CAID=<caid> ACTION=api.threats.action.quarantine_url QUARANTINE_URL=/path/to/backdoor.php bws run -- bash set-backdoor.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID (from user input or imperva-cwaf-get-site-detail)}"
 CAID="${CAID:?Set CAID (from user input or imperva-cwaf-get-site-detail)}"

@@ -9,10 +9,10 @@
 #
 # Usage:
 #   Get current log level for a site:
-#     SITE_ID=<site_id> CAID=<caid> bws run --project-id <bw_id> -- bash get-site-log-level.sh
+#     SITE_ID=<site_id> CAID=<caid> bws run -- bash get-site-log-level.sh
 #
 #   JSON output:
-#     SITE_ID=<site_id> OUTPUT_FORMAT=json CAID=<caid> bws run --project-id <bw_id> -- bash get-site-log-level.sh
+#     SITE_ID=<site_id> OUTPUT_FORMAT=json CAID=<caid> bws run -- bash get-site-log-level.sh
 #
 # Note: Imperva does not have a dedicated GET endpoint for log level.
 #       The /api/prov/v1/sites/setlog endpoint accepts log_level="default" (no change)

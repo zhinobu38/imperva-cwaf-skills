@@ -8,10 +8,10 @@
 #   SITE_ID, CAID must be set by user before calling
 #
 # Usage:
-#   SITE_ID=<id> CAID=<caid> TCP_PRE_POOLING=true bws run --project-id <id> -- bash update-network.sh
-#   SITE_ID=<id> CAID=<caid> ENABLE_HTTP2=true HTTP2_TO_ORIGIN=false bws run ... -- bash update-network.sh
-#   SITE_ID=<id> CAID=<caid> SUPPORT_NON_SNI_CLIENTS=false bws run ... -- bash update-network.sh
-#   SITE_ID=<id> CAID=<caid> ORIGIN_CONNECTION_REUSE=true bws run ... -- bash update-network.sh
+#   SITE_ID=<id> CAID=<caid> TCP_PRE_POOLING=true bws run -- bash update-network.sh
+#   SITE_ID=<id> CAID=<caid> ENABLE_HTTP2=true HTTP2_TO_ORIGIN=false bws run -- bash update-network.sh
+#   SITE_ID=<id> CAID=<caid> SUPPORT_NON_SNI_CLIENTS=false bws run -- bash update-network.sh
+#   SITE_ID=<id> CAID=<caid> ORIGIN_CONNECTION_REUSE=true bws run -- bash update-network.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID (from user input or imperva-cwaf-get-site-detail)}"
 CAID="${CAID:?Set CAID (from user input or imperva-cwaf-get-site-detail)}"

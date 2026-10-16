@@ -41,11 +41,11 @@ fi
 
 # ── Credentials ───────────────────────────────────────────────────────
 if [[ -z "${IMPERVA_API_ID:-}" ]]; then
-  echo "❌ IMPERVA_API_ID not set. Use: bws run --project-id <id> -- $0 $IP" >&2
+  echo "❌ IMPERVA_API_ID not set. Use: bws run -- $0 $IP" >&2
   exit 1
 fi
 if [[ -z "${IMPERVA_API_KEY:-}" ]]; then
-  echo "❌ IMPERVA_API_KEY not set. Use: bws run --project-id <id> -- $0 $IP" >&2
+  echo "❌ IMPERVA_API_KEY not set. Use: bws run -- $0 $IP" >&2
   exit 1
 fi
 

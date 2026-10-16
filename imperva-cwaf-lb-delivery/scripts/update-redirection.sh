@@ -8,8 +8,8 @@
 #   SITE_ID, CAID must be set by user before calling
 #
 # Usage:
-#   SITE_ID=<id> CAID=<caid> REDIRECT_HTTP_TO_HTTPS=true bws run --project-id <id> -- bash update-redirection.sh
-#   SITE_ID=<id> CAID=<caid> REDIRECT_NAKED_TO_FULL=true bws run ... -- bash update-redirection.sh
+#   SITE_ID=<id> CAID=<caid> REDIRECT_HTTP_TO_HTTPS=true bws run -- bash update-redirection.sh
+#   SITE_ID=<id> CAID=<caid> REDIRECT_NAKED_TO_FULL=true bws run -- bash update-redirection.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID (from user input or imperva-cwaf-get-site-detail)}"
 CAID="${CAID:?Set CAID (from user input or imperva-cwaf-get-site-detail)}"

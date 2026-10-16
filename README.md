@@ -25,7 +25,7 @@ This repository contains a collection of [Hermes Agent](https://hermes-agent.nou
 
 - [Hermes Agent](https://hermes-agent.nousresearch.com/docs) installed and configured
 - Imperva Cloud WAF account with API access
-- API credentials: `api_id` and `api_key` (configured via `bws` or environment variables)
+- API credentials: `api_id` and `api_key` (recommend: configured via `bws` or environment variables)
 - `curl`, `jq` available on the system
 
 ## Installation
@@ -68,7 +68,7 @@ Credentials are resolved via `bws` (Bitwarden Secrets Manager) or environment va
 Once installed, Hermes Agent automatically discovers the skills. You can invoke them naturally:
 
 ```
-"Check the status of my CWAF site 852056322"
+"Check the status of my CWAF site www.xxx.com"
 "Create a custom WAF rule to block requests from IP 1.2.3.4"
 "Onboard example.com to Imperva CWAF"
 "Show me all cache rules for my site"

@@ -13,7 +13,7 @@
 #
 # Usage:
 #   CAID=<caid> POLICY_ID=<id> IPS='["198.51.100.0/24"]' ACTION=BLOCK \
-#     bws run --project-id <bw_id> -- bash add-ip-setting.sh
+#     bws run -- bash add-ip-setting.sh
 
 CAID="${CAID:?Set CAID}"
 POLICY_ID="${POLICY_ID:?Set POLICY_ID}"

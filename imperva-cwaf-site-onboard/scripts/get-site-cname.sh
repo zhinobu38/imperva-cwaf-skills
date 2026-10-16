@@ -8,7 +8,7 @@
 #   SITE_ID, CAID must be set by user before calling
 #
 # Usage:
-#   SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash get-site-cname.sh
+#   SITE_ID=<id> CAID=<caid> bws run -- bash get-site-cname.sh
 #
 # Note: imperva-cwaf-get-site-detail returns the same fields (cname, siteStatus, active).
 # This script is a lightweight alternative when you already have SITE_ID.

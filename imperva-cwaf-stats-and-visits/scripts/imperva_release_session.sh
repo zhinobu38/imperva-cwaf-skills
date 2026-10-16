@@ -2,14 +2,14 @@
 # imperva_release_session.sh — Release a blocked session in Imperva CWAF
 #
 # Usage:
-#   SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash imperva_release_session.sh --session-id <session_id>
+#   SITE_ID=<id> CAID=<caid> bws run -- bash imperva_release_session.sh --session-id <session_id>
 #
 # ⚠️  NOTE: This operation is for USER-REQUESTED release of blocked sessions ONLY.
 #     It is NOT related to WAF exceptions/whitelist policies.
 #     For managing exceptions, use: imperva-cwaf-policy-management
 #
 # Examples:
-#   SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+#   SITE_ID=852056322 CAID=2429928 bws run -- \
 #     bash imperva_release_session.sh --session-id "abc123def456"
 
 set -euo pipefail

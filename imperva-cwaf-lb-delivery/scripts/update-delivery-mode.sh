@@ -8,8 +8,8 @@
 #   SITE_ID, CAID must be set by user before calling
 #
 # Usage:
-#   SITE_ID=<id> CAID=<caid> COMPRESSION_TYPE=BROTLI bws run --project-id <id> -- bash update-delivery-mode.sh
-#   SITE_ID=<id> CAID=<caid> MINIFY_JS=false bws run --project-id <id> -- bash update-delivery-mode.sh
+#   SITE_ID=<id> CAID=<caid> COMPRESSION_TYPE=BROTLI bws run -- bash update-delivery-mode.sh
+#   SITE_ID=<id> CAID=<caid> MINIFY_JS=false bws run -- bash update-delivery-mode.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID (from user input or imperva-cwaf-get-site-detail)}"
 CAID="${CAID:?Set CAID (from user input or imperva-cwaf-get-site-detail)}"

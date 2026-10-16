@@ -16,7 +16,7 @@
 #   DISABLE_PQC_SUPPORT  — true | false (default: false)
 #
 # Usage:
-#   SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash update-tls-config.sh
+#   SITE_ID=<id> CAID=<caid> bws run -- bash update-tls-config.sh
 #   SITE_ID=<id> CAID=<caid> TLS_PROFILE=DEFAULT HSTS_ENABLED=false bws run ... -- bash update-tls-config.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID}"

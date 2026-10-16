@@ -17,7 +17,7 @@ Every template MUST have this header:
 #   SITE_ID, CAID must be set by user before calling
 #
 # Usage:
-#   SITE_ID=<id> CAID=<caid> bws run --project-id <id> -- bash template.sh
+#   SITE_ID=<id> CAID=<caid> bws run -- bash template.sh
 ```
 
 ## GET-Only Template

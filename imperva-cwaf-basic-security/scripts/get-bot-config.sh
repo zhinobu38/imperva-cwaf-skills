@@ -8,7 +8,7 @@
 #   SITE_ID must be set by user before calling
 #
 # Usage:
-#   SITE_ID=<id> bws run --project-id <bw_id> -- bash get-bot-config.sh
+#   SITE_ID=<id> bws run -- bash get-bot-config.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID (from user input or imperva-cwaf-get-site-detail)}"
 

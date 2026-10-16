@@ -13,8 +13,8 @@ Manage origin servers, load balancing, compression, redirection, and error pages
 
 | Value | Source | Method |
 |-------|--------|--------|
-| `IMPERVA_API_ID` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
-| `IMPERVA_API_KEY` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
+| `IMPERVA_API_ID` | Bitwarden | Only via `bws run` |
+| `IMPERVA_API_KEY` | Bitwarden | Only via `bws run` |
 | `SITE_ID` | User / memory / get-site-detail | Pass as env var |
 | `CAID` | User / memory / get-site-detail | Pass as env var |
 
@@ -41,7 +41,7 @@ Manage delivery settings (compression, image compression, network, redirection, 
 ### Get Delivery Settings
 
 ```bash
-SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/get-delivery.sh
 ```
 
@@ -51,7 +51,7 @@ Optional: `SECTIONS=compression,image_compression,network,redirection,custom_err
 
 ```bash
 SITE_ID=<id> CAID=<caid> COMPRESSION_TYPE=BROTLI \
-  bws run --project-id <bw_id> -- bash \
+  bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/update-delivery-mode.sh
 ```
 
@@ -61,7 +61,7 @@ Env vars: `COMPRESSION_TYPE`, `FILE_COMPRESSION`, `MINIFY_JS`, `MINIFY_CSS`, `MI
 
 ```bash
 SITE_ID=<id> CAID=<caid> COMPRESS_JPEG=true COMPRESS_PNG=true \
-  bws run --project-id <bw_id> -- bash \
+  bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/update-image-compression.sh
 ```
 
@@ -69,7 +69,7 @@ SITE_ID=<id> CAID=<caid> COMPRESS_JPEG=true COMPRESS_PNG=true \
 
 ```bash
 SITE_ID=<id> CAID=<caid> ENABLE_HTTP2=true HTTP2_TO_ORIGIN=false \
-  bws run --project-id <bw_id> -- bash \
+  bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/update-network.sh
 ```
 
@@ -77,7 +77,7 @@ SITE_ID=<id> CAID=<caid> ENABLE_HTTP2=true HTTP2_TO_ORIGIN=false \
 
 ```bash
 SITE_ID=<id> CAID=<caid> REDIRECT_HTTP_TO_HTTPS=true \
-  bws run --project-id <bw_id> -- bash \
+  bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/update-redirection.sh
 ```
 
@@ -86,14 +86,14 @@ SITE_ID=<id> CAID=<caid> REDIRECT_HTTP_TO_HTTPS=true \
 ```bash
 SITE_ID=<id> CAID=<caid> ERROR_TYPE=access_denied \
   ERROR_HTML='<html><body>Access Denied</body></html>' \
-  bws run --project-id <bw_id> -- bash \
+  bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/set-error-page.sh
 ```
 
 ### Restore Default Delivery Settings
 
 ```bash
-SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/restore-defaults.sh
 ```
 
@@ -120,7 +120,7 @@ Manage load balancing, data center, and origin server settings for a site.
 ### Get Load Balancing Configuration
 
 ```bash
-SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/get-load-balancing.sh
 ```
 
@@ -130,14 +130,14 @@ SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
 # Step 1: GET current config
 # Step 2: Modify JSON
 # Step 3: Pipe modified JSON into update script
-SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/update-load-balancing.sh < modified.json
 ```
 
 ### Resume Traffic to Active DCs
 
 ```bash
-SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/resume-dc.sh
 ```
 
@@ -179,7 +179,7 @@ Base URL: `https://api.imperva.com/appdlv-site-settings/v2/site/{siteId}/monitor
 ### Get Monitoring Settings
 
 ```bash
-SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/get-monitoring.sh
 ```
 
@@ -189,7 +189,7 @@ SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
 # Step 1: GET current settings
 # Step 2: Modify JSON
 # Step 3: Pipe modified JSON into update script
-SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-lb-delivery/scripts/update-monitoring.sh < modified.json
 ```
 

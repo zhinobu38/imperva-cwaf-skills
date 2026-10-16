@@ -12,8 +12,8 @@
 #   CHALLENGE_SUSPECTED_BOTS — true | false (default: true)
 #
 # Usage:
-#   SITE_ID=<id> CAID=<caid> BLOCK_BAD_BOTS=true CHALLENGE_SUSPECTED_BOTS=true bws run --project-id <bw_id> -- bash set-bot-control.sh
-#   SITE_ID=<id> CAID=<caid> BLOCK_BAD_BOTS=false bws run ... -- bash set-bot-control.sh
+#   SITE_ID=<id> CAID=<caid> BLOCK_BAD_BOTS=true CHALLENGE_SUSPECTED_BOTS=true bws run -- bash set-bot-control.sh
+#   SITE_ID=<id> CAID=<caid> BLOCK_BAD_BOTS=false bws run -- bash set-bot-control.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID (from user input or imperva-cwaf-get-site-detail)}"
 CAID="${CAID:?Set CAID (from user input or imperva-cwaf-get-site-detail)}"

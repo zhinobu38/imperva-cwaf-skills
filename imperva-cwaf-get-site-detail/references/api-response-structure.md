@@ -10,13 +10,13 @@ Based on actual API testing during session on 2026-05-30.
 {
   "data": [
     {
-      "id": 539880281,
-      "name": "thegreat.impervamtth.com",
+      "id": xxxxxxx,
+      "name": "thegreat.xxx.com",
       "type": "CLOUD_WAF",
       "active": true,
       "accountId": <YOUR_CAID>,
       "creationTime": 1780120010463,
-      "cname": "7maby9o.ng.impervadns.net",
+      "cname": "xxx.ng.impervadns.net",
       "siteStatus": "NOT_CONFIGURED"
     }
   ],
@@ -57,7 +57,7 @@ Based on actual API testing during session on 2026-05-30.
 ### Response Format (based on skill documentation)
 ```json
 {
-  "id": 12345678,
+  "id": xxxxxxx,
   "name": "example.com",
   "domain": "example.com",
   "status": "ACTIVE",

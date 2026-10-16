@@ -19,8 +19,8 @@ Create, update, delete, and manage custom rules in Imperva Cloud WAF via the API
 
 | Value | Source | Method |
 |-------|--------|--------|
-| `IMPERVA_API_ID` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
-| `IMPERVA_API_KEY` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
+| `IMPERVA_API_ID` | Bitwarden | Only via `bws run` |
+| `IMPERVA_API_KEY` | Bitwarden | Only via `bws run` |
 | `SITE_ID` | User / memory / get-site-detail | Pass as env var |
 | `CAID` | User / memory / get-site-detail | Pass as env var |
 
@@ -42,7 +42,7 @@ All scripts at:
 ### List Custom Rules
 
 ```bash
-CAID=<caid> SITE_ID=<id> bws run --project-id <bw_id> -- bash \
+CAID=<caid> SITE_ID=<id> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-custom-rule/scripts/list-rules.sh
 ```
 
@@ -53,11 +53,11 @@ Optional filters (env vars):
 
 ```bash
 # List only BLOCK rules
-CAID=<caid> SITE_ID=<id> FILTER_ACTION=RULE_ACTION_BLOCK bws run --project-id <bw_id> -- bash \
+CAID=<caid> SITE_ID=<id> FILTER_ACTION=RULE_ACTION_BLOCK bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-custom-rule/scripts/list-rules.sh
 
 # List disabled rules with name containing "Test"
-CAID=<caid> SITE_ID=<id> FILTER_ENABLED=false FILTER_NAME=Test bws run --project-id <bw_id> -- bash \
+CAID=<caid> SITE_ID=<id> FILTER_ENABLED=false FILTER_NAME=Test bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-custom-rule/scripts/list-rules.sh
 ```
 
@@ -66,7 +66,7 @@ CAID=<caid> SITE_ID=<id> FILTER_ENABLED=false FILTER_NAME=Test bws run --project
 ```bash
 SITE_ID=<id> CAID=<caid> RULE_NAME=BlockRU RULE_ACTION=RULE_ACTION_BLOCK \
   RULE_FILTER='CountryCode == RU' \
-  bws run --project-id <bw_id> -- bash \
+  bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-custom-rule/scripts/create-rule.sh
 ```
 
@@ -77,7 +77,7 @@ Complex filter example:
 ```bash
 SITE_ID=<id> CAID=<caid> RULE_NAME=BlockAPINonTH RULE_ACTION=RULE_ACTION_ALERT \
   RULE_FILTER='URL contains "/api/" & CountryCode != TH' \
-  bws run --project-id <bw_id> -- bash \
+  bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-custom-rule/scripts/create-rule.sh
 ```
 
@@ -86,7 +86,7 @@ SITE_ID=<id> CAID=<caid> RULE_NAME=BlockAPINonTH RULE_ACTION=RULE_ACTION_ALERT \
 ```bash
 SITE_ID=<id> CAID=<caid> RULE_ID=<id> \
   RULE_FILTER='CountryCode != TH;CN;RU' \
-  bws run --project-id <bw_id> -- bash \
+  bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-custom-rule/scripts/edit-rule.sh
 ```
 
@@ -95,7 +95,7 @@ Only pass the fields you want to change. Unspecified fields keep their current v
 ### Delete a Custom Rule
 
 ```bash
-SITE_ID=<id> RULE_ID=<id> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> RULE_ID=<id> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-custom-rule/scripts/delete-rule.sh
 ```
 
@@ -106,7 +106,7 @@ SITE_ID=<id> RULE_ID=<id> bws run --project-id <bw_id> -- bash \
 Step 1: **List rules with name filter to find candidates:**
 
 ```bash
-CAID=<caid> SITE_ID=<id> FILTER_NAME=<name> bws run --project-id <bw_id> -- bash \
+CAID=<caid> SITE_ID=<id> FILTER_NAME=<name> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-custom-rule/scripts/list-rules.sh
 ```
 
@@ -143,7 +143,7 @@ Proceed? (yes/no)
 Step 4: **Only after user confirms "yes", execute deletions one by one using RULE_ID:**
 
 ```bash
-SITE_ID=<id> RULE_ID=<id> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> RULE_ID=<id> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-custom-rule/scripts/delete-rule.sh
 ```
 

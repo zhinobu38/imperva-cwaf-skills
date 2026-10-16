@@ -9,7 +9,7 @@
 #   CAID, POLICY_ID must be set by user before calling
 #
 # Usage:
-#   CAID=<caid> POLICY_ID=<id> bws run --project-id <bw_id> -- bash delete-policy.sh
+#   CAID=<caid> POLICY_ID=<id> bws run -- bash delete-policy.sh
 
 CAID="${CAID:?Set CAID}"
 POLICY_ID="${POLICY_ID:?Set POLICY_ID}"

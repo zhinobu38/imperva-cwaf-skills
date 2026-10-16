@@ -8,16 +8,6 @@ version: 2.0.0
 # Imperva CWAF Status Check
 
 Check if Imperva services are operational before making any API calls.
-
-## ⚡ MANDATORY: Use the Script
-
-**ALWAYS use the provided script. Do NOT write inline curl.**
-
-```bash
-bws run --project-id <BW_PROJECT_ID_READ> -- bash \
-  ~/.hermes/skills/imperva-cwaf/imperva-cwaf-status-check/scripts/check-status.sh
-```
-
 No credentials needed — this is a public status API.
 
 ## Response Interpretation

@@ -8,7 +8,7 @@
 #   SITE_ID must be set by user before calling
 #
 # Usage:
-#   SITE_ID=<id> bws run --project-id <bw_id> -- bash list-site-policies.sh
+#   SITE_ID=<id> bws run -- bash list-site-policies.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID}"
 

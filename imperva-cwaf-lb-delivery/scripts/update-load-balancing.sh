@@ -8,7 +8,7 @@
 #   SITE_ID, CAID must be set by user before calling
 #
 # Usage:
-#   SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash templates/update-load-balancing.sh < modified.json
+#   SITE_ID=<id> CAID=<caid> bws run -- bash templates/update-load-balancing.sh < modified.json
 #
 # Workflow:
 #   1. GET current config via get-load-balancing.sh

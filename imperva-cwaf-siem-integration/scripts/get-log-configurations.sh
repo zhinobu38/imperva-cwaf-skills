@@ -9,13 +9,13 @@
 #
 # Usage:
 #   List all log configurations:
-#     CAID=<caid> bws run --project-id <bw_id> -- bash get-log-configurations.sh
+#     CAID=<caid> bws run -- bash get-log-configurations.sh
 #
 #   Get single log configuration:
-#     CAID=<caid> CONFIG_ID=<id> bws run --project-id <bw_id> -- bash get-log-configurations.sh
+#     CAID=<caid> CONFIG_ID=<id> bws run -- bash get-log-configurations.sh
 #
 #   JSON output:
-#     OUTPUT_FORMAT=json CAID=<caid> bws run --project-id <bw_id> -- bash get-log-configurations.sh
+#     OUTPUT_FORMAT=json CAID=<caid> bws run -- bash get-log-configurations.sh
 
 CAID="${CAID:-}"
 CONFIG_ID="${CONFIG_ID:-}"

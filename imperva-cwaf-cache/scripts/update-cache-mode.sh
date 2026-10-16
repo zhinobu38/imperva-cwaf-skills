@@ -11,7 +11,7 @@
 #   MODE_LEVEL — disabled | custom_cache_rules_only | standard | smart | all_resources (default: smart)
 #
 # Usage:
-#   SITE_ID=<id> MODE_LEVEL=smart bws run --project-id <bw_id> -- bash update-cache-mode.sh
+#   SITE_ID=<id> MODE_LEVEL=smart bws run -- bash update-cache-mode.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID}"
 MODE_LEVEL="${MODE_LEVEL:-smart}"

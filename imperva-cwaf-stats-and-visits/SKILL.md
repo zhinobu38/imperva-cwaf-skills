@@ -13,8 +13,8 @@ Retrieve site-level statistics and visit session logs from Imperva Cloud WAF. Su
 
 | Value | Source | Forbidden |
 |-------|--------|-----------|
-| `IMPERVA_API_ID` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | hardcode in script/template/SKILL.md |
-| `IMPERVA_API_KEY` | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` | print in log or raw request output |
+| `IMPERVA_API_ID` | `bws run` | hardcode in script/template/SKILL.md |
+| `IMPERVA_API_KEY` | `bws run` | print in log or raw request output |
 | `SITE_ID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode in template |
 | `CAID` | User env / memory / `imperva-cwaf-get-site-detail` | hardcode in template |
 
@@ -43,7 +43,7 @@ Retrieve site-level statistics and visit session logs from Imperva Cloud WAF. Su
 ### stats — Get Site Statistics
 
 ```
-SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- \
+SITE_ID=<id> CAID=<caid> bws run -- \
   python3 scripts/imperva_get_stats.py stats \
     --stats threats incap_rules caching \
     --time-range last_7_days \
@@ -88,7 +88,7 @@ SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- \
 ### visits — Get Visit Session Logs
 
 ```
-SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- \
+SITE_ID=<id> CAID=<caid> bws run -- \
   python3 scripts/imperva_get_stats.py visits \
     --security api.threats.sql_injection \
     --country TH \
@@ -141,7 +141,7 @@ These filters are applied in Python after fetching visits from the API. Combine 
 ### release — Release Blocked Session
 
 ```
-SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- \
+SITE_ID=<id> CAID=<caid> bws run -- \
   bash scripts/imperva_release_session.sh --session-id <session_id>
 ```
 
@@ -163,13 +163,13 @@ SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- \
 **Real-world flow example:**
 ```
 # 1. Find blocked sessions first
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   python3 scripts/imperva_get_stats.py visits \
     --filter-result "req_blocked_security" \
     --page-size 20 --format table
 
 # 2. Take session/visit ID from results → release
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   bash scripts/imperva_release_session.sh \
     --session-id "526000340320036642"
 ```
@@ -177,7 +177,7 @@ SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
 ### reputation — IP Reputation Intelligence
 
 ```
-bws run --project-id <bw_id> -- \
+bws run -- \
   bash scripts/imperva_ip_reputation.sh <ip> [--format table|json]
 ```
 
@@ -215,17 +215,17 @@ Retrieves reputation data for a single IPv4 address from across the Imperva cust
 
 ```bash
 # Step 1: Find blocked IPs from visit logs
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   python3 scripts/imperva_get_stats.py visits \
     --filter-result "req_blocked_security" \
     --page-size 20 --format table
 
 # Step 2: Look up reputation for a specific attacker IP
-bws run --project-id <id> -- \
+bws run -- \
   bash scripts/imperva_ip_reputation.sh 85.11.167.19
 
 # Step 3: Get raw JSON for scripting
-bws run --project-id <id> -- \
+bws run -- \
   bash scripts/imperva_ip_reputation.sh 85.11.167.19 --format json | jq '.risk_score'
 ```
 
@@ -260,7 +260,7 @@ Each stat type appears as a top-level key when requested.
   "visits": [
     {
       "id": "526000340320036642",
-      "siteId": 852056322,
+      "siteId": xxxxxxx,
       "startTime": 1781545009419,
       "endTime": 1781545608000,
       "clientIPs": ["85.11.167.19"],
@@ -275,13 +275,13 @@ Each stat type appears as a top-level key when requested.
       "supportsJavaScript": false,
       "hits": 1,
       "pageViews": 0,
-      "entryPage": "POST testagent.thtechs.com/",
-      "entryReferer": "https://testagent.thtechs.com",
+      "entryPage": "POST testagent.xxx.com/",
+      "entryReferer": "https://testagent.xxx.com",
       "servedVia": ["Dubai, UAE"],
       "securitySummary": { "api.threats.customRule": 1 },
       "actions": [
         {
-          "url": "testagent.thtechs.com/",
+          "url": "testagent.xxx.com/",
           "requestResult": "api.request_result.req_blocked_security",
           "isSecured": true,
           "responseTime": 2,
@@ -290,7 +290,7 @@ Each stat type appears as a top-level key when requested.
             {
               "securityRule": "api.threats.customRule",
               "alertLocation": "api.alert_location.alert_location_path",
-              "threatPattern": "testagent.thtechs.com/",
+              "threatPattern": "testagent.xxx.com/",
               "attackCodes": ["17296460.0"],
               "securityRuleAction": "api.rule_action_type.rule_action_block"
             }
@@ -440,17 +440,17 @@ Request results are found in `actions[].requestResult`.
 # ── Stats ──
 
 # Threats summary for last 7 days (table)
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   python3 scripts/imperva_get_stats.py stats --stats threats
 
 # Multiple stats as JSON
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   python3 scripts/imperva_get_stats.py stats \
     --stats threats incap_rules caching visits_timeseries \
     --format json
 
 # Custom time range
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   python3 scripts/imperva_get_stats.py stats \
     --stats bandwidth_timeseries \
     --time-range custom \
@@ -459,18 +459,18 @@ SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
 # ── Visits — API-side filters ──
 
 # Visits from Thailand with SQL injection attempts
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   python3 scripts/imperva_get_stats.py visits \
     --country TH --security api.threats.sql_injection
 
 # Specific visit by ID
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   python3 scripts/imperva_get_stats.py visits \
     --visit-id 526000340320036642 \
     --format json
 
 # Lookup by incident ID (auto-extracts visit_id)
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   python3 scripts/imperva_get_stats.py visits \
     --incident-id 526000340320036642-169334527402838191 \
     --format json
@@ -478,7 +478,7 @@ SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
 # ── Visits — Client-side filters ──
 
 # Find all Go HTTP scanner sessions
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   python3 scripts/imperva_get_stats.py visits \
     --filter-app "Go HTTP library" \
     --filter-type "Hacking Tool" \
@@ -486,21 +486,21 @@ SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
     --time-range last_7_days
 
 # Find .git/config probes
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   python3 scripts/imperva_get_stats.py visits \
     --filter-path ".git/config" \
     --page-size 100 \
     --time-range last_7_days
 
 # Find blocked security sessions from Bulgaria
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   python3 scripts/imperva_get_stats.py visits \
     --country BG \
     --filter-result "req_blocked_security" \
     --page-size 100
 
 # Find sessions served via Dubai PoP
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   python3 scripts/imperva_get_stats.py visits \
     --filter-pop "Dubai" \
     --page-size 100 \
@@ -509,21 +509,21 @@ SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
 # ── Visits — Analysis reports ──
 
 # Analysis report: who got blocked and why (.git probes)
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   python3 scripts/imperva_get_stats.py visits \
     --filter-path ".git" \
     --page-size 100 \
     --format report
 
 # Analysis report: specific attack code investigation
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   python3 scripts/imperva_get_stats.py visits \
     --filter-attack-code "17489321.0" \
     --page-size 100 \
     --format report
 
 # Analysis report: country + client type + path combination
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   python3 scripts/imperva_get_stats.py visits \
     --country BG \
     --filter-type HackingTool \
@@ -534,7 +534,7 @@ SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
 # ── Using wrapper script (for args with spaces) ──
 
 # The wrapper script handles quoting properly through bws run
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   bash scripts/imperva-visits.sh \
     --filter-type "Hacking Tool" \
     --filter-app "Go HTTP library" \
@@ -544,25 +544,25 @@ SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
 # ── Release blocked session ──
 
 # Release a specific blocked session (user request only, NOT exception)
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   bash scripts/imperva_release_session.sh \
     --session-id "526000340320036642"
 
 # Release with JSON output
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   bash scripts/imperva_release_session.sh \
     --session-id "526000340320036642" \
     --format json
 
 # Typical flow: find blocked session → release
 # Step 1: Find blocked sessions
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   python3 scripts/imperva_get_stats.py visits \
     --filter-result "req_blocked_security" \
     --page-size 20 --format table
 
 # Step 2: Release using session ID from step 1
-SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- \
+SITE_ID=xxxxxxx CAID=xxxxxx bws run -- \
   bash scripts/imperva_release_session.sh \
     --session-id "<session_id_from_step1>"
 ```

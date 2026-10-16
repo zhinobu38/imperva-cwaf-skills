@@ -15,7 +15,7 @@
 #
 # Usage:
 #   SITE_ID=<id> CAID=<caid> RULE_NAME=BlockRU RULE_ACTION=RULE_ACTION_BLOCK \
-#     RULE_FILTER='CountryCode == RU' bws run --project-id <bw_id> -- bash create-rule.sh
+#     RULE_FILTER='CountryCode == RU' bws run -- bash create-rule.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID}"
 CAID="${CAID:?Set CAID}"

@@ -27,8 +27,8 @@ Manage security policies (WAF Rules, ACL, Whitelist, File Upload) including poli
 
 | Value | Source | Method |
 |-------|--------|--------|
-| `IMPERVA_API_ID` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
-| `IMPERVA_API_KEY` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
+| `IMPERVA_API_ID` | Bitwarden | Only via `bws run` |
+| `IMPERVA_API_KEY` | Bitwarden | Only via `bws run` |
 | `CAID` | User / memory | Pass as env var |
 | `SITE_ID` | User / memory / get-site-detail | Pass as env var |
 | `POLICY_ID` | From list/get/create response | Pass as env var |
@@ -57,7 +57,7 @@ All scripts are at: `~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-managemen
 ### List All Policies
 
 ```bash
-CAID=<caid> bws run --project-id <bw_id> -- bash \
+CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/list-policies.sh
 ```
 
@@ -66,7 +66,7 @@ Optional: `POLICY_TYPE=ACL` to filter by type.
 ### Get a Specific Policy
 
 ```bash
-CAID=<caid> POLICY_ID=<id> bws run --project-id <bw_id> -- bash \
+CAID=<caid> POLICY_ID=<id> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/get-policy.sh
 ```
 
@@ -74,7 +74,7 @@ CAID=<caid> POLICY_ID=<id> bws run --project-id <bw_id> -- bash \
 
 ```bash
 CAID=<caid> POLICY_NAME="Block RU" POLICY_TYPE=ACL \
-  bws run --project-id <bw_id> -- bash \
+  bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/create-policy.sh
 ```
 
@@ -82,7 +82,7 @@ CAID=<caid> POLICY_NAME="Block RU" POLICY_TYPE=ACL \
 
 ```bash
 CAID=<caid> POLICY_ID=<id> COUNTRIES='["RU","CN"]' ACTION=BLOCK \
-  bws run --project-id <bw_id> -- bash \
+  bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/add-geo-setting.sh
 ```
 
@@ -90,7 +90,7 @@ CAID=<caid> POLICY_ID=<id> COUNTRIES='["RU","CN"]' ACTION=BLOCK \
 
 ```bash
 CAID=<caid> POLICY_ID=<id> IPS='["198.51.100.0/24","10.0.0.1"]' ACTION=BLOCK \
-  bws run --project-id <bw_id> -- bash \
+  bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/add-ip-setting.sh
 ```
 
@@ -98,7 +98,7 @@ CAID=<caid> POLICY_ID=<id> IPS='["198.51.100.0/24","10.0.0.1"]' ACTION=BLOCK \
 
 ```bash
 CAID=<caid> POLICY_ID=<id> URLS='[{"pattern":"PREFIX","url":"/admin/"}]' ACTION=BLOCK \
-  bws run --project-id <bw_id> -- bash \
+  bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/add-url-setting.sh
 ```
 
@@ -108,35 +108,35 @@ CAID=<caid> POLICY_ID=<id> URLS='[{"pattern":"PREFIX","url":"/admin/"}]' ACTION=
 # First GET the policy to find the setting ID, then:
 CAID=<caid> POLICY_ID=<id> SETTING_ID=<sid> \
   EXCEPTIONS='[{"exceptionType":"IP","values":["10.0.0.0/8"]}]' \
-  bws run --project-id <bw_id> -- bash \
+  bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/add-exception.sh
 ```
 
 ### Apply Policy to a Site
 
 ```bash
-SITE_ID=<id> POLICY_ID=<id> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> POLICY_ID=<id> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/apply-policy.sh
 ```
 
 ### Remove Policy from a Site
 
 ```bash
-SITE_ID=<id> POLICY_ID=<id> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> POLICY_ID=<id> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/remove-policy.sh
 ```
 
 ### Delete a Policy
 
 ```bash
-CAID=<caid> POLICY_ID=<id> bws run --project-id <bw_id> -- bash \
+CAID=<caid> POLICY_ID=<id> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/delete-policy.sh
 ```
 
 ### List Policies Applied to a Site
 
 ```bash
-SITE_ID=<id> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/list-site-policies.sh
 ```
 
@@ -144,10 +144,10 @@ SITE_ID=<id> bws run --project-id <bw_id> -- bash \
 
 ```bash
 # Update name and/or description and/or enabled status
-CAID=<caid> POLICY_ID=<id> POLICY_NAME="New Name" bws run --project-id <bw_id> -- bash \
+CAID=<caid> POLICY_ID=<id> POLICY_NAME="New Name" bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/update-policy.sh
 
-CAID=<caid> POLICY_ID=<id> ENABLED=false bws run --project-id <bw_id> -- bash \
+CAID=<caid> POLICY_ID=<id> ENABLED=false bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-policy-management/scripts/update-policy.sh
 ```
 
@@ -166,7 +166,7 @@ See `references/policy-types.md` for full details.
 
 > **Looking up country/continent codes for GEO policies?** Use the integrations script:
 > ```bash
-> bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9 -- python3 \
+> bws run -- python3 \
 >   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-api-manual/scripts/integrations.py \
 >   geo [--country CODE] [--continent CODE] [--limit N]
 > ```
@@ -180,16 +180,16 @@ See `references/policy-types.md` for full details.
 ```bash
 # Step 1: Create policy
 CAID=<caid> POLICY_NAME="Block RU" POLICY_TYPE=ACL \
-  bws run --project-id <bw_id> -- bash scripts/create-policy.sh
+  bws run -- bash scripts/create-policy.sh
 # → Note the returned policy ID
 
 # Step 2: Add GEO setting
 CAID=<caid> POLICY_ID=<id> COUNTRIES='["RU"]' ACTION=BLOCK \
-  bws run --project-id <bw_id> -- bash scripts/add-geo-setting.sh
+  bws run -- bash scripts/add-geo-setting.sh
 
 # Step 3: Apply to site
 SITE_ID=<id> POLICY_ID=<id> \
-  bws run --project-id <bw_id> -- bash scripts/apply-policy.sh
+  bws run -- bash scripts/apply-policy.sh
 ```
 
 ### Copy Policy from One Site to Another
@@ -206,7 +206,7 @@ SITE_ID=<id> POLICY_ID=<id> \
 
 ```bash
 # Step 1: List all policies
-CAID=<caid> bws run --project-id <bw_id> -- bash scripts/list-policies.sh
+CAID=<caid> bws run -- bash scripts/list-policies.sh
 ```
 
 Step 2: **Filter by name pattern with correct position matching (case insensitive).** All matching is case insensitive — `train` matches `train`, `Train`, `TRAIN`, `Training`, etc. Use exact position logic:
@@ -230,7 +230,7 @@ The following N policies match the criteria "starts with 'train'":
 
   ID        Name                     Type
   ────────  ───────────────────────  ──────────
-  2104459   train14.thtechs.com rule  WAF_RULES
+  2104459   train14.xxx.com rule  WAF_RULES
   2104462   train15 WAF Policy        WAF_RULES
   ...
 
@@ -241,7 +241,7 @@ Proceed? (yes/no)
 Step 4: **Only after user confirms "yes", execute deletions one by one:**
 
 ```bash
-CAID=<caid> POLICY_ID=<id> bws run --project-id <bw_id> -- bash scripts/delete-policy.sh
+CAID=<caid> POLICY_ID=<id> bws run -- bash scripts/delete-policy.sh
 ```
 
 Step 5: **Report results** — show ✅ deleted and ❌ failed (with reason).

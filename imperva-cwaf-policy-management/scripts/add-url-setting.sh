@@ -15,7 +15,7 @@
 #
 # Usage:
 #   CAID=<caid> POLICY_ID='<id> URLS='[{"pattern":"PREFIX","url":"/admin/"}]' ACTION=BLOCK \
-#     bws run --project-id <bw_id> -- bash add-url-setting.sh
+#     bws run -- bash add-url-setting.sh
 
 CAID="${CAID:?Set CAID}"
 POLICY_ID="${POLICY_ID:?Set POLICY_ID}"

@@ -14,7 +14,7 @@
 #   ENABLED     — true | false (default: true)
 #
 # Usage:
-#   CAID=<caid> POLICY_NAME="Block RU" POLICY_TYPE=ACL bws run --project-id <bw_id> -- bash create-policy.sh
+#   CAID=<caid> POLICY_NAME="Block RU" POLICY_TYPE=ACL bws run -- bash create-policy.sh
 
 CAID="${CAID:?Set CAID}"
 POLICY_NAME="${POLICY_NAME:?Set POLICY_NAME}"

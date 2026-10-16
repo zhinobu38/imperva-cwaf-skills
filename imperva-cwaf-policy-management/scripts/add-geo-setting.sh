@@ -14,7 +14,7 @@
 #
 # Usage:
 #   CAID=<caid> POLICY_ID=<id> COUNTRIES='["RU","CN"]' ACTION=BLOCK \
-#     bws run --project-id <bw_id> -- bash add-geo-setting.sh
+#     bws run -- bash add-geo-setting.sh
 
 CAID="${CAID:?Set CAID}"
 POLICY_ID="${POLICY_ID:?Set POLICY_ID}"

@@ -8,7 +8,7 @@
 #   SITE_ID, POLICY_ID must be set by user before calling
 #
 # Usage:
-#   SITE_ID=<id> POLICY_ID=<id> bws run --project-id <bw_id> -- bash remove-policy.sh
+#   SITE_ID=<id> POLICY_ID=<id> bws run -- bash remove-policy.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID}"
 POLICY_ID="${POLICY_ID:?Set POLICY_ID}"

@@ -17,7 +17,7 @@
 # Usage:
 #   SITE_ID=<id> RULE_NAME=CacheStatic RULE_ACTION=HTTP_CACHE_MAKE_STATIC \
 #     RULE_FILTER='URL contains ".css"' RULE_TTL=86400 \
-#     bws run --project-id <bw_id> -- bash create-cache-rule.sh
+#     bws run -- bash create-cache-rule.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID}"
 RULE_NAME="${RULE_NAME:?Set RULE_NAME}"

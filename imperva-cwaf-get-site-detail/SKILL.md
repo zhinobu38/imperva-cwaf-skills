@@ -21,8 +21,8 @@ List all sites or search by keyword from Imperva Cloud WAF.
 
 | Value | Source | Method |
 |-------|--------|--------|
-| `IMPERVA_API_ID` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
-| `IMPERVA_API_KEY` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
+| `IMPERVA_API_ID` | Bitwarden | Only via `bws run` |
+| `IMPERVA_API_KEY` | Bitwarden | Only via `bws run` |
 | `CAID` | User / memory | Pass as env var |
 
 **NEVER hardcode credentials or identifiers.**
@@ -35,11 +35,11 @@ List all sites or search by keyword from Imperva Cloud WAF.
 
 ```bash
 # Table output (default — human readable)
-CAID=<caid> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
+CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/list-sites.sh
 
 # JSON output (for scripting / jq / grep)
-OUTPUT_FORMAT=json CAID=<caid> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
+OUTPUT_FORMAT=json CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/list-sites.sh
 ```
 
@@ -62,12 +62,12 @@ If the user says no at any step, abort immediately.
 
 ```bash
 # Delete a site by ID (after 2-step confirmation)
-CAID=<caid> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
+CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/delete-site.sh <site_id>
 
 # Delete multiple sites (loop, after 2-step confirmation)
 for id in <id1> <id2> <id3>; do
-  CAID=<caid> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
+  CAID=<caid> bws run -- bash \
     ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/delete-site.sh $id
 done
 ```
@@ -83,11 +83,11 @@ done
 
 ```bash
 # Find sites matching "train" (case-insensitive)
-SEARCH=train CAID=<caid> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
+SEARCH=train CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/list-sites.sh
 
 # Combine with JSON output for scripting
-SEARCH=train OUTPUT_FORMAT=json CAID=<caid> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
+SEARCH=train OUTPUT_FORMAT=json CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/list-sites.sh
 ```
 
@@ -95,7 +95,7 @@ SEARCH=train OUTPUT_FORMAT=json CAID=<caid> bws run --uuids-as-keynames --projec
 
 ```bash
 # Get site detail — returns siteId, name, domain, cname, siteStatus, active
-CAID=<caid> SITE_ID=<site_id> bws run --uuids-as-keynames --project-id <bw_id> -- bash \
+CAID=<caid> SITE_ID=<site_id> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-get-site-detail/scripts/get-site-detail.sh
 ```
 
@@ -127,10 +127,9 @@ Each site object contains:
 | 15 (HTTP 403) | WAF intermittent block — IP-based, NOT auth failure. Retry with exponential backoff. |
 
 ## Pitfalls
-- **Dev Standard — No raw credentials anywhere**: NEVER write inline curl with hardcoded API IDs/keys. NEVER put credentials in script files, terminal commands, or environment variable exports typed directly into the chat. ALWAYS use `bws run --uuids-as-keynames --project-id <id> -- bash script.sh` so credentials are injected at runtime from Bitwarden. Scripts MUST read `IMPERVA_API_ID` and `IMPERVA_API_KEY` from environment variables only.
+- **Dev Standard — No raw credentials anywhere**: NEVER write inline curl with hardcoded API IDs/keys. NEVER put credentials in script files, terminal commands, or environment variable exports typed directly into the chat. ALWAYS use `bws run -- bash script.sh` so credentials are injected at runtime from Bitwarden. Scripts MUST read `IMPERVA_API_ID` and `IMPERVA_API_KEY` from environment variables only.
 - **WAF intermittent block (errorCode 15, HTTP 403)**: Imperva's WAF may intermittently block API requests from certain IPs (especially cloud/AWS IPs). Response: `{"errorCode":"15","description":"This request was blocked by our security service"}`. This is NOT a rate limit (rate limit returns HTTP 429) and NOT an auth failure (auth failure returns HTTP 401). It is an IP-based WAF block that typically resolves within seconds to minutes. **Retry with exponential backoff** (5s, 15s, 30s, 60s) until the request succeeds. Do NOT assume credentials are wrong when seeing errorCode 15.
 - **Delete is irreversible**: `DELETE /sites-mgmt/v3/sites/{id}` permanently removes the site. Always run `DRY_RUN=true` first, show the user what will be deleted, and get explicit confirmation before executing the real delete. The delete API returns HTTP 200 on success (not 204).
-- **Duplicate secret names in Bitwarden**: If `bws run` fails with "Multiple secrets with name: 'IMPERVA_API_ID'", use `--uuids-as-keynames` flag to disambiguate.
 - **SEARCH filter is client-side**: The `SEARCH` env var filters results after the API returns them. For accounts with many sites, this may miss matches on unlisted pages. Use `SIZE=100` and paginate if needed.
 - **`bws run` quoting and jq @tsv**: When `bws run -- bash script.sh` is used, the command string is passed through an extra shell layer. This can break:
   - `$'\t'` ANSI-C quoting in `column -t -s $'\t'` — use `column -t -s "\t"` instead

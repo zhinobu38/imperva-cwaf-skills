@@ -17,9 +17,9 @@ Skills that look correct on paper can fail due to:
 
 | Value | Source |
 |-------|--------|
-| `SITE_ID` | Test site: `852056322` (testagent.thtechs.com) |
-| `CAID` | `2429928` |
-| Credentials | `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
+| `SITE_ID` | Retrive from argument |
+| `CAID` | Retrieve from argument |
+| Credentials | `bws run` |
 
 ## Test Procedure
 
@@ -47,7 +47,7 @@ Start with read-only operations:
 
 ```bash
 # Test each GET script
-SITE_ID=852056322 bws run --project-id <bw_id> -- bash get-xxx.sh
+SITE_ID=852056322 bws run -- bash get-xxx.sh
 
 # Verify response structure
 # - res: 0 means success
@@ -77,27 +77,27 @@ For each CRUD operation, follow this lifecycle:
 
 ```bash
 # Step 1: Create
-SITE_ID=852056322 RULE_NAME=TestRule RULE_ACTION=HTTP_CACHE_MAKE_STATIC \
+SITE_ID=xxxxxx RULE_NAME=TestRule RULE_ACTION=HTTP_CACHE_MAKE_STATIC \
   RULE_FILTER='URL contains ".test"' \
-  bws run --project-id <bw_id> -- bash create-xxx.sh
+  bws run -- bash create-xxx.sh
 # Capture the returned rule_id
 
 # Step 2: Verify creation
-SITE_ID=852056322 bws run --project-id <bw_id> -- bash get-xxx.sh
+SITE_ID=xxxxxxx bws run -- bash get-xxx.sh
 # Confirm the new rule exists in the list
 
 # Step 3: Update (if update script exists)
-SITE_ID=852056322 RULE_ID=<new_id> RULE_ENABLED=false \
-  bws run --project-id <bw_id> -- bash update-xxx.sh
+SITE_ID=xxxxxxx RULE_ID=<new_id> RULE_ENABLED=false \
+  bws run -- bash update-xxx.sh
 # Verify res: 0
 
 # Step 4: Delete
-SITE_ID=852056322 RULE_ID=<new_id> \
-  bws run --project-id <bw_id> -- bash delete-xxx.sh
+SITE_ID=xxxxxxx RULE_ID=<new_id> \
+  bws run -- bash delete-xxx.sh
 # Verify res: 0
 
 # Step 5: Verify deletion
-SITE_ID=852056322 bws run --project-id <bw_id> -- bash get-xxx.sh
+SITE_ID=xxxxxxx bws run -- bash get-xxx.sh
 # Confirm the rule is gone
 ```
 
@@ -120,8 +120,8 @@ Test these scenarios to catch hidden bugs:
 
 ```bash
 # Remove any test rules created during testing
-SITE_ID=852056322 RULE_ID=<test_rule_id> \
-  bws run --project-id <bw_id> -- bash delete-xxx.sh
+SITE_ID=xxxxxxx RULE_ID=<test_rule_id> \
+  bws run -- bash delete-xxx.sh
 ```
 
 ### 6. Post-test Verification Checklist

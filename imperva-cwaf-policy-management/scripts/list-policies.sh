@@ -12,8 +12,8 @@
 #   POLICY_TYPE — WAF_RULES | ACL | WHITELIST | FILE_UPLOAD (optional filter)
 #
 # Usage:
-#   CAID=<caid> bws run --project-id <bw_id> -- bash list-policies.sh
-#   CAID=<caid> POLICY_TYPE=ACL bws run --project-id <bw_id> -- bash list-policies.sh
+#   CAID=<caid> bws run -- bash list-policies.sh
+#   CAID=<caid> POLICY_TYPE=ACL bws run -- bash list-policies.sh
 
 CAID="${CAID:?Set CAID}"
 EXTENDED="${EXTENDED:-true}"

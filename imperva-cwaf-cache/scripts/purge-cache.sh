@@ -16,8 +16,8 @@
 #   resource_name$    — resources ending with the name
 #
 # Usage:
-#   SITE_ID=<id> URL_PATTERN=style.css bws run --project-id <bw_id> -- bash purge-cache.sh
-#   SITE_ID=<id> bws run --project-id <bw_id> -- bash purge-cache.sh
+#   SITE_ID=<id> URL_PATTERN=style.css bws run -- bash purge-cache.sh
+#   SITE_ID=<id> bws run -- bash purge-cache.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID}"
 

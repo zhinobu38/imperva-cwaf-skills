@@ -8,7 +8,7 @@
 #   SITE_ID, CAID must be set by user before calling
 #
 # Usage:
-#   SITE_ID=<id> CAID=<caid> COMPRESS_JPEG=true bws run --project-id <id> -- bash update-image-compression.sh
+#   SITE_ID=<id> CAID=<caid> COMPRESS_JPEG=true bws run -- bash update-image-compression.sh
 #   SITE_ID=<id> CAID=<caid> COMPRESS_PNG=false AGGRESSIVE_COMPRESSION=true bws run ... -- bash update-image-compression.sh
 #   SITE_ID=<id> CAID=<caid> PROGRESSIVE_IMAGE_RENDERING=true bws run ... -- bash update-image-compression.sh
 

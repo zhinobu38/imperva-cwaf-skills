@@ -9,10 +9,10 @@
 #
 # Usage:
 #   Update site log level:
-#     SITE_ID=<site_id> LOG_LEVEL=<level> CAID=<caid> bws run --project-id <bw_id> -- bash update-site-log-level.sh
+#     SITE_ID=<site_id> LOG_LEVEL=<level> CAID=<caid> bws run -- bash update-site-log-level.sh
 #
 #   JSON output:
-#     SITE_ID=<site_id> LOG_LEVEL=<level> OUTPUT_FORMAT=json CAID=<caid> bws run --project-id <bw_id> -- bash update-site-log-level.sh
+#     SITE_ID=<site_id> LOG_LEVEL=<level> OUTPUT_FORMAT=json CAID=<caid> bws run -- bash update-site-log-level.sh
 #
 # Valid log levels: full, security, none, default
 #   - full:     All logs

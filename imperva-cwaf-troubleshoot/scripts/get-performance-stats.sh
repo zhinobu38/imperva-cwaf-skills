@@ -9,8 +9,8 @@
 #   SITE_ID, CAID must be set by user before calling
 #
 # Usage:
-#   SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash get-performance-stats.sh
-#   CAID=<caid> bws run --project-id <bw_id> -- bash get-performance-stats.sh
+#   SITE_ID=<id> CAID=<caid> bws run -- bash get-performance-stats.sh
+#   CAID=<caid> bws run -- bash get-performance-stats.sh
 #
 # Environment variables:
 #   SITE_ID — Site ID to filter (optional, returns all sites if omitted)

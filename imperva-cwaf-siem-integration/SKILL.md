@@ -24,8 +24,8 @@ Read-only retrieval of SIEM log integration configuration — connections and lo
 
 | Value | Source | Method |
 |-------|--------|--------|
-| `IMPERVA_API_ID` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
-| `IMPERVA_API_KEY` | Bitwarden project `hermes-aws` | Only via `bws run --project-id 61c6c700-2d78-4860-b79e-b46200e193e9` |
+| `IMPERVA_API_ID` | Bitwarden | Only via `bws run` |
+| `IMPERVA_API_KEY` | Bitwarden | Only via `bws run` |
 | `CAID` | User / memory | Pass as env var |
 
 **NEVER hardcode credentials or identifiers.**
@@ -49,21 +49,21 @@ Manage log storage repository connections (S3, SFTP, Splunk).
 ### List All Connections
 
 ```bash
-CAID=<caid> bws run --project-id <bw_id> -- bash \
+CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-siem-integration/scripts/get-connections.sh
 ```
 
 ### Get Single Connection
 
 ```bash
-CAID=<caid> CONNECTION_ID=<24-char-id> bws run --project-id <bw_id> -- bash \
+CAID=<caid> CONNECTION_ID=<24-char-id> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-siem-integration/scripts/get-connections.sh
 ```
 
 ### JSON Output
 
 ```bash
-OUTPUT_FORMAT=json CAID=<caid> bws run --project-id <bw_id> -- bash \
+OUTPUT_FORMAT=json CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-siem-integration/scripts/get-connections.sh
 ```
 
@@ -103,21 +103,21 @@ Configure which logs to receive and where to send them.
 ### List All Log Configurations
 
 ```bash
-CAID=<caid> bws run --project-id <bw_id> -- bash \
+CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-siem-integration/scripts/get-log-configurations.sh
 ```
 
 ### Get Single Log Configuration
 
 ```bash
-CAID=<caid> CONFIG_ID=<24-char-id> bws run --project-id <bw_id> -- bash \
+CAID=<caid> CONFIG_ID=<24-char-id> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-siem-integration/scripts/get-log-configurations.sh
 ```
 
 ### JSON Output
 
 ```bash
-OUTPUT_FORMAT=json CAID=<caid> bws run --project-id <bw_id> -- bash \
+OUTPUT_FORMAT=json CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-siem-integration/scripts/get-log-configurations.sh
 ```
 
@@ -171,14 +171,14 @@ Get or update the log reporting level for a specific site.
 ### Get Current Site Log Level
 
 ```bash
-SITE_ID=<site_id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<site_id> CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-siem-integration/scripts/get-site-log-level.sh
 ```
 
 ### JSON Output
 
 ```bash
-SITE_ID=<site_id> OUTPUT_FORMAT=json CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<site_id> OUTPUT_FORMAT=json CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-siem-integration/scripts/get-site-log-level.sh
 ```
 
@@ -193,14 +193,14 @@ SITE_ID=<site_id> OUTPUT_FORMAT=json CAID=<caid> bws run --project-id <bw_id> --
 ### Update Site Log Level
 
 ```bash
-SITE_ID=<site_id> LOG_LEVEL=<level> CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<site_id> LOG_LEVEL=<level> CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-siem-integration/scripts/update-site-log-level.sh
 ```
 
 ### JSON Output
 
 ```bash
-SITE_ID=<site_id> LOG_LEVEL=<level> OUTPUT_FORMAT=json CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<site_id> LOG_LEVEL=<level> OUTPUT_FORMAT=json CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-siem-integration/scripts/update-site-log-level.sh
 ```
 

@@ -11,8 +11,8 @@
 #   SECTIONS — comma-separated sections to retrieve (optional)
 #
 # Usage:
-#   SITE_ID=<id> bws run --project-id <bw_id> -- bash get-cache-settings.sh
-#   SITE_ID=<id> SECTIONS=mode,client_side bws run --project-id <bw_id> -- bash get-cache-settings.sh
+#   SITE_ID=<id> bws run -- bash get-cache-settings.sh
+#   SITE_ID=<id> SECTIONS=mode,client_side bws run -- bash get-cache-settings.sh
 
 SITE_ID="${SITE_ID:?Set SITE_ID}"
 

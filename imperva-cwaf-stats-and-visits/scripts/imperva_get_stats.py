@@ -3,7 +3,7 @@
 Imperva CWAF — Statistics & Visits
 
 Usage:
-  SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- python3 imperva_get_stats.py [command] [options]
+  SITE_ID=<id> CAID=<caid> bws run -- python3 imperva_get_stats.py [command] [options]
 
 Commands:
   stats       Fetch site statistics (/api/stats/v1)
@@ -16,13 +16,13 @@ Output formats:
 
 Examples:
   # Stats: threats summary
-  SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- python3 imperva_get_stats.py stats --stats threats
+  SITE_ID=xxxxxxx CAID=xxxxxx bws run -- python3 imperva_get_stats.py stats --stats threats
 
   # Visits: filter by incident ID
-  SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- python3 imperva_get_stats.py visits --incident-id 526000340320036642-169334527402838191
+  SITE_ID=xxxxxxx CAID=xxxxxx bws run -- python3 imperva_get_stats.py visits --incident-id 526000340320036642-169334527402838191
 
   # Visits: find .git probes with analysis report
-  SITE_ID=852056322 CAID=2429928 bws run --project-id <id> -- python3 imperva_get_stats.py visits --filter-path ".git" --format report
+  SITE_ID=xxxxxxx CAID=xxxxxx bws run -- python3 imperva_get_stats.py visits --filter-path ".git" --format report
 """
 
 import argparse

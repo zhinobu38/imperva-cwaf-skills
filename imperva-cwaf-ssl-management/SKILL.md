@@ -36,28 +36,28 @@ All scripts at: `~/.hermes/skills/imperva-cwaf/imperva-cwaf-ssl-management/scrip
 ### Enable SSL Certificate (Imperva-Managed)
 
 ```bash
-SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-ssl-management/scripts/enable-ssl.sh
 ```
 
 ### Get SSL Status
 
 ```bash
-SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-ssl-management/scripts/get-ssl-status.sh
 ```
 
 ### Get Certificate Details
 
 ```bash
-SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-ssl-management/scripts/get-certificate-details.sh
 ```
 
 ### Get TLS/HSTS Configuration
 
 ```bash
-SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-ssl-management/scripts/get-tls-config.sh
 ```
 
@@ -65,12 +65,12 @@ SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
 
 ```bash
 # Default: ENHANCED_SECURITY + HSTS enabled
-SITE_ID=<id> CAID=<caid> bws run --project-id <bw_id> -- bash \
+SITE_ID=<id> CAID=<caid> bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-ssl-management/scripts/update-tls-config.sh
 
 # Custom settings
 SITE_ID=<id> CAID=<caid> TLS_PROFILE=DEFAULT HSTS_ENABLED=false \
-  bws run --project-id <bw_id> -- bash \
+  bws run -- bash \
   ~/.hermes/skills/imperva-cwaf/imperva-cwaf-ssl-management/scripts/update-tls-config.sh
 ```
 
@@ -114,7 +114,7 @@ Different endpoint groups use different base URLs — mixing them causes persist
 ```json
 {
   "data": [{
-    "siteId": 852056322,
+    "siteId": xxxxxxx,
     "defaultValidationMethod": "CNAME",
     "siteCertificateEnabled": true,
     "certificateDetails": [{
@@ -125,7 +125,7 @@ Different endpoint groups use different base URLs — mixing them causes persist
       "expirationDate": 1787893284000,
       "inRenewal": false,
       "sans": [...],
-      "extSiteId": 852056322,
+      "extSiteId": xxxxxxx,
       "authType": "RSA",
       "level": "SITE"
     }]
@@ -145,12 +145,12 @@ Different endpoint groups use different base URLs — mixing them causes persist
     "expirationDate": 1787893284000,
     "sans": [{
       "sanId": 2637328,
-      "sanValue": "testagent.thtechs.com",
+      "sanValue": "testagent.xxx.com",
       "validationMethod": "CNAME",
       "status": "VALIDATED"
     }],
-    "extSiteId": 852056322,
-    "siteName": "testagent.thtechs.com"
+    "extSiteId": xxxxxxx,
+    "siteName": "testagent.xxx.com"
   }]
 }
 ```
